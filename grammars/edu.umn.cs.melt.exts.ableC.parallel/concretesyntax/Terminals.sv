@@ -10,9 +10,12 @@ marking terminal ParArray_t 'parArray' lexer classes {Type, Global};
 marking terminal Thread_t 'thread' lexer classes {Type, Global};
 marking terminal Atomic_t 'atomic' lexer classes {Type, Global};
 
+-- Terminals for parallel system management
+terminal New_t 'new';
+terminal Delete_t 'delete' lexer classes {Keyword, Reserved};
+
 -- Terminals for feature defaults
 terminal SpawnFeature_t 'spawn';
-terminal LockFeature_t 'lock';
 terminal AtomicFeature_t 'atomic';
 terminal ParArrayFeature_t 'parArray';
 

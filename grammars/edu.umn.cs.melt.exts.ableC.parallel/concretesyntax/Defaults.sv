@@ -8,6 +8,5 @@ concrete productions top::Declaration_c
 closed nonterminal ParallelFeature_c with ast<ParallelFeature>;
 concrete productions top::ParallelFeature_c
 | x::SpawnFeature_t    { top.ast = featureSpawn();    }
-| x::LockFeature_t     { top.ast = featureLock();     }
 | x::AtomicFeature_t   { top.ast = featureAtomic();   }
 | x::ParArrayFeature_t { top.ast = featureParallel(); }
