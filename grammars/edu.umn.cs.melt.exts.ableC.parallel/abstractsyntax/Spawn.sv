@@ -1,19 +1,14 @@
 grammar edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax;
 
 abstract production spawnTask
-top::Stmt ::= expr::Expr annts::SpawnAnnotations
+top::Stmt ::= expr::Expr annts::[SpawnAnnotation]
 {
-  forwards to nullStmt();
+  forwards to exprStmt(expr);
 }
 
-nonterminal SpawnAnnotations;
+closed nonterminal SpawnAnnotation;
 
-abstract production emptyAnnotations
-top::SpawnAnnotations ::= 
-{
-}
-
-abstract production fakeAnnotations
-top::SpawnAnnotations ::= name::String tl::SpawnAnnotations
+abstract production fakeSpawnAnnotation
+top::SpawnAnnotation ::= expr::Expr
 {
 }

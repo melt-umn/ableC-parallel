@@ -2,43 +2,26 @@ grammar edu:umn:cs:melt:exts:ableC:parallel:concretesyntax;
 
 concrete productions top::Stmt_c
 | 'spawn' ex::Expr_c ';' annts::SpawnAnnotations_c {
-    --top.ast = spawnTask(ex.ast, annts.ast);
-    top.ast = exprStmt(ex.ast);
+    top.ast = spawnTask(ex.ast, annts.ast);
   }
 | 'sync' ';' {
     top.ast = nullStmt();
   }
-| 'parallel' 'for' '(' init::Declaration_c cond::ExprStmt_c iter::Expr_c ')'
-      body::Stmt_c {
-    --top.ast = nullStmt();
-    top.ast = forDeclStmt(init.ast, cond.asMaybeExpr, justExpr(iter.ast), body.ast);
-  }
-| 'parallel' 'for' '(' init::Declaration_c cond::ExprStmt_c iter::Expr_c ')'
-      annts::NonEmptySpawnAnnotations_c body::Stmt_c {
-    --top.ast = nullStmt();
-    top.ast = forDeclStmt(init.ast, cond.asMaybeExpr, justExpr(iter.ast), body.ast);
-  }
-| 'parallel' 'for' '(' init::Declaration_c cond::ExprStmt_c iter::Expr_c ')'
-      '{' annts::NonEmptySpawnAnnotations_c body::BlockItemList_c '}' {
-    --top.ast = nullStmt();
-    top.ast = forDeclStmt(init.ast, cond.asMaybeExpr, justExpr(iter.ast), 
-      compoundStmt(foldStmt(body.ast)));
-  }
 
-nonterminal SpawnAnnotations_c with ast<SpawnAnnotations>, location;
-nonterminal NonEmptySpawnAnnotations_c with ast<SpawnAnnotations>, location;
+closed nonterminal SpawnAnnotations_c with ast<[SpawnAnnotation]>, location;
+closed nonterminal SpawnAnnotation_c with ast<SpawnAnnotation>, location;
 
 concrete productions top::SpawnAnnotations_c
-| { top.ast = emptyAnnotations(); }
-| annts::NonEmptySpawnAnnotations_c { top.ast = annts.ast; }
+| { top.ast = []; }
+| hd::SpawnAnnotation_c ';' tl::SpawnAnnotations_c { top.ast = hd.ast :: tl.ast; }
 
-concrete productions top::NonEmptySpawnAnnotations_c
-| 'by' sys::Identifier_t rest::SpawnAnnotations_c {
-    top.ast = fakeAnnotations(sys.lexeme, rest.ast);
+concrete productions top::SpawnAnnotation_c
+| 'by' sys::Expr_c {
+    top.ast = fakeSpawnAnnotation(sys.ast);
   }
-| 'as' nm::Identifier_t rest::SpawnAnnotations_c {
-    top.ast = fakeAnnotations(nm.lexeme, rest.ast);
+| 'as' nm::Expr_c {
+    top.ast = fakeSpawnAnnotation(nm.ast);
   }
-| 'in' nm::Identifier_t rest::SpawnAnnotations_c {
-    top.ast = fakeAnnotations(nm.lexeme, rest.ast);
+| 'in' nm::Expr_c {
+    top.ast = fakeSpawnAnnotation(nm.ast);
   }
