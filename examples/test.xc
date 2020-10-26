@@ -36,4 +36,14 @@ int main() {
     printf("Test: %d\n", f(7));
     printf("Testing... %d\n", f(77));
   }
+
+  parallel for (int i = 77; i < 100; i = i + 7) {
+    printf("%d\n", i);
+  }
+
+  parallel for(int i = 100; i >= 0; i = i - 2) printf("%d\n", i);
+  parallel for(int j = 7; j < 100; j = (2 * 77) + j) printf("%d\n", j);
+
+  parallel for(int i = 0; i + 1 < 100; i = 7 + i) printf("%d\n", i);
+  parallel for(int i = 0; 100 > i + 7; i = i + 1) printf("%d\n", i);
 }

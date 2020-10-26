@@ -231,83 +231,19 @@ extern char  *ctermid(char  * __s) __attribute__((__nothrow__, __leaf__));
 extern void flockfile(FILE  * __stream) __attribute__((__nothrow__, __leaf__));
 extern signed int ftrylockfile(FILE  * __stream) __attribute__((__nothrow__, __leaf__));
 extern void funlockfile(FILE  * __stream) __attribute__((__nothrow__, __leaf__));
-signed int f(signed int  z)
-{
-
-  ;
-  {
-    return ((((z) << 4)) * (((z) >> 1)));
-  }
-}
 signed int main()
 {
 
   ;
   {
-    signed int x;
-    ((x) = ((f)(7)));
-    ((x) = ((f)(4)));
-    ((f)(99));
-    ((x) += ((f)(7)));
-    ({
-      ((printf)("Hi!\n"));
-      ((f)(4)); })
-    ;
-    ;
-    for (signed int i = 0; ((i) < 10); ((i) += 1))
-    {
-      ((printf)("%d\n", (i)));
-    }
-    for (signed int i = 0; ((i) < 53); ((i) += 2))
+    for (signed int i = 0; ((i) < 100); ((i) += 1))
     {
       {
         ((printf)("%d\n", (i)));
+        signed int  *p = (&(i));
+        ((*(p)) += 1);
       }
     }
-    for (signed int i = 0; ((i) > (-10)); ((i) -= 1))
-    {
-      ((printf)("Hello\n"));
-    }
-    for (signed int i = 0; ((i) < 100); ((i) += 7))
-    {
-      {
-        ((printf)("Bad...\n"));
-      }
-    }
-    for (signed int i = 8; ((i) < 12); ((i) += 1))
-    {
-      {
-        ((printf)("Testing...\n"));
-      }
-    }
-    for (signed int i = 9; ((i) < 35); ((i) += 2))
-    {
-      {
-        ((printf)("Test: %d\n", ((f)(7))));
-        ((printf)("Testing... %d\n", ((f)(77))));
-      }
-    }
-    for (signed int i = 77; ((i) < 100); ((i) += 7))
-    {
-      {
-        ((printf)("%d\n", (i)));
-      }
-    }
-    for (signed int i = 100; ((i) >= 0); ((i) -= 2))
-    {
-      ((printf)("%d\n", (i)));
-    }
-    for (signed int j = 7; ((j) < 100); ((j) += ((2 * 77))))
-    {
-      ((printf)("%d\n", (j)));
-    }
-    for (signed int i = 0; ((i) < (100 - 1)); ((i) += 7))
-    {
-      ((printf)("%d\n", (i)));
-    }
-    for (signed int i = 0; ((i) < (100 - 7)); ((i) += 1))
-    {
-      ((printf)("%d\n", (i)));
-    }
+    return 0;
   }
 }

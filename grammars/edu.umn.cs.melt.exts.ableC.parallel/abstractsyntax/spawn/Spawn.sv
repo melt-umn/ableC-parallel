@@ -1,4 +1,4 @@
-grammar edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax;
+grammar edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:spawn;
 
 abstract production spawnTask
 top::Stmt ::= expr::Expr annts::[SpawnAnnotation]
