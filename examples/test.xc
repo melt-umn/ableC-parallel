@@ -6,11 +6,11 @@ int f(int z) {
 
 int main() {
   int x;
-  spawn x = f(7);
-  spawn x = f(4); by 44;
-  spawn f(99); as 18;
-  spawn x += f(7); in who;
-  spawn ({printf("Hi!\n"); f(4); });
+  //spawn x = f(7);
+  //spawn x = f(4); by 44;
+  //spawn f(99); as 18;
+  //spawn x += f(7); in who;
+  //spawn ({printf("Hi!\n"); f(4); });
 
   sync;
 

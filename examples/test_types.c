@@ -231,12 +231,31 @@ extern char  *ctermid(char  * __s) __attribute__((__nothrow__, __leaf__));
 extern void flockfile(FILE  * __stream) __attribute__((__nothrow__, __leaf__));
 extern signed int ftrylockfile(FILE  * __stream) __attribute__((__nothrow__, __leaf__));
 extern void funlockfile(FILE  * __stream) __attribute__((__nothrow__, __leaf__));
-signed int f(signed int  z)
+struct __attribute__(()) system_test {
+  signed int tmp;
+  
+};
+signed long f(unsigned int  n)
 {
 
   ;
   {
-    return ((((z) << 4)) * (((z) >> 1)));
+    signed long res = 1;
+    for (unsigned int i = 0; ((i) < (n)); ((i)++))
+    {
+      ((res) *= (n));
+    }
+    return (res);
+  }
+}
+double g(signed int  x)
+{
+
+  ;
+  {
+    double res = 1.0;
+    ((res) *= ((x) + 7));
+    return (res);
   }
 }
 signed int main()
@@ -244,62 +263,15 @@ signed int main()
 
   ;
   {
-    signed int x;
+    struct system_test system;
+    struct system_test  *ptr = (&(system));
+    signed long r1, r2;
+    signed int r3;
+    ((r1) = ((f)(17)));
+    ((r2) = ((f)(44)));
+    ((r3) = ((g)(102)));
     ;
-    for (signed int i = 0; ((i) < 10); ((i) += 1))
-    {
-      ((printf)("%d\n", (i)));
-    }
-    for (signed int i = 0; ((i) < 53); ((i) += 2))
-    {
-      {
-        ((printf)("%d\n", (i)));
-      }
-    }
-    for (signed int i = 0; ((i) > (-10)); ((i) -= 1))
-    {
-      ((printf)("Hello\n"));
-    }
-    for (signed int i = 0; ((i) < 100); ((i) += 7))
-    {
-      {
-        ((printf)("Bad...\n"));
-      }
-    }
-    for (signed int i = 8; ((i) < 12); ((i) += 1))
-    {
-      {
-        ((printf)("Testing...\n"));
-      }
-    }
-    for (signed int i = 9; ((i) < 35); ((i) += 2))
-    {
-      {
-        ((printf)("Test: %d\n", ((f)(7))));
-        ((printf)("Testing... %d\n", ((f)(77))));
-      }
-    }
-    for (signed int i = 77; ((i) < 100); ((i) += 7))
-    {
-      {
-        ((printf)("%d\n", (i)));
-      }
-    }
-    for (signed int i = 100; ((i) >= 0); ((i) -= 2))
-    {
-      ((printf)("%d\n", (i)));
-    }
-    for (signed int j = 7; ((j) < 100); ((j) += ((2 * 77))))
-    {
-      ((printf)("%d\n", (j)));
-    }
-    for (signed int i = 0; ((i) < (100 - 1)); ((i) += 7))
-    {
-      ((printf)("%d\n", (i)));
-    }
-    for (signed int i = 0; ((i) < (100 - 7)); ((i) += 1))
-    {
-      ((printf)("%d\n", (i)));
-    }
+    ((printf)("%d\n", 4));
+    return 0;
   }
 }
