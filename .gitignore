@@ -8,6 +8,7 @@ build.xml
 *.jar
 
 # Other files
+*.c
 *.i
 *.o
 *.out
