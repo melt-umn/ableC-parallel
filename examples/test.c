@@ -231,6 +231,10 @@ extern char  *ctermid(char  * __s) __attribute__((__nothrow__, __leaf__));
 extern void flockfile(FILE  * __stream) __attribute__((__nothrow__, __leaf__));
 extern signed int ftrylockfile(FILE  * __stream) __attribute__((__nothrow__, __leaf__));
 extern void funlockfile(FILE  * __stream) __attribute__((__nothrow__, __leaf__));
+struct __attribute__(()) system_test {
+  signed int tmp;
+  
+};
 signed int f(signed int  z)
 {
 
@@ -244,7 +248,16 @@ signed int main()
 
   ;
   {
+    struct system_test system;
     signed int x;
+    ((x) = ((f)(7)));
+    ((x) = ((f)(4)));
+    ((f)(99));
+    ((x) += ((f)(7)));
+    ({
+      ((printf)("Hi!\n"));
+      ((f)(4)); })
+    ;
     ;
     for (signed int i = 0; ((i) < 10); ((i) += 1))
     {

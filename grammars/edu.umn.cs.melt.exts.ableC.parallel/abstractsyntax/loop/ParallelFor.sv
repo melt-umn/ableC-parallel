@@ -2,7 +2,7 @@ grammar edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:loop;
 
 abstract production parallelFor
 top::Stmt ::= init::Decl cond::MaybeExpr iter::Expr body::Stmt 
-              annts::[ParallelAnnotation]
+              annts::ParallelAnnotations
 {
   top.pp = ppConcat([text("parallel for"), space(), 
               parens(ppConcat([init.pp, space(), 
@@ -18,6 +18,7 @@ top::Stmt ::= init::Decl cond::MaybeExpr iter::Expr body::Stmt
   init.isTopLevel = false;
 
   local declName :: Name = init.parLoopVar.fromJust;
+  local varType :: Type = init.parLoopType.fromJust;
   local varInit :: Expr = init.parLoopInit.fromJust;
 
   condExp.parLoopVarName = declName;
@@ -42,63 +43,36 @@ top::Stmt ::= init::Decl cond::MaybeExpr iter::Expr body::Stmt
       ++
       iter.parLoopUpdateErrs
     else [])
-    ++ body.loopVarErrs;
+    ++ body.loopVarErrs
+    ++  if !annts.parallelBy.isJust
+        then [err(builtin, "Parallel for-loop is missing annotation to specify which system to use")]
+        else
+          case systemType of
+          | extType(_, parallelType(_)) -> []
+          | _ -> [err(parallelBy.location, "Expression specifying the parallel system is not an appropriate type")]
+          end;
 
   local propagateErrors :: [Message] = 
-    init.errors ++ cond.errors ++ iter.errors ++ body.errors;
+    init.errors ++ cond.errors ++ iter.errors ++ body.errors ++ annts.errors;
 
   top.errors := if null(propagateErrors) 
                 then parLoopErrors 
                 else propagateErrors;
 
-  local modCond :: MaybeExpr =
-    justExpr(
-      case loopCond of
-      | lessThan(bound) -> 
-          ltExpr(
-            declRefExpr(declName, location=builtin), 
-            bound, location=builtin)
-      | lessThanOrEqual(bound) -> 
-          lteExpr(
-            declRefExpr(declName, location=builtin), 
-            bound, location=builtin)
-      | greaterThan(bound) -> 
-          gtExpr(
-            declRefExpr(declName, location=builtin), 
-            bound, location=builtin)
-      | greaterThanOrEqual(bound) -> 
-          gteExpr(
-            declRefExpr(declName, location=builtin), 
-            bound, location=builtin)
-      | notEqual(bound) -> 
-          notEqualsExpr(
-            declRefExpr(declName, location=builtin), 
-            bound, location=builtin)
-      end);
 
-  local modIter :: MaybeExpr =
-    justExpr(
-      case loopUpdate of
-      | add(amt) ->
-          addEqExpr(
-            declRefExpr(declName, location=builtin),
-            amt, location=builtin)
-      | subtract(amt) ->
-          subEqExpr(
-            declRefExpr(declName, location=builtin),
-            amt, location=builtin)
-      end);
+  local parallelBy :: Expr = annts.parallelBy.fromJust;
+
+  parallelBy.env = top.env;
+  parallelBy.returnType = top.returnType;
+
+  local systemType :: Type = parallelBy.typerep;
+  local sys :: ParallelSystem =
+    case systemType of
+    | extType(_, parallelType(s)) -> s
+    end;
 
   forwards to 
     if !null(top.errors)
     then warnStmt(top.errors)
-    else forDeclStmt(init, modCond, modIter, body);
-  --forwards to forDeclStmt(init, cond, justExpr(iter), body);
-}
-
-closed nonterminal ParallelAnnotation;
-
-abstract production fakeParallelAnnotation
-top::ParallelAnnotation ::= expr::Expr
-{
+    else sys.fFor(declName, varType, varInit, loopCond, loopUpdate, body);
 }

@@ -8,3 +8,4 @@ imports silver:langutil;
 imports silver:langutil:pp;
 
 imports edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax;
+imports edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:parallel;

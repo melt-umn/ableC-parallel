@@ -1,9 +1,11 @@
 #include <stdio.h>
+#include "testing.xh"
 
 int main() {
   int i = 0;
 
-  parallel for (i = 0; i < 10; i++) {
+  test parallel system;
+  parallel for (i = 0; i < 10; i++) { by system;
     printf("%d\n", i);
   }
 }

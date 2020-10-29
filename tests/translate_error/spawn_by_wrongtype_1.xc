@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "testing.xh"
 
 int f(int x) {
   return x * x * x;

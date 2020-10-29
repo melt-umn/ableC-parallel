@@ -2,7 +2,7 @@ grammar edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:spawn;
 
 synthesized attribute spawnBy :: Maybe<Expr>;
 
-nonterminal SpawnAnnotations with errors, env, returnType, spawnBy;
+closed nonterminal SpawnAnnotations with errors, env, returnType, spawnBy;
 
 abstract production consSpawnAnnotations
 top::SpawnAnnotations ::= hd::SpawnAnnotation tl::SpawnAnnotations

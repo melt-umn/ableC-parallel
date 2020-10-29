@@ -2,10 +2,9 @@
 #include "testing.xh"
 
 int main() {
-  int i = 0;
-
-  test parallel system;
-  parallel for (; i < 10; i++) { by system;
+  parallel for (int i = 0; i < 77; i++) {
     printf("%d\n", i);
   }
+
+  return 0;
 }
