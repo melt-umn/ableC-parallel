@@ -1,8 +1,15 @@
 grammar edu:umn:cs:melt:exts:ableC:parallel:concretesyntax;
 
+marking terminal Parallel_t 'parallel' lexer classes {Keyword, Type, Reserved};
+
 marking terminal Spawn_t 'spawn' lexer classes {Keyword, Reserved};
 marking terminal Sync_t 'sync' lexer classes {Keyword, Reserved};
-marking terminal Parallel_t 'parallel' lexer classes {Keyword, Reserved};
+
+marking terminal Lock_t 'lock' lexer classes {Type, Global};
+marking terminal Condvar_t 'condvar' lexer classes {Type, Global};
+
+marking terminal Acquire_t 'acquire' lexer classes {Keyword, Global};
+marking terminal Release_t 'release' lexer classes {Keyword, Global};
 
 terminal By_t 'by' lexer classes {Keyword, Reserved};
 terminal As_t 'as' lexer classes {Keyword, Reserved};

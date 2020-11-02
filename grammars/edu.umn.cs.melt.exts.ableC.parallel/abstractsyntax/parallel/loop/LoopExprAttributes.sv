@@ -1,4 +1,4 @@
-grammar edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:loop;
+grammar edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:parallel:loop;
 
 synthesized attribute parLoopBoundErrs :: [Message] occurs on Expr;
 synthesized attribute parLoopUpdateErrs :: [Message] occurs on Expr;

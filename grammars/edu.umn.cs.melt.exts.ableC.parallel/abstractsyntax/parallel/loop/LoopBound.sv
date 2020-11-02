@@ -1,4 +1,4 @@
-grammar edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:loop;
+grammar edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:parallel:loop;
 
 synthesized attribute bound :: Expr;
 nonterminal LoopBound with bound;

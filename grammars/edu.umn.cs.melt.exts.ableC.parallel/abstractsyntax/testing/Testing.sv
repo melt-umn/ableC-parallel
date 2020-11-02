@@ -1,4 +1,4 @@
-grammar edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:parallel;
+grammar edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:testing;
 
 abstract production sequentialFor
 top::Stmt ::= n::Name t::Type init::Expr bound::LoopBound update::LoopUpdate 
@@ -70,6 +70,39 @@ top::ParallelSystem ::=
                 -> sequentialFor(n, t, e, b, u, s);
 }
 
+abstract production fakeLock
+top::Stmt ::= locks::[Expr] val::Integer
+{
+  forwards to foldStmt(
+    map(\ e::Expr -> 
+      exprStmt(
+        eqExpr(
+          memberExpr(
+            explicitCastExpr(
+              typeName(
+                tagReferenceTypeExpr(
+                  nilQualifier(), structSEU(), name("system_test", location=builtin)), 
+                baseTypeExpr()),
+              e, location=builtin), 
+            false, name("tmp", location=builtin), location=builtin), 
+          mkIntConst(val, e.location),
+          location=builtin
+        )
+      ),
+      locks
+    )
+  );
+}
+
+abstract production testLockSystem
+top::LockSystem ::=
+{
+  top.parName = "testing";
+  top.lockType = refIdExtType(structSEU(), "system_test", "edu:umn:cs:melt:exts:ableC:parallel:test");
+  top.fAcquire = \lst::[Expr] -> fakeLock(lst, 1);
+  top.fRelease = \lst::[Expr] -> fakeLock(lst, 0);
+}
+
 abstract production testParallelQualifier
 top::Qualifier ::= 
 {
@@ -84,4 +117,5 @@ top::Qualifier ::=
   top.errors := [];
 
   top.parSystem = just(testParSystem());
+  top.lockSystem = just(testLockSystem());
 }

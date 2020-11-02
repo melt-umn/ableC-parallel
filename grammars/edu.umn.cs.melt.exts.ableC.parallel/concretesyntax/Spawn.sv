@@ -25,9 +25,3 @@ concrete productions top::SpawnAnnotation_c
 | 'in' nm::Expr_c {
     top.ast = fakeSpawnAnnotation(nm.ast, location=top.location);
   }
-
-closed nonterminal ExprList_c with ast<[Expr]>, location;
-concrete productions top::ExprList_c
-| { top.ast = []; }
-| e::AssignExpr_c { top.ast = e.ast :: []; }
-| e::AssignExpr_c ',' tl::ExprList_c { top.ast = e.ast :: tl.ast; }

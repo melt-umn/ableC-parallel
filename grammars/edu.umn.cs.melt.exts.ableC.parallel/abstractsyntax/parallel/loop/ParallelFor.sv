@@ -1,4 +1,4 @@
-grammar edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:loop;
+grammar edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:parallel:loop;
 
 abstract production parallelFor
 top::Stmt ::= init::Decl cond::MaybeExpr iter::Expr body::Stmt 

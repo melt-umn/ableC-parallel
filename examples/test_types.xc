@@ -30,5 +30,14 @@ int main() {
   sync;
 
   printf("%d\n", 4);
+
+  test lock lck;
+  test lock* ltr = &lck;
+
+  acquire lck, *ltr;
+
+  release *ltr;
+  release lck;
+
   return 0;
 }

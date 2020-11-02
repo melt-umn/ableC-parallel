@@ -1,4 +1,4 @@
-grammar edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:spawn;
+grammar edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:parallel:spawn;
 
 synthesized attribute spawnBy :: Maybe<Expr>;
 

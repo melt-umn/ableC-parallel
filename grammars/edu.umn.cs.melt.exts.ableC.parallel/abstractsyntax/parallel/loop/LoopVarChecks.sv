@@ -1,4 +1,4 @@
-grammar edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:loop;
+grammar edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:parallel:loop;
 
 monoid attribute loopVarErrs :: [Message] with [], ++ occurs on Expr, Decl, Stmt, 
   MaybeExpr, Exprs, ExprOrTypeName, Initializer, MaybeInitializer, Declarators,
