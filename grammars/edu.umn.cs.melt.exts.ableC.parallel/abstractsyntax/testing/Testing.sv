@@ -73,22 +73,26 @@ top::ParallelSystem ::=
 abstract production fakeLock
 top::Stmt ::= locks::[Expr] val::Integer
 {
+  top.pp = text("fake_lock_operation");
+  top.functionDefs := [];
+
   forwards to foldStmt(
     map(\ e::Expr -> 
-      exprStmt(
+      let t :: Type = 
+        (decorate e with {env=top.env; returnType=nothing();}).typerep
+      in exprStmt(
         eqExpr(
           memberExpr(
-            explicitCastExpr(
-              typeName(
-                tagReferenceTypeExpr(
-                  nilQualifier(), structSEU(), name("system_test", location=builtin)), 
-                baseTypeExpr()),
+            explicitCastExpr(typeName(t.host.baseTypeExpr, t.host.typeModifierExpr),
               e, location=builtin), 
-            false, name("tmp", location=builtin), location=builtin), 
+            case t of 
+              | pointerType(_, _) -> true | _ -> false end,
+            name("tmp", location=builtin), location=builtin), 
           mkIntConst(val, e.location),
           location=builtin
         )
-      ),
+      )
+      end,
       locks
     )
   );
@@ -101,6 +105,11 @@ top::LockSystem ::=
   top.lockType = refIdExtType(structSEU(), "system_test", "edu:umn:cs:melt:exts:ableC:parallel:test");
   top.fAcquire = \lst::[Expr] -> fakeLock(lst, 1);
   top.fRelease = \lst::[Expr] -> fakeLock(lst, 0);
+
+  top.condType = refIdExtType(structSEU(), "system_test", "edu:umn:cs:melt:exts:ableC:parallel:test");
+  top.fWait = \cv::Expr -> nullStmt();
+  top.fSignal = \cv::Expr -> nullStmt();
+  top.fBroadcast = \cv::Expr -> nullStmt();
 }
 
 abstract production testParallelQualifier

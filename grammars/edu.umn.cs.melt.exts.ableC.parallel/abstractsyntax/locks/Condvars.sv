@@ -1,9 +1,9 @@
 grammar edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:locks;
 
-abstract production lockTypeExpr
+abstract production condvarTypeExpr
 top::BaseTypeExpr ::= q::Qualifiers
 {
-  top.pp = ppConcat([ppImplode(space(), q.pps), text("lock")]);
+  top.pp = ppConcat([ppImplode(space(), q.pps), text("condvar")]);
 
   local partitionQualifiers :: Pair<[Qualifier] [Qualifier]> =
     partition(\q::Qualifier -> q.lockSystem.isJust, q.qualifiers);
@@ -14,7 +14,7 @@ top::BaseTypeExpr ::= q::Qualifiers
   -- TODO: Location
   local localErrors :: [Message] =
     if null(lockQuals) || !null(tail(lockQuals))
-    then [err(builtin, "An object of type 'lock' must have a single qualifier specifying the system")]
+    then [err(builtin, "An object of type 'condvar' must have a single qualifier specifying the system")]
     else [];
 
   local lockSystem :: LockSystem = head(lockQuals).lockSystem.fromJust;
@@ -23,22 +23,22 @@ top::BaseTypeExpr ::= q::Qualifiers
     if !null(localErrors)
     then errorTypeExpr(localErrors)
     else extTypeExpr(foldQualifier(otherQuals),
-      lockType(lockSystem));
+      condvarType(lockSystem));
 }
 
-abstract production lockType
+abstract production condvarType
 top::ExtType ::= sys::LockSystem
 {
   propagate canonicalType;
 
-  top.pp = ppConcat([text(sys.parName), space(), text("lock")]);
-  top.mangledName = s"lock_${sys.parName}";
+  top.pp = ppConcat([text(sys.parName), space(), text("condvar")]);
+  top.mangledName = s"condvar_${sys.parName}";
   top.isEqualTo =
     \ other::ExtType ->
       case other of
-      | lockType(s) -> s.parName == sys.parName
+      | condvarType(s) -> s.parName == sys.parName
       | _ -> false
       end;
 
-  top.host = extType(top.givenQualifiers, sys.lockType);
+  top.host = extType(top.givenQualifiers, sys.condType);
 }

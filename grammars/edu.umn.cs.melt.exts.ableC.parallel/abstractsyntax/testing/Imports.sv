@@ -6,6 +6,7 @@ imports edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:parallel;
 imports edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:parallel:loop;
 
 imports edu:umn:cs:melt:ableC:abstractsyntax:construction;
+imports edu:umn:cs:melt:ableC:abstractsyntax:env;
 imports edu:umn:cs:melt:ableC:abstractsyntax:host;
 
 imports silver:langutil;

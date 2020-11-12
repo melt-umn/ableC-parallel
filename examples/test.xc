@@ -53,4 +53,22 @@ int main() {
     printf("%d\n", i);
   parallel for(int i = 0; 100 > i + 7; i = i + 1) by system;
     printf("%d\n", i);
+
+  test lock lk;
+  test condvar cv;
+
+  acquire lk;
+
+  wait cv;
+  broadcast cv;
+
+  release lk;
+
+  test lock* ptr = &lk;
+  test condvar* pc = &cv;
+
+  acquire ptr;
+  wait pc;
+  signal pc;
+  release ptr;
 }
