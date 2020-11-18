@@ -112,6 +112,22 @@ top::LockSystem ::=
   top.fBroadcast = \cv::Expr -> nullStmt();
 }
 
+abstract production testSyncSystem
+top::SyncSystem ::=
+{
+  top.parName = "testing";
+  top.threadType = refIdExtType(structSEU(), "system_test", "edu:umn:cs:melt:exts:ableC:parallel:test");
+  top.setThread = \e::Expr -> nullStmt();
+  top.finishThread = \e::Expr -> nullStmt();
+  top.syncThread = \e::[Expr] -> nullStmt();
+
+  top.groupType = refIdExtType(structSEU(), "system_test", "edu:umn:cs:melt:exts:ableC:parallel:test");
+  top.initGroup = mkIntConst(0, builtin);
+  top.addGroup = \e::Expr -> nullStmt();
+  top.finishGroup = \e::Expr -> nullStmt();
+  top.syncGroup = \e::[Expr] -> nullStmt();
+}
+
 abstract production testParallelQualifier
 top::Qualifier ::= 
 {
@@ -127,4 +143,5 @@ top::Qualifier ::=
 
   top.parSystem = just(testParSystem());
   top.lockSystem = just(testLockSystem());
+  top.syncSystem = just(testSyncSystem());
 }

@@ -1,4 +1,6 @@
-grammar edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:locks;
+grammar edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax;
+
+imports edu:umn:cs:melt:ableC:abstractsyntax:host;
 
 synthesized attribute exprList :: [Expr] occurs on Exprs;
 

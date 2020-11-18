@@ -4,9 +4,6 @@ concrete productions top::Stmt_c
 | 'spawn' ex::Expr_c ';' annts::SpawnAnnotations_c {
     top.ast = spawnTask(ex.ast, annts.ast);
   }
-| 'sync' lst::ExprList_c ';' {
-    top.ast = syncTask(foldExpr(lst.ast));
-  }
 
 closed nonterminal SpawnAnnotations_c with ast<SpawnAnnotations>, location;
 closed nonterminal SpawnAnnotation_c with ast<SpawnAnnotation>, location;
@@ -20,8 +17,8 @@ concrete productions top::SpawnAnnotation_c
     top.ast = spawnByAnnotation(sys.ast, location=top.location);
   }
 | 'as' nm::Expr_c {
-    top.ast = fakeSpawnAnnotation(nm.ast, location=top.location);
+    top.ast = spawnAsAnnotation(nm.ast, location=top.location);
   }
 | 'in' nm::Expr_c {
-    top.ast = fakeSpawnAnnotation(nm.ast, location=top.location);
+    top.ast = spawnInAnnotation(nm.ast, location=top.location);
   }

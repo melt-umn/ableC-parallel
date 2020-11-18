@@ -7,6 +7,8 @@ marking terminal Sync_t 'sync' lexer classes {Keyword, Reserved};
 
 marking terminal Lock_t 'lock' lexer classes {Type, Global};
 marking terminal Condvar_t 'condvar' lexer classes {Type, Global};
+marking terminal Thread_t 'thread' lexer classes {Type, Global};
+marking terminal Group_t 'group' lexer classes {Type, Global};
 
 marking terminal Acquire_t 'acquire' lexer classes {Keyword, Global};
 marking terminal Release_t 'release' lexer classes {Keyword, Global};

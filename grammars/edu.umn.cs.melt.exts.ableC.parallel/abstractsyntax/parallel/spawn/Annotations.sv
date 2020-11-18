@@ -38,7 +38,10 @@ top::SpawnAnnotation ::= expr::Expr
   top.spawnBy = just(expr);
 }
 
-abstract production fakeSpawnAnnotation
+abstract production spawnAsAnnotation -- specify thread object to associate with
 top::SpawnAnnotation ::= expr::Expr
-{
-}
+{}
+
+abstract production spawnInAnnotation -- specify group object to add to
+top::SpawnAnnotation ::= expr::Expr
+{}

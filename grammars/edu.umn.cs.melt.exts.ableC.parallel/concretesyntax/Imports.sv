@@ -6,6 +6,7 @@ imports edu:umn:cs:melt:ableC:abstractsyntax:host;
 imports silver:langutil only ast;
 
 imports edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:locks;
+imports edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:sync;
 
 imports edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:parallel;
 imports edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:parallel:loop;
