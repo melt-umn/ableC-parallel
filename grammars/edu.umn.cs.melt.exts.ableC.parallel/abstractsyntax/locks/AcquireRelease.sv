@@ -1,7 +1,7 @@
 grammar edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:locks;
 
 abstract production genericLockOperation
-top::Stmt ::= locks::Exprs sysFunc::((Stmt ::= [Expr]) ::= LockSystem) nm::String
+top::Stmt ::= locks::Exprs sysFunc::(Stmt ::= LockSystem Decorated Env [Expr]) nm::String
 {
   locks.env = top.env;
   top.pp = ppConcat([text(nm), space(), 
@@ -30,7 +30,7 @@ top::Stmt ::= locks::Exprs sysFunc::((Stmt ::= [Expr]) ::= LockSystem) nm::Strin
 
   local lockStmts :: [Stmt] =
     map(\ sys::LockSystem ->
-      sysFunc(sys) (
+      sysFunc(sys, top.env, 
         filter(\ex::Expr -> 
           case (decorate ex with {env=top.env; returnType=top.returnType;}).typerep of 
           | extType(_, lockType(s)) -> s.parName == sys.parName 
@@ -49,11 +49,15 @@ top::Stmt ::= locks::Exprs sysFunc::((Stmt ::= [Expr]) ::= LockSystem) nm::Strin
 abstract production acquireLock
 top::Stmt ::= locks::Exprs
 {
-  forwards to genericLockOperation(locks, \sys::LockSystem -> sys.fAcquire, "acquire");
+  forwards to genericLockOperation(locks, 
+    \sys::LockSystem env::Decorated Env lst::[Expr] -> 
+      (decorate sys with {env=env; locks=lst;}).acquireLocks, "acquire");
 }
 
 abstract production releaseLock
 top::Stmt ::= locks::Exprs
 {
-  forwards to genericLockOperation(locks, \sys::LockSystem -> sys.fRelease, "release");
+  forwards to genericLockOperation(locks, 
+    \sys::LockSystem env::Decorated Env lst::[Expr] -> 
+      (decorate sys with {env=env; locks=lst;}).releaseLocks, "release");
 }

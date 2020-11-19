@@ -1,17 +1,24 @@
 grammar edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:locks;
 
-synthesized attribute lockType :: ExtType;
-synthesized attribute fAcquire :: (Stmt ::= [Expr]); -- Handler for lock acquire
-synthesized attribute fRelease :: (Stmt ::= [Expr]); -- Handler for lock release
+synthesized attribute lockType :: Type;
+inherited attribute locks :: [Expr];
+synthesized attribute acquireLocks :: Stmt;
+synthesized attribute releaseLocks :: Stmt;
 
-synthesized attribute condType   :: ExtType;
-synthesized attribute fWait      :: (Stmt ::= Expr); -- Handler for cv wait
-synthesized attribute fSignal    :: (Stmt ::= Expr); -- Handler for cv signal
-synthesized attribute fBroadcast :: (Stmt ::= Expr); -- Handler for cv broadcast
+synthesized attribute condType :: Type;
+inherited attribute condvar :: Expr;
+synthesized attribute waitCV :: Stmt;
+synthesized attribute signalCV :: Stmt;
+synthesized attribute broadcastCV :: Stmt;
 
-closed nonterminal LockSystem with parName, 
-                                    lockType, fAcquire, fRelease,
-                                    condType, fWait,    fSignal,  fBroadcast;
+closed nonterminal LockSystem with parName, env,
+                                    lockType, locks, acquireLocks, releaseLocks,
+                                    condType, condvar, waitCV, signalCV, broadcastCV;
+
+flowtype LockSystem = decorate{env},
+                      acquireLocks{env, locks}, releaseLocks{env, locks},
+                      waitCV{env, condvar}, signalCV{env, condvar}, broadcastCV{env, condvar},
+                      lockType{decorate}, condType{decorate};
 
 synthesized attribute lockSystem :: Maybe<LockSystem> occurs on Qualifier;
 

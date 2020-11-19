@@ -1,7 +1,7 @@
 grammar edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:locks;
 
 abstract production genericCVOp
-top::Stmt ::= cv::Expr sysOp::((Stmt ::= Expr) ::= LockSystem) nm::String
+top::Stmt ::= cv::Expr sysOp::(Stmt ::= LockSystem Decorated Env Expr) nm::String
 {
   cv.env = top.env;
 
@@ -24,23 +24,26 @@ top::Stmt ::= cv::Expr sysOp::((Stmt ::= Expr) ::= LockSystem) nm::String
   forwards to
     if !null(localErrors)
     then warnStmt(localErrors)
-    else sysOp(lockSystem)(cv);
+    else sysOp(lockSystem, top.env, cv);
 }
 
 abstract production waitCV
 top::Stmt ::= cv::Expr
 {
-  forwards to genericCVOp(cv, \sys::LockSystem -> sys.fWait, "wait");
+  forwards to genericCVOp(cv, \sys::LockSystem env::Decorated Env cv::Expr ->
+    (decorate sys with {env=env; condvar=cv;}).waitCV, "wait");
 }
 
 abstract production signalCV
 top::Stmt ::= cv::Expr
 {
-  forwards to genericCVOp(cv, \sys::LockSystem -> sys.fSignal, "signal");
+  forwards to genericCVOp(cv, \sys::LockSystem env::Decorated Env cv::Expr -> 
+    (decorate sys with {env=env; condvar=cv;}).signalCV, "signal");
 }
 
 abstract production broadcastCV
 top::Stmt ::= cv::Expr
 {
-  forwards to genericCVOp(cv, \sys::LockSystem -> sys.fBroadcast, "broadcast");
+  forwards to genericCVOp(cv, \sys::LockSystem env::Decorated Env cv::Expr -> 
+    (decorate sys with {env=env; condvar=cv;}).broadcastCV, "broadcast");
 }

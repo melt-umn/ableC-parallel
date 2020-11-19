@@ -18,6 +18,7 @@ top::BaseTypeExpr ::= q::Qualifiers
     else [];
 
   local lockSystem :: LockSystem = head(lockQuals).lockSystem.fromJust;
+  lockSystem.env = top.env;
 
   forwards to
     if !null(localErrors)
@@ -27,7 +28,7 @@ top::BaseTypeExpr ::= q::Qualifiers
 }
 
 abstract production condvarType
-top::ExtType ::= sys::LockSystem
+top::ExtType ::= sys::Decorated LockSystem
 {
   propagate canonicalType;
 
@@ -40,5 +41,8 @@ top::ExtType ::= sys::LockSystem
       | _ -> false
       end;
 
-  top.host = extType(top.givenQualifiers, sys.condType);
+  local condType :: Type = sys.condType;
+  condType.addedTypeQualifiers = top.givenQualifiers.qualifiers;
+
+  top.host = condType.withTypeQualifiers;
 }

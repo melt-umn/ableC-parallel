@@ -102,14 +102,22 @@ abstract production testLockSystem
 top::LockSystem ::=
 {
   top.parName = "testing";
-  top.lockType = refIdExtType(structSEU(), "system_test", "edu:umn:cs:melt:exts:ableC:parallel:test");
-  top.fAcquire = \lst::[Expr] -> fakeLock(lst, 1);
-  top.fRelease = \lst::[Expr] -> fakeLock(lst, 0);
+  top.lockType = 
+    (decorate 
+      refIdExtType(structSEU(), "system_test", "edu:umn:cs:melt:exts:ableC:parallel:test")
+    with {givenQualifiers=nilQualifier();}).host;
+  
+  top.acquireLocks = fakeLock(top.locks, 1);
+  top.releaseLocks = fakeLock(top.locks, 0);
 
-  top.condType = refIdExtType(structSEU(), "system_test", "edu:umn:cs:melt:exts:ableC:parallel:test");
-  top.fWait = \cv::Expr -> nullStmt();
-  top.fSignal = \cv::Expr -> nullStmt();
-  top.fBroadcast = \cv::Expr -> nullStmt();
+  top.condType =
+    (decorate 
+      refIdExtType(structSEU(), "system_test", "edu:umn:cs:melt:exts:ableC:parallel:test")
+    with {givenQualifiers=nilQualifier();}).host;
+
+  top.waitCV = nullStmt();
+  top.signalCV = nullStmt();
+  top.broadcastCV = nullStmt();
 }
 
 abstract production testSyncSystem
