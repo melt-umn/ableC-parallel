@@ -11,9 +11,16 @@ synthesized attribute waitCV :: Stmt;
 synthesized attribute signalCV :: Stmt;
 synthesized attribute broadcastCV :: Stmt;
 
+synthesized attribute lockNewProd :: Maybe<(Expr ::= Exprs Location)>;
+synthesized attribute lockDeleteProd :: Maybe<(Stmt ::= Expr)>;
+synthesized attribute condvarNewProd :: Maybe<(Expr ::= Exprs Location)>;
+synthesized attribute condvarDeleteProd :: Maybe<(Stmt ::= Expr)>;
+
 closed nonterminal LockSystem with parName, env,
                                     lockType, locks, acquireLocks, releaseLocks,
-                                    condType, condvar, waitCV, signalCV, broadcastCV;
+                                    condType, condvar, waitCV, signalCV, broadcastCV,
+                                    lockNewProd, lockDeleteProd, 
+                                    condvarNewProd, condvarDeleteProd;
 
 flowtype LockSystem = decorate{env},
                       acquireLocks{env, locks}, releaseLocks{env, locks},

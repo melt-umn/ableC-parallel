@@ -45,4 +45,7 @@ top::ExtType ::= sys::Decorated LockSystem
   sysType.addedTypeQualifiers = top.givenQualifiers.qualifiers;
 
   top.host = sysType.withTypeQualifiers;
+
+  top.newProd = sys.lockNewProd;
+  top.deleteProd = sys.lockDeleteProd;
 }

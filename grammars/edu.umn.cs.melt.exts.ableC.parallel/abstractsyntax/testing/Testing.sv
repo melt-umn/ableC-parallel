@@ -64,10 +64,13 @@ abstract production testParSystem
 top::ParallelSystem ::=
 {
   top.parName = "testing";
-  top.typeImpl = refIdExtType(structSEU(), "system_test", "edu:umn:cs:melt:exts:ableC:parallel:test");
+  
   top.fSpawn = \e::Expr -> exprStmt(e);
   top.fFor = \n::Name t::Type e::Expr b::LoopBound u::LoopUpdate s::Stmt
                 -> sequentialFor(n, t, e, b, u, s);
+
+  top.newProd = nothing();
+  top.deleteProd = nothing();
 }
 
 abstract production fakeLock
@@ -104,7 +107,7 @@ top::LockSystem ::=
   top.parName = "testing";
   top.lockType = 
     (decorate 
-      refIdExtType(structSEU(), "system_test", "edu:umn:cs:melt:exts:ableC:parallel:test")
+      refIdExtType(structSEU(), just("system_test"), "edu:umn:cs:melt:exts:ableC:parallel:test")
     with {givenQualifiers=nilQualifier();}).host;
   
   top.acquireLocks = fakeLock(top.locks, 1);
@@ -112,24 +115,29 @@ top::LockSystem ::=
 
   top.condType =
     (decorate 
-      refIdExtType(structSEU(), "system_test", "edu:umn:cs:melt:exts:ableC:parallel:test")
+      refIdExtType(structSEU(), just("system_test"), "edu:umn:cs:melt:exts:ableC:parallel:test")
     with {givenQualifiers=nilQualifier();}).host;
 
   top.waitCV = nullStmt();
   top.signalCV = nullStmt();
   top.broadcastCV = nullStmt();
+
+  top.lockNewProd = nothing();
+  top.lockDeleteProd = nothing();
+  top.condvarNewProd = nothing();
+  top.condvarDeleteProd = nothing();
 }
 
 abstract production testSyncSystem
 top::SyncSystem ::=
 {
   top.parName = "testing";
-  top.threadType = refIdExtType(structSEU(), "system_test", "edu:umn:cs:melt:exts:ableC:parallel:test");
+  top.threadType = refIdExtType(structSEU(), just("system_test"), "edu:umn:cs:melt:exts:ableC:parallel:test");
   top.setThread = \e::Expr -> nullStmt();
   top.finishThread = \e::Expr -> nullStmt();
   top.syncThread = \e::[Expr] -> nullStmt();
 
-  top.groupType = refIdExtType(structSEU(), "system_test", "edu:umn:cs:melt:exts:ableC:parallel:test");
+  top.groupType = refIdExtType(structSEU(), just("system_test"), "edu:umn:cs:melt:exts:ableC:parallel:test");
   top.initGroup = mkIntConst(0, builtin);
   top.addGroup = \e::Expr -> nullStmt();
   top.finishGroup = \e::Expr -> nullStmt();
