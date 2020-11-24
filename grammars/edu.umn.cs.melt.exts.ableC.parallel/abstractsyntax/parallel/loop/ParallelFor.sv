@@ -74,5 +74,5 @@ top::Stmt ::= init::Decl cond::MaybeExpr iter::Expr body::Stmt
   forwards to 
     if !null(top.errors)
     then warnStmt(top.errors)
-    else sys.fFor(declName, varType, varInit, loopCond, loopUpdate, body);
+    else sys.fFor(declName, varType, varInit, loopCond, loopUpdate, body, annts);
 }

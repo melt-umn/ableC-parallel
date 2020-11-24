@@ -65,8 +65,8 @@ top::ParallelSystem ::=
 {
   top.parName = "testing";
   
-  top.fSpawn = \e::Expr -> exprStmt(e);
-  top.fFor = \n::Name t::Type e::Expr b::LoopBound u::LoopUpdate s::Stmt
+  top.fSpawn = \e::Expr a::SpawnAnnotations -> exprStmt(e);
+  top.fFor = \n::Name t::Type e::Expr b::LoopBound u::LoopUpdate s::Stmt a::ParallelAnnotations
                 -> sequentialFor(n, t, e, b, u, s);
 
   top.newProd = nothing();

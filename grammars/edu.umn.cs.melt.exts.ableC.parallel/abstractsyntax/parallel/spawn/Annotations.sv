@@ -1,13 +1,18 @@
 grammar edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:parallel:spawn;
 
 synthesized attribute spawnBy :: Maybe<Expr>;
+synthesized attribute threads :: [Expr];
+synthesized attribute groups :: [Expr];
 
-closed nonterminal SpawnAnnotations with errors, env, returnType, spawnBy;
+closed nonterminal SpawnAnnotations with errors, env, returnType, spawnBy, threads, groups;
 
 abstract production consSpawnAnnotations
 top::SpawnAnnotations ::= hd::SpawnAnnotation tl::SpawnAnnotations
 {
   top.spawnBy = if hd.spawnBy.isJust then hd.spawnBy else tl.spawnBy;
+  top.threads = hd.threads ++ tl.threads;
+  top.groups = hd.groups ++ tl.groups;
+
   top.errors := hd.errors ++ tl.errors ++ 
     if hd.spawnBy.isJust && tl.spawnBy.isJust
     then [err(hd.location, "Multiple annotations on spawn specify the system to use")]
@@ -20,9 +25,11 @@ top::SpawnAnnotations ::=
 {
   top.errors := [];
   top.spawnBy = nothing();
+  top.threads = [];
+  top.groups = [];
 }
 
-closed nonterminal SpawnAnnotation with errors, env, returnType, spawnBy, location;
+closed nonterminal SpawnAnnotation with errors, env, returnType, spawnBy, threads, groups, location;
 
 propagate errors on SpawnAnnotation;
 
@@ -30,6 +37,8 @@ aspect default production
 top::SpawnAnnotation ::=
 {
   top.spawnBy = nothing();
+  top.threads = [];
+  top.groups = [];
 }
 
 abstract production spawnByAnnotation
@@ -40,8 +49,12 @@ top::SpawnAnnotation ::= expr::Expr
 
 abstract production spawnAsAnnotation -- specify thread object to associate with
 top::SpawnAnnotation ::= expr::Expr
-{}
+{
+  top.threads = expr :: [];
+}
 
 abstract production spawnInAnnotation -- specify group object to add to
 top::SpawnAnnotation ::= expr::Expr
-{}
+{
+  top.groups = expr :: [];
+}
