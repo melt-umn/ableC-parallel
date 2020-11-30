@@ -15,7 +15,7 @@ int main() {
   int x;
   spawn x = f(7); by system;
   spawn x = f(4); by system; in g;
-  spawn f(99); as 18; by system; as th;
+  spawn f(99); by system; as th;
   spawn x += f(7); by system; in g;
   spawn ({printf("Hi!\n"); f(4); }); by system;
 

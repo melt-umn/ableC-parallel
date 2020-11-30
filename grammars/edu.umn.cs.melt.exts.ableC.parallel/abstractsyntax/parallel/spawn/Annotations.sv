@@ -51,10 +51,20 @@ abstract production spawnAsAnnotation -- specify thread object to associate with
 top::SpawnAnnotation ::= expr::Expr
 {
   top.threads = expr :: [];
+
+  expr.env = top.env;
+  top.errors <- case expr.typerep of
+                | extType(_, threadType(_)) -> []
+                | _ -> [err(expr.location, s"Annotation 'as' on spawn expects object of thread type")]
+                end;
 }
 
 abstract production spawnInAnnotation -- specify group object to add to
 top::SpawnAnnotation ::= expr::Expr
 {
   top.groups = expr :: [];
+  top.errors <- case expr.typerep of
+                | extType(_, groupType(_)) -> []
+                | _ -> [err(expr.location, "Annotation 'in' on spawn expects object of group type")]
+                end;
 }

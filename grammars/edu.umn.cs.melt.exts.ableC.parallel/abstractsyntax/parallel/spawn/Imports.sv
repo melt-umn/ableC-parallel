@@ -7,3 +7,4 @@ imports silver:langutil;
 imports silver:langutil:pp;
 
 imports edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:parallel;
+imports edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:sync;
