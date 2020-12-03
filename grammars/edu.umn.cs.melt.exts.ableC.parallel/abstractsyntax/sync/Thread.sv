@@ -18,6 +18,7 @@ top::BaseTypeExpr ::= q::Qualifiers
     else [];
 
   local syncSystem :: SyncSystem = head(syncQuals).syncSystem.fromJust;
+  syncSystem.env = top.env;
 
   forwards to
     if !null(localErrors)
@@ -27,7 +28,7 @@ top::BaseTypeExpr ::= q::Qualifiers
 }
 
 abstract production threadType
-top::ExtType ::= sys::SyncSystem
+top::ExtType ::= sys::Decorated SyncSystem
 {
   propagate canonicalType;
 
@@ -40,5 +41,11 @@ top::ExtType ::= sys::SyncSystem
       | _ -> false
       end;
 
-  top.host = extType(top.givenQualifiers, sys.threadType);
+  local sysType :: Type = sys.threadType;
+  sysType.addedTypeQualifiers = top.givenQualifiers.qualifiers;
+
+  top.host = sysType.withTypeQualifiers;
+
+  top.newProd = sys.threadNewProd;
+  top.deleteProd = sys.threadDeleteProd;
 }

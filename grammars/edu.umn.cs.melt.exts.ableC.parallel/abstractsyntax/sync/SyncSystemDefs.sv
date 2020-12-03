@@ -1,22 +1,40 @@
 grammar edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:sync;
 
-synthesized attribute threadType :: ExtType;
-synthesized attribute setThread :: (Stmt ::= Expr);
-synthesized attribute finishThread :: (Stmt ::= Expr);
--- Taking a list as the argument again lets us do what we do with locks
--- where the extension could pick the order of the synchronization of all
--- threads (and separately groups) that extension is responsible for
-synthesized attribute syncThread :: (Stmt ::= [Expr]);
+synthesized attribute threadType :: Type;
+synthesized attribute groupType :: Type;
 
-synthesized attribute groupType :: ExtType;
-synthesized attribute initGroup :: Expr;
-synthesized attribute addGroup :: (Stmt ::= Expr);
-synthesized attribute finishGroup :: (Stmt ::= Expr);
-synthesized attribute syncGroup :: (Stmt ::= [Expr]);
+inherited attribute threads :: [Expr]; -- List of threads for sync or ops
+inherited attribute groups :: [Expr];  -- List of groups for sync or ops
 
-closed nonterminal SyncSystem with parName, 
-          threadType, setThread, finishThread, syncThread,
-          groupType, initGroup, addGroup, finishGroup, syncGroup;
+synthesized attribute threadBefrOps :: Stmt; -- To be done synchronously before the thread
+synthesized attribute threadThrdOps :: Stmt; -- To be done before work, in the thread (once TCB setup)
+synthesized attribute threadPostOps :: Stmt; -- To execute once the thread is complete
+
+synthesized attribute groupBefrOps :: Stmt; -- To be done synchrnously, before the thread
+synthesized attribute groupThrdOps :: Stmt; -- To be done before work, in the thread (once TCB setup)
+synthesized attribute groupPostOps :: Stmt; -- To be executed once the thread is complete
+
+synthesized attribute syncThreads :: Stmt; -- Synchronize on threads
+synthesized attribute syncGroups :: Stmt;  -- Synchronize on groups
+
+synthesized attribute threadNewProd :: Maybe<(Expr ::= Exprs Location)>;
+synthesized attribute threadDeleteProd :: Maybe<(Stmt ::= Expr)>;
+synthesized attribute groupNewProd :: Maybe<(Expr ::= Exprs Location)>;
+synthesized attribute groupDeleteProd :: Maybe<(Stmt ::= Expr)>;
+
+closed nonterminal SyncSystem with parName, env,
+                        threadType, groupType, threadNewProd, threadDeleteProd,
+                        groupNewProd, groupDeleteProd, threads, groups,
+                        threadBefrOps, threadThrdOps, threadPostOps,
+                        groupBefrOps, groupThrdOps, groupPostOps,
+                        syncThreads, syncGroups;
+
+flowtype SyncSystem = decorate{env},
+                      threadType{decorate}, groupType{decorate},
+                      threadBefrOps{env, threads}, threadThrdOps{env, threads},
+                      threadPostOps{env, threads}, syncThreads{env, threads},
+                      groupBefrOps{env, groups}, groupThrdOps{env, groups},
+                      groupPostOps{env, groups}, syncGroups{env, groups};
 
 synthesized attribute syncSystem ::Maybe<SyncSystem> occurs on Qualifier;
 

@@ -132,16 +132,30 @@ abstract production testSyncSystem
 top::SyncSystem ::=
 {
   top.parName = "testing";
-  top.threadType = refIdExtType(structSEU(), just("system_test"), "edu:umn:cs:melt:exts:ableC:parallel:test");
-  top.setThread = \e::Expr -> nullStmt();
-  top.finishThread = \e::Expr -> nullStmt();
-  top.syncThread = \e::[Expr] -> nullStmt();
+  top.threadType =
+    (decorate
+      refIdExtType(structSEU(), just("system_test"), "edu:umn:cs:melt:exts:ableC:parallel:test")
+    with {givenQualifiers=nilQualifier();}).host;
 
-  top.groupType = refIdExtType(structSEU(), just("system_test"), "edu:umn:cs:melt:exts:ableC:parallel:test");
-  top.initGroup = mkIntConst(0, builtin);
-  top.addGroup = \e::Expr -> nullStmt();
-  top.finishGroup = \e::Expr -> nullStmt();
-  top.syncGroup = \e::[Expr] -> nullStmt();
+  top.threadBefrOps = nullStmt();
+  top.threadThrdOps = nullStmt();
+  top.threadPostOps = nullStmt();
+  top.syncThreads = nullStmt();
+
+  top.groupType = 
+    (decorate
+      refIdExtType(structSEU(), just("system_test"), "edu:umn:cs:melt:exts:ableC:parallel:test")
+    with {givenQualifiers=nilQualifier();}).host;
+
+  top.groupBefrOps = nullStmt();
+  top.groupThrdOps = nullStmt();
+  top.groupPostOps = nullStmt();
+  top.syncGroups = nullStmt();
+
+  top.threadNewProd = nothing();
+  top.threadDeleteProd = nothing();
+  top.groupNewProd = nothing();
+  top.groupDeleteProd = nothing();
 }
 
 abstract production testParallelQualifier

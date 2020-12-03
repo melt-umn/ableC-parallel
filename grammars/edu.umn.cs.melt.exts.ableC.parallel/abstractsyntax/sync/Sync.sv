@@ -59,15 +59,15 @@ top::Stmt ::= tasks::Exprs
 
   local threadSync :: [Stmt] =
     map(
-      \sys::SyncSystem -> 
-          sys.syncThread(
-            map(\p::Pair<Expr SyncSystem> -> p.fst,
+      \sys::SyncSystem ->
+          (decorate sys with {env=top.env;
+            threads = map(\p::Pair<Expr SyncSystem> -> p.fst,
               filter(
                 \p::Pair<Expr SyncSystem> -> p.snd.parName == sys.parName,
                 threads
               )
-            )
-          ),
+            );
+          }).syncThreads,
       nubBy(
         \s1::SyncSystem s2::SyncSystem -> s1.parName == s2.parName,
         map(\p::Pair<Expr SyncSystem> -> p.snd, threads)
@@ -76,14 +76,14 @@ top::Stmt ::= tasks::Exprs
   local groupSync :: [Stmt] =
     map(
       \sys::SyncSystem ->
-        sys.syncGroup(
-          map(\p::Pair<Expr SyncSystem> -> p.fst,
+        (decorate sys with {env=top.env;
+          groups = map(\p::Pair<Expr SyncSystem> -> p.fst,
             filter(
               \p::Pair<Expr SyncSystem> -> p.snd.parName == sys.parName,
               groups
             )
-          )
-        ),
+          );
+        }).syncGroups,
       nubBy(
         \s1::SyncSystem s2::SyncSystem -> s1.parName == s2.parName,
         map(\p::Pair<Expr SyncSystem> -> p.snd, groups)
