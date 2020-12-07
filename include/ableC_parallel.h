@@ -22,10 +22,11 @@ struct __attribute__((refId("edu:umn:cs:melt:exts:ableC:parallel:system-info")))
 
 struct __attribute__((refId("edu:umn:cs:melt:exts:ableC:parallel:thread-info")))
   __ableC_tcb {
+    enum __ableC_thread_status status;
     struct __ableC_system_info* system;
     void* thread_info;
     struct __ableC_tcb* parent;
-    enum __ableC_thread_status status;
+    struct __ableC_tcb* next; // next pointer to make lists of TCBs easier
 };
 
 _Thread_local struct __ableC_tcb* __ableC_thread_tcb;
@@ -70,6 +71,18 @@ struct __ableC_tcb __ableC_main_tcb =
 
 void __attribute__((constructor)) __ableC_init_main_thread_tcb() {
   __ableC_thread_tcb = &__ableC_main_tcb;
+}
+
+typedef int __ableC_spinlock;
+void __ableC_spinlock_acquire(__ableC_spinlock* lk) {
+  while (__atomic_exchange_n(lk, 1, __ATOMIC_SEQ_CST) != 0) ;
+}
+
+void __ableC_spinlock_release(__ableC_spinlock* lk) {
+  // I don't think this needs to be atomic (and I'm not sure x86 actually
+  // does anything where you lock a move operation) but this probably
+  // doesn't hurt performance too much.
+  __atomic_store_n(lk, 0, __ATOMIC_SEQ_CST);
 }
 
 #endif // INCLUDE_ABLEC_PARALLEL_
