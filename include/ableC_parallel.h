@@ -67,22 +67,29 @@ struct __ableC_system_info __ableC_main_thread =
 struct __ableC_main_thread_info __ableC_main_info = 
   {PTHREAD_MUTEX_INITIALIZER, PTHREAD_COND_INITIALIZER};
 struct __ableC_tcb __ableC_main_tcb = 
-  {&__ableC_main_thread, &__ableC_main_info, NULL, RUNNING};
+  {RUNNING, &__ableC_main_thread, &__ableC_main_info, NULL, NULL};
 
 void __attribute__((constructor)) __ableC_init_main_thread_tcb() {
   __ableC_thread_tcb = &__ableC_main_tcb;
 }
 
-typedef int __ableC_spinlock;
-void __ableC_spinlock_acquire(__ableC_spinlock* lk) {
-  while (__atomic_exchange_n(lk, 1, __ATOMIC_SEQ_CST) != 0) ;
+// Spinlocks
+typedef volatile _Atomic int __ableC_spinlock;
+
+void inline __ableC_spinlock_acquire(__ableC_spinlock* lk) {
+  // Personally, I'm not a huge fan of this implementation (which is the one used
+  // by glibc for pthread's) because at some point we theoretically can get
+  // overflow of the int back to negative and then 0. However, I agree it is
+  // probably sufficiently unlikely (it would require 2^32 ~ 4 Billion increments)
+  // On my Laptop a single thread requires ~24 s to wrap from 1 back to 0,
+  // two threads takes ~60 s (increase presumably due to cache contention),
+  // and three or more threads takes over 80 s. This suggests that as long as
+  // spinlocks are always held very temporarily this problem shouldn't manifest
+  while ((*lk)++ != 0) ;
 }
 
-void __ableC_spinlock_release(__ableC_spinlock* lk) {
-  // I don't think this needs to be atomic (and I'm not sure x86 actually
-  // does anything where you lock a move operation) but this probably
-  // doesn't hurt performance too much.
-  __atomic_store_n(lk, 0, __ATOMIC_SEQ_CST);
+void inline __ableC_spinlock_release(__ableC_spinlock* lk) {
+  (*lk) = 0;
 }
 
 #endif // INCLUDE_ABLEC_PARALLEL_
