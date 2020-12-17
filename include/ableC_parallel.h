@@ -76,7 +76,7 @@ void __attribute__((constructor)) __ableC_init_main_thread_tcb() {
 // Spinlocks
 typedef volatile _Atomic int __ableC_spinlock;
 
-void inline __ableC_spinlock_acquire(__ableC_spinlock* lk) {
+static void inline __ableC_spinlock_acquire(__ableC_spinlock* lk) {
   // Personally, I'm not a huge fan of this implementation (which is the one used
   // by glibc for pthread's) because at some point we theoretically can get
   // overflow of the int back to negative and then 0. However, I agree it is
@@ -88,7 +88,7 @@ void inline __ableC_spinlock_acquire(__ableC_spinlock* lk) {
   while ((*lk)++ != 0) ;
 }
 
-void inline __ableC_spinlock_release(__ableC_spinlock* lk) {
+static void inline __ableC_spinlock_release(__ableC_spinlock* lk) {
   (*lk) = 0;
 }
 

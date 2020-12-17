@@ -8,18 +8,25 @@ top::Stmt ::= expr::Expr annts::SpawnAnnotations
   top.pp = ppConcat([text("spawn"), space(), expr.pp, semi()]);
   top.functionDefs := [];
 
+  local privateVars :: [Name] = nubBy(nameEq, annts.privates);
+  local publicVars  :: [Name] = nubBy(nameEq, annts.publics);
+  local globalVars  :: [Name] = nubBy(nameEq, annts.globals);
+
   -- TODO: Location; Default system
   local localErrors :: [Message] =
     expr.errors ++ annts.errors 
-    ++ if !annts.spawnBy.isJust
+    ++ (if !annts.bySystem.isJust
        then [err(expr.location, "Spawn is missing annotation to specify which system to use")]
        else 
          case systemType of
          | extType(_, parallelType(_)) -> []
          | _ -> [err(spawnBy.location, "Expression specifying the spawn system is not an appropriate type")]
-         end;
+         end)
+    ++ (if !null(intersectBy(nameEq, intersectBy(nameEq, globalVars, privateVars), publicVars))
+        then [err(expr.location, "Some variables listed in multiple public / private / global annotations")]
+        else []);
 
-  local spawnBy :: Expr = annts.spawnBy.fromJust;
+  local spawnBy :: Expr = annts.bySystem.fromJust;
 
   spawnBy.env = top.env;
   spawnBy.returnType = top.returnType;

@@ -36,3 +36,18 @@ concrete productions top::ParallelAnnotation_c
 | 'by' sys::Expr_c {
     top.ast = parallelByAnnotation(sys.ast, location=top.location);
   }
+| 'in' grp::Expr_c {
+    top.ast = parallelInAnnotation(grp.ast, location=top.location);
+  }
+| 'num_threads' num::Expr_c {
+    top.ast = parallelNumThreadsAnnotation(num.ast, location=top.location);
+  }
+| 'private' nm::Identifier_c {
+    top.ast = parallelPrivateAnnotation(nm.ast, location=top.location);
+  }
+| 'public' nm::Identifier_c {
+    top.ast = parallelPublicAnnotation(nm.ast, location=top.location);
+  }
+| 'global' nm::Identifier_c {
+    top.ast = parallelGlobalAnnotation(nm.ast, location=top.location);
+  }

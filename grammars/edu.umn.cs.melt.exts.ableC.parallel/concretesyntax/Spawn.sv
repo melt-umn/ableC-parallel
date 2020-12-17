@@ -22,3 +22,12 @@ concrete productions top::SpawnAnnotation_c
 | 'in' nm::Expr_c {
     top.ast = spawnInAnnotation(nm.ast, location=top.location);
   }
+| 'private' nm::Identifier_c {
+    top.ast = spawnPrivateAnnotation(nm.ast, location=top.location);
+  }
+| 'public' nm::Identifier_c {
+    top.ast = spawnPublicAnnotation(nm.ast, location=top.location);
+  }
+| 'global' nm::Identifier_c {
+    top.ast = spawnGlobalAnnotation(nm.ast, location=top.location);
+  }

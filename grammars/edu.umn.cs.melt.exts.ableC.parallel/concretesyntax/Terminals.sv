@@ -17,6 +17,15 @@ marking terminal Wait_t 'wait' lexer classes {Keyword, Global};
 marking terminal Signal_t 'signal' lexer classes {Keyword, Global};
 marking terminal Broadcast_t 'broadcast' lexer classes {Keyword, Global};
 
+
+-- Annotations
 terminal By_t 'by' lexer classes {Keyword, Reserved};
+
 terminal As_t 'as' lexer classes {Keyword, Reserved};
 terminal In_t 'in' lexer classes {Keyword, Reserved};
+
+terminal Private_t 'private' lexer classes {Keyword, Reserved};
+terminal Public_t  'public'  lexer classes {Keyword, Reserved};
+terminal Global_t  'global'  lexer classes {Keyword, Reserved};
+
+terminal NumThreads_t 'num_threads' lexer classes {Keyword, Reserved};

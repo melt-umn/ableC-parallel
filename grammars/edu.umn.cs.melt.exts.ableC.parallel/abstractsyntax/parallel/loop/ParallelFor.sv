@@ -32,6 +32,10 @@ top::Stmt ::= init::Decl cond::MaybeExpr iter::Expr body::Stmt
   local loopCond :: LoopBound = condExp.parLoopBound.fromJust;
   local loopUpdate :: LoopUpdate = iter.parLoopUpdate.fromJust;
 
+  local publicVars :: [Name]  = annts.publics;
+  local privateVars :: [Name] = annts.privates;
+  local globalVars :: [Name]  = annts.globals;
+
   -- TODO: Find a better location
   local parLoopErrors :: [Message] =
     init.parLoopVarErrs ++ 
@@ -44,13 +48,16 @@ top::Stmt ::= init::Decl cond::MaybeExpr iter::Expr body::Stmt
       iter.parLoopUpdateErrs
     else [])
     ++ body.loopVarErrs
-    ++  if !annts.parallelBy.isJust
+    ++  if !annts.bySystem.isJust
         then [err(builtin, "Parallel for-loop is missing annotation to specify which system to use")]
         else
           case systemType of
           | extType(_, parallelType(_)) -> []
-          | _ -> [err(parallelBy.location, "Expression specifying the parallel system is not an appropriate type")]
-          end;
+          | _ -> [err(bySystem.location, "Expression specifying the parallel system is not an appropriate type")]
+          end
+    ++ (if !null(intersectBy(nameEq, intersectBy(nameEq, globalVars, privateVars), publicVars))
+        then [err(builtin, "Some variables listed in multiple public / private / global annotations")]
+        else []);
 
   local propagateErrors :: [Message] = 
     init.errors ++ cond.errors ++ iter.errors ++ body.errors ++ annts.errors;
@@ -60,12 +67,12 @@ top::Stmt ::= init::Decl cond::MaybeExpr iter::Expr body::Stmt
                 else propagateErrors;
 
 
-  local parallelBy :: Expr = annts.parallelBy.fromJust;
+  local bySystem :: Expr = annts.bySystem.fromJust;
 
-  parallelBy.env = top.env;
-  parallelBy.returnType = top.returnType;
+  bySystem.env = top.env;
+  bySystem.returnType = top.returnType;
 
-  local systemType :: Type = parallelBy.typerep;
+  local systemType :: Type = bySystem.typerep;
   local sys :: ParallelSystem =
     case systemType of
     | extType(_, parallelType(s)) -> s
