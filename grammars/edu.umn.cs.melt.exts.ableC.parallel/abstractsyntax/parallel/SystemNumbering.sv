@@ -39,8 +39,8 @@ top::ParallelSystem ::=
   top.parName = "__main_thread";
   top.fSpawn = \e::Expr a::SpawnAnnotations 
     -> warnStmt([err(builtin, "Placeholder parallel system should never be used")]);
-  top.fFor = \s::Stmt a::ParallelAnnotations 
-    -> warnStmt([err(builtin, "Placeholder parallel system should never be used")]);
+  top.fFor = \s::Stmt l::Location a::ParallelAnnotations 
+    -> warnStmt([err(l, "Placeholder parallel system should never be used")]);
   top.newProd = nothing();
   top.deleteProd = nothing();
 }

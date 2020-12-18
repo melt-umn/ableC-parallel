@@ -48,5 +48,5 @@ top::Stmt ::= init::Decl cond::MaybeExpr iter::Expr body::Stmt
     then warnStmt(normalizedS.errors)
     else if !normalizedProperly
     then warnStmt([err(iter.location, "Parallel for-loop could not be normalized correctly")])
-    else sys.fFor(normalizedS, annts);
+    else sys.fFor(normalizedS, iter.location, annts); -- TODO: Location
 }

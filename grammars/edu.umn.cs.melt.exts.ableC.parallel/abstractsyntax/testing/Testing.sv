@@ -6,7 +6,7 @@ top::ParallelSystem ::=
   top.parName = "testing";
   
   top.fSpawn = \e::Expr a::SpawnAnnotations -> exprStmt(e);
-  top.fFor = \s::Stmt a::ParallelAnnotations -> s;
+  top.fFor = \s::Stmt l::Location a::ParallelAnnotations -> s;
 
   top.newProd = nothing();
   top.deleteProd = nothing();
