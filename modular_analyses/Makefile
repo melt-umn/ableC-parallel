@@ -4,7 +4,7 @@ ABLEC_BASE?=../../../ableC
 EXTS_BASE?=../../../extensions
 
 # The Silver compiler to use
-SILVER=silver
+SILVER=silver-ableC
 # The artifact specification grammars to compile
 MDA_ARTIFACT=determinism
 MWDA_ARTIFACT=well_definedness

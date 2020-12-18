@@ -4,7 +4,7 @@ ABLEC_BASE?=../../../ableC
 EXTS_BASE?=../../../extensions
 
 # The Silver compiler to use
-SILVER=silver
+SILVER=silver-ableC
 # The jar file to build
 ABLEC_JAR=ableC.jar
 # The artifact specification grammar to compile

@@ -9,4 +9,4 @@ synthesized attribute publics    :: [Name];
 synthesized attribute privates   :: [Name];
 synthesized attribute globals    :: [Name];
 
-synthesized attribute numThreads :: Maybe<Expr>;
+synthesized attribute numParallelThreads :: Maybe<Expr>;

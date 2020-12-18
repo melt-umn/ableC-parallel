@@ -1,7 +1,7 @@
 grammar edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:parallel:loop;
 
 nonterminal ParallelAnnotations with errors, env, returnType, 
-  bySystem, inGroups, publics, privates, globals, numThreads;
+  bySystem, inGroups, publics, privates, globals, numParallelThreads;
 
 abstract production consParallelAnnotations
 top::ParallelAnnotations ::= hd::ParallelAnnotation tl::ParallelAnnotations
@@ -13,14 +13,14 @@ top::ParallelAnnotations ::= hd::ParallelAnnotation tl::ParallelAnnotations
   top.privates = hd.privates ++ tl.privates;
   top.globals = hd.globals ++ tl.globals;
 
-  top.numThreads = if hd.numThreads.isJust then hd.numThreads else tl.numThreads;
+  top.numParallelThreads = if hd.numParallelThreads.isJust then hd.numParallelThreads else tl.numParallelThreads;
 
   top.errors := hd.errors ++ tl.errors ++
     (if hd.bySystem.isJust && tl.bySystem.isJust
     then [err(hd.location, "Multiple annotations on parallel for-loop specify the system to use")]
     else [])
     ++
-    if hd.numThreads.isJust && tl.numThreads.isJust
+    if hd.numParallelThreads.isJust && tl.numParallelThreads.isJust
     then [err(hd.location, "Multiple annotations on parallel for-loop specify the number of threads")]
     else [];
 }
@@ -34,11 +34,11 @@ top::ParallelAnnotations ::=
   top.publics = [];
   top.privates = [];
   top.globals = [];
-  top.numThreads = nothing();
+  top.numParallelThreads = nothing();
 }
 
 closed nonterminal ParallelAnnotation with errors, env, returnType, location,
-  bySystem, inGroups, publics, privates, globals, numThreads;
+  bySystem, inGroups, publics, privates, globals, numParallelThreads;
 
 propagate errors on ParallelAnnotation;
 
@@ -50,7 +50,7 @@ top::ParallelAnnotation ::=
   top.publics = [];
   top.privates = [];
   top.globals = [];
-  top.numThreads = nothing();
+  top.numParallelThreads = nothing();
 }
 
 abstract production parallelByAnnotation
@@ -90,5 +90,5 @@ top::ParallelAnnotation ::= id::Name
 abstract production parallelNumThreadsAnnotation
 top::ParallelAnnotation ::= num::Expr
 {
-  top.numThreads = just(num);
+  top.numParallelThreads = just(num);
 }

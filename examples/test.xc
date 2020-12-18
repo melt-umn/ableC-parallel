@@ -46,29 +46,29 @@ int main() {
     printf("Testing... %d\n", f(77));
   }
 
-  parallel for (int i = 77; i < 100; i = i + 7) { by system;
+  parallel for (int i = 77; i < 100; i += 7) { by system;
     printf("%d\n", i);
   }
 
-  parallel for(int i = 100; i >= 0; i = i - 2) by system; 
+  parallel for(int i = 100; i >= 0; i -= 2) by system; 
     printf("%d\n", i);
-  parallel for(int j = 7; j < 100; j = (2 * 77) + j) by system;
+  parallel for(int j = 7; j < 100; j += (2 * 77)) by system;
     printf("%d\n", j);
 
-  parallel for(int i = 0; i + 1 < 100; i = 7 + i) by system;
+  parallel for(int i = 0; i < 99; i += 7) by system;
     printf("%d\n", i);
-  parallel for(int i = 0; 100 > i + 7; i = i + 1) by system;
+  parallel for(int i = 0; 93 > i; i += 1) by system;
     printf("%d\n", i);
 
   test lock lk;
   test condvar cv;
 
-  acquire lk;
+  acquire &lk;
 
-  wait cv;
-  broadcast cv;
+  wait &cv;
+  broadcast &cv;
 
-  release lk;
+  release &lk;
 
   test lock* ptr = &lk;
   test condvar* pc = &cv;
