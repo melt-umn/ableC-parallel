@@ -49,9 +49,13 @@ top::ExtType ::= sys::ParallelSystem
       end;
 
   top.host = 
-    (decorate 
-      refIdExtType(structSEU(), just("__ableC_system_info"), "edu:umn:cs:melt:exts:ableC:parallel:system-info")
-    with {givenQualifiers=top.givenQualifiers;}).host;
+    pointerType(nilQualifier(),
+      (decorate 
+        refIdExtType(structSEU(), 
+          just("__ableC_system_info"), 
+          "edu:umn:cs:melt:exts:ableC:parallel:system-info")
+      with {givenQualifiers=top.givenQualifiers;}).host
+    );
   
   top.newProd = sys.newProd;
   top.deleteProd = sys.deleteProd;

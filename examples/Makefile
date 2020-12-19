@@ -42,7 +42,7 @@ override CFLAGS+=
 # All directories contining extension libraries that may be linked
 LIB_DIRS=$(wildcard $(EXTS_BASE)/*/lib)
 # Flags passed to the linker specifying the appropriate directories
-override LDFLAGS+=$(addprefix -L,$(LIB_DIRS))
+override LDFLAGS+=-pthread $(addprefix -L,$(LIB_DIRS))
 # Flags passed to the linker specifying libraries to link
 LDLIBS=
 

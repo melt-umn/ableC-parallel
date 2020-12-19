@@ -73,6 +73,14 @@ void __attribute__((constructor)) __ableC_init_main_thread_tcb() {
   __ableC_thread_tcb = &__ableC_main_tcb;
 }
 
+size_t __ableC_stack_size;
+void __attribute__((constructor)) __ableC_init_stack_size() {
+  pthread_attr_t attr;
+  pthread_attr_init(&attr);
+  pthread_attr_getstacksize(&attr, &__ableC_stack_size);
+  pthread_attr_destroy(&attr);
+}
+
 // Spinlocks
 typedef volatile _Atomic int __ableC_spinlock;
 
