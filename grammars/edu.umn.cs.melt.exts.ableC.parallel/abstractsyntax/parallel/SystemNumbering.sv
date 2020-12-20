@@ -37,8 +37,8 @@ abstract production placeHolderParSystem
 top::ParallelSystem ::=
 {
   top.parName = "__main_thread";
-  top.fSpawn = \e::Expr a::SpawnAnnotations 
-    -> warnStmt([err(builtin, "Placeholder parallel system should never be used")]);
+  top.fSpawn = \e::Expr l::Location a::SpawnAnnotations 
+    -> warnStmt([err(l, "Placeholder parallel system should never be used")]);
   top.fFor = \s::Stmt l::Location a::ParallelAnnotations 
     -> warnStmt([err(l, "Placeholder parallel system should never be used")]);
   top.newProd = nothing();

@@ -40,5 +40,5 @@ top::Stmt ::= expr::Expr annts::SpawnAnnotations
   forwards to
     if !null(localErrors)
     then warnStmt(localErrors)
-    else sys.fSpawn(expr, annts);
+    else sys.fSpawn(expr, expr.location, annts);
 }

@@ -1,6 +1,7 @@
 grammar edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:parallel;
 
-synthesized attribute fSpawn::(Stmt ::= Expr SpawnAnnotations);  -- Handler for task spawn
+-- Handler for task spawn
+synthesized attribute fSpawn::(Stmt ::= Expr Location SpawnAnnotations);
 
 -- Handler for parallel for loop
 synthesized attribute fFor::(Stmt ::= Stmt Location ParallelAnnotations);
