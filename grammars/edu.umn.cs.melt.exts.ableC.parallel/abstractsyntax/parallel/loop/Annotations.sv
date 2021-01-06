@@ -70,21 +70,21 @@ top::ParallelAnnotation ::= group::Expr
 }
 
 abstract production parallelPublicAnnotation
-top::ParallelAnnotation ::= id::Name
+top::ParallelAnnotation ::= ids::[Name]
 {
-  top.publics = id :: [];
+  top.publics = ids;
 }
 
 abstract production parallelPrivateAnnotation
-top::ParallelAnnotation ::= id::Name
+top::ParallelAnnotation ::= ids::[Name]
 {
-  top.privates = id :: [];
+  top.privates = ids;
 }
 
 abstract production parallelGlobalAnnotation
-top::ParallelAnnotation ::= id::Name
+top::ParallelAnnotation ::= ids::[Name]
 {
-  top.globals = id :: [];
+  top.globals = ids;
 }
 
 abstract production parallelNumThreadsAnnotation

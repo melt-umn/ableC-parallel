@@ -42,12 +42,12 @@ concrete productions top::ParallelAnnotation_c
 | 'num_threads' num::Expr_c {
     top.ast = parallelNumThreadsAnnotation(num.ast, location=top.location);
   }
-| 'private' nm::Identifier_c {
-    top.ast = parallelPrivateAnnotation(nm.ast, location=top.location);
+| 'private' nms::IdentifierList_c {
+    top.ast = parallelPrivateAnnotation(nms.ast, location=top.location);
   }
-| 'public' nm::Identifier_c {
-    top.ast = parallelPublicAnnotation(nm.ast, location=top.location);
+| 'public' nms::IdentifierList_c {
+    top.ast = parallelPublicAnnotation(nms.ast, location=top.location);
   }
-| 'global' nm::Identifier_c {
-    top.ast = parallelGlobalAnnotation(nm.ast, location=top.location);
+| 'global' nms::IdentifierList_c {
+    top.ast = parallelGlobalAnnotation(nms.ast, location=top.location);
   }

@@ -77,19 +77,19 @@ top::SpawnAnnotation ::= expr::Expr
 }
 
 abstract production spawnPrivateAnnotation -- specify that a variable should be private to the thread
-top::SpawnAnnotation ::= nm::Name
+top::SpawnAnnotation ::= nms::[Name]
 {
-  top.privates = nm :: [];
+  top.privates = nms;
 }
 
 abstract production spawnPublicAnnotation -- specify that a variable should be shared to the thread
-top::SpawnAnnotation ::= nm::Name
+top::SpawnAnnotation ::= nms::[Name]
 {
-  top.publics = nm :: [];
+  top.publics = nms;
 }
 
 abstract production spawnGlobalAnnotation
-top::SpawnAnnotation ::= nm::Name
+top::SpawnAnnotation ::= nms::[Name]
 {
-  top.globals = nm :: [];
+  top.globals = nms;
 }
