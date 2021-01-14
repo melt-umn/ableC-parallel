@@ -8,9 +8,9 @@ top::Stmt ::= expr::Expr annts::SpawnAnnotations
   top.pp = ppConcat([text("spawn"), space(), expr.pp, semi()]);
   top.functionDefs := [];
 
-  local privateVars :: [Name] = nubBy(nameEq, annts.privates);
-  local publicVars  :: [Name] = nubBy(nameEq, annts.publics);
-  local globalVars  :: [Name] = nubBy(nameEq, annts.globals);
+  local privateVars :: [Name] = nub(annts.privates);
+  local publicVars  :: [Name] = nub(annts.publics);
+  local globalVars  :: [Name] = nub(annts.globals);
 
   -- TODO: Location; Default system
   local localErrors :: [Message] =
@@ -22,7 +22,7 @@ top::Stmt ::= expr::Expr annts::SpawnAnnotations
          | extType(_, parallelType(_)) -> []
          | _ -> [err(spawnBy.location, "Expression specifying the spawn system is not an appropriate type")]
          end)
-    ++ (if !null(intersectBy(nameEq, intersectBy(nameEq, globalVars, privateVars), publicVars))
+    ++ (if !null(intersect(intersect(globalVars, privateVars), publicVars))
         then [err(expr.location, "Some variables listed in multiple public / private / global annotations")]
         else []);
 
