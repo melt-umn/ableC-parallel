@@ -6,7 +6,7 @@
 int main() {
   int i = 0;
 
-  test parallel system;
+  testing parallel system;
   parallel for (; i < 10; i++) { by system;
     printf("%d\n", i);
   }

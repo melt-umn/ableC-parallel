@@ -7,10 +7,10 @@ int f(int z) {
 }
 
 int main() {
-  test parallel system;
+  testing parallel system;
   
-  test thread th;
-  test group g;
+  testing thread th;
+  testing group g;
 
   int x;
   spawn x = f(7); by system;
@@ -60,8 +60,8 @@ int main() {
   parallel for(int i = 0; 93 > i; i += 1) by system;
     printf("%d\n", i);
 
-  test lock lk;
-  test condvar cv;
+  testing lock lk;
+  testing condvar cv;
 
   acquire &lk;
 
@@ -70,8 +70,8 @@ int main() {
 
   release &lk;
 
-  test lock* ptr = &lk;
-  test condvar* pc = &cv;
+  testing lock* ptr = &lk;
+  testing condvar* pc = &cv;
 
   acquire ptr;
   wait pc;

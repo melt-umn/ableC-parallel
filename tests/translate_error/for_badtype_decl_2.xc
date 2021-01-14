@@ -8,7 +8,7 @@ typedef struct {
 } var;
 
 int main() {
-  test parallel system;
+  testing parallel system;
   parallel for (var i = {0}; i.x < 10; i.x++) { by system;
     printf("%d\n", i.x);
   }

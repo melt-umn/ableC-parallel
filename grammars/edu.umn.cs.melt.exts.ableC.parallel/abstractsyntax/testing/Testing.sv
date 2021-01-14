@@ -100,8 +100,8 @@ top::SyncSystem ::=
 abstract production testParallelQualifier
 top::Qualifier ::= 
 {
-  top.pp = text("test");
-  top.mangledName = "test";
+  top.pp = text("testing");
+  top.mangledName = "testing";
   top.qualIsPositive = true;
   top.qualIsNegative = false;
   top.qualAppliesWithinRef = true;
