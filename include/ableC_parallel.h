@@ -29,59 +29,40 @@ struct __attribute__((refId("edu:umn:cs:melt:exts:ableC:parallel:thread-info")))
     struct __ableC_tcb* next; // next pointer to make lists of TCBs easier
 };
 
-_Thread_local struct __ableC_tcb* __ableC_thread_tcb;
+extern _Thread_local struct __ableC_tcb* __ableC_thread_tcb;
 
 struct __ableC_main_thread_info {
   pthread_mutex_t lk;
   pthread_cond_t  cv;
 };
 
-void __ableC_main_thread_block(struct __ableC_tcb* tcb) {
-  struct __ableC_main_thread_info* info = 
-    (struct __ableC_main_thread_info*) (tcb->thread_info);
+extern void __ableC_main_thread_block(struct __ableC_tcb* tcb);
+extern void __ableC_main_thread_unblock(struct __ableC_tcb* tcb);
 
-  pthread_mutex_lock(&(info->lk));
-  while (tcb->status != UNBLOCKING) {
-    tcb->status = BLOCKING;
-    pthread_cond_wait(&(info->cv), &(info->lk));
-  }
-  tcb->status = RUNNING;
-  pthread_mutex_unlock(&(info->lk));
-}
+extern struct __ableC_system_info __ableC_main_thread;
+extern struct __ableC_main_thread_info __ableC_main_info;
+extern struct __ableC_tcb __ableC_main_tcb;
 
-void __ableC_main_thread_unblock(struct __ableC_tcb* tcb) {
-  struct __ableC_main_thread_info* info = 
-    (struct __ableC_main_thread_info*) (tcb->thread_info);
-
-  pthread_mutex_lock(&(info->lk));
-  if (tcb->status == BLOCKING) {
-    pthread_cond_signal(&(info->cv));
-  }
-  
-  tcb->status = UNBLOCKING;
-  pthread_mutex_unlock(&(info->lk));
-}
-
-struct __ableC_system_info __ableC_main_thread = 
-  {0, 0, NULL, __ableC_main_thread_block, __ableC_main_thread_unblock};
-struct __ableC_main_thread_info __ableC_main_info = 
-  {PTHREAD_MUTEX_INITIALIZER, PTHREAD_COND_INITIALIZER};
-struct __ableC_tcb __ableC_main_tcb = 
-  {RUNNING, &__ableC_main_thread, &__ableC_main_info, NULL, NULL};
-
+// Constructors don't work if placed in the library (I'm guessing it has to
+// be defined in the same object file that contains the definition of main)
+#ifndef ABLEC_NON_MAIN
 void __attribute__((constructor)) __ableC_init_main_thread_tcb() {
   __ableC_thread_tcb = &__ableC_main_tcb;
 }
+#endif
 
-size_t __ableC_stack_size;
+extern size_t __ableC_stack_size;
+#ifndef ABLEC_NON_MAIN
 void __attribute__((constructor)) __ableC_init_stack_size() {
   pthread_attr_t attr;
   pthread_attr_init(&attr);
   pthread_attr_getstacksize(&attr, &__ableC_stack_size);
   pthread_attr_destroy(&attr);
 }
+#endif
 
-// Spinlocks
+// Spinlocks (the definitions here are intended to be inlined, which is why
+// the definition is provided in this header file, rather than the library)
 typedef volatile _Atomic int __ableC_spinlock;
 
 static void inline __ableC_spinlock_acquire(__ableC_spinlock* lk) {

@@ -6,6 +6,7 @@
 build.xml
 *.copperdump.html
 *.jar
+lib
 
 # Other files
 *.c
