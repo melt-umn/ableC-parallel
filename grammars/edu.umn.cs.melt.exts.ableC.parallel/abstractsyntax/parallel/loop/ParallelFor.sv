@@ -14,10 +14,19 @@ top::Stmt ::= init::Decl cond::MaybeExpr iter::Expr body::Stmt
   local loopS :: Stmt = ableC_Stmt {
       for($Decl{init} $Expr{cond.justTheExpr.fromJust}; $Expr{iter}) $Stmt{body}
     };
-  loopS.returnType = top.returnType; loopS.env = top.env;
+  loopS.returnType = nothing();
+  -- Breaking from a parallel loop is not allowed because we're running
+  -- iterations in parallel. A continue is fine (we require that the
+  -- impleemntation use a loop, so this behaves as expected)
+  loopS.breakValid = false;
+  loopS.continueValid = true;
+  loopS.env = top.env;
 
   local normalizedS :: Stmt = loopS.normalizeLoops;
-  normalizedS.returnType = loopS.returnType; normalizedS.env = loopS.env;
+  normalizedS.returnType = nothing();
+  normalizedS.breakValid = false;
+  normalizedS.continueValid = true;
+  normalizedS.env = loopS.env;
 
   local normalizedProperly :: Boolean =
     case normalizedS of
@@ -30,6 +39,8 @@ top::Stmt ::= init::Decl cond::MaybeExpr iter::Expr body::Stmt
 
   bySystem.env = top.env;
   bySystem.returnType = top.returnType;
+  bySystem.breakValid = top.breakValid;
+  bySystem.continueValid = top.continueValid;
 
   local systemType :: Type = bySystem.typerep;
   local sys :: ParallelSystem =

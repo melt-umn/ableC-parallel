@@ -29,7 +29,12 @@ top::Stmt ::= expr::Expr annts::SpawnAnnotations
   local spawnBy :: Expr = annts.bySystem.fromJust;
 
   spawnBy.env = top.env;
-  spawnBy.returnType = top.returnType;
+  -- Because we exectue in parallel, don't allow anything that is based on
+  -- executing in this location (so no return, break, or continue based on
+  -- the current location of code)
+  spawnBy.returnType = nothing();
+  spawnBy.breakValid = false;
+  spawnBy.continueValid = false;
 
   local systemType :: Type = spawnBy.typerep;
   local sys :: ParallelSystem = 

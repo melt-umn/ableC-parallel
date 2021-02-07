@@ -1,7 +1,7 @@
 grammar edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:parallel:loop;
 
-nonterminal ParallelAnnotations with errors, env, returnType, 
-  bySystem, inGroups, publics, privates, globals, numParallelThreads;
+nonterminal ParallelAnnotations with errors, env, returnType, breakValid,
+  continueValid, bySystem, inGroups, publics, privates, globals, numParallelThreads;
 
 abstract production consParallelAnnotations
 top::ParallelAnnotations ::= hd::ParallelAnnotation tl::ParallelAnnotations
@@ -37,8 +37,9 @@ top::ParallelAnnotations ::=
   top.numParallelThreads = nothing();
 }
 
-closed nonterminal ParallelAnnotation with errors, env, returnType, location,
-  bySystem, inGroups, publics, privates, globals, numParallelThreads;
+closed nonterminal ParallelAnnotation with errors, env, returnType, breakValid,
+  continueValid, location, bySystem, inGroups, publics, privates, globals,
+  numParallelThreads;
 
 propagate errors on ParallelAnnotation;
 

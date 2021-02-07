@@ -32,7 +32,8 @@ top::Stmt ::= locks::Exprs sysFunc::(Stmt ::= LockSystem Decorated Env [Expr]) n
     map(\ sys::LockSystem ->
       sysFunc(sys, top.env, 
         filter(\ex::Expr -> 
-          case (decorate ex with {env=top.env; returnType=top.returnType;}).typerep of 
+          case (decorate ex with {env=top.env; returnType=top.returnType;
+              breakValid=top.breakValid; continueValid=top.continueValid;}).typerep of 
           | extType(_, lockType(s)) -> s.parName == sys.parName 
           | pointerType(_, extType(_, lockType(s))) -> s.parName == sys.parName
           end,

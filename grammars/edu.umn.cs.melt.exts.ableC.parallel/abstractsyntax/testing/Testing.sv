@@ -21,7 +21,7 @@ top::Stmt ::= locks::[Expr] val::Integer
   forwards to foldStmt(
     map(\ e::Expr -> 
       let t :: Type = 
-        (decorate e with {env=top.env; returnType=nothing();}).typerep
+        (decorate e with {env=top.env; returnType=nothing(); breakValid=false; continueValid=false; }).typerep
       in exprStmt(
         eqExpr(
           memberExpr(
