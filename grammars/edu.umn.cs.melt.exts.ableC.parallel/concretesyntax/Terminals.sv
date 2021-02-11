@@ -13,7 +13,7 @@ marking terminal Group_t 'group' lexer classes {Type, Global};
 marking terminal Acquire_t 'acquire' lexer classes {Keyword, Global};
 marking terminal Release_t 'release' lexer classes {Keyword, Global};
 
-marking terminal Wait_t 'wait' lexer classes {Keyword, Global};
+marking terminal Wait_t 'wait' lexer classes {Keyword, Reserved};
 marking terminal Signal_t 'signal' lexer classes {Keyword, Global};
 marking terminal Broadcast_t 'broadcast' lexer classes {Keyword, Global};
 
