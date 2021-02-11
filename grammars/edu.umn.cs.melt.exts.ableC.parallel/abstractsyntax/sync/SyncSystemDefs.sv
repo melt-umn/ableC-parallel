@@ -17,14 +17,14 @@ synthesized attribute groupPostOps :: Stmt; -- To be executed once the thread is
 synthesized attribute syncThreads :: Stmt; -- Synchronize on threads
 synthesized attribute syncGroups :: Stmt;  -- Synchronize on groups
 
-synthesized attribute threadNewProd :: Maybe<(Expr ::= Exprs Location)>;
+synthesized attribute initializeThread :: (Expr ::= Expr Exprs Location);
 synthesized attribute threadDeleteProd :: Maybe<(Stmt ::= Expr)>;
-synthesized attribute groupNewProd :: Maybe<(Expr ::= Exprs Location)>;
+synthesized attribute initializeGroup :: (Expr ::= Expr Exprs Location);
 synthesized attribute groupDeleteProd :: Maybe<(Stmt ::= Expr)>;
 
 closed nonterminal SyncSystem with parName, env,
-                        threadType, groupType, threadNewProd, threadDeleteProd,
-                        groupNewProd, groupDeleteProd, threads, groups,
+                        threadType, groupType, initializeThread, threadDeleteProd,
+                        initializeGroup, groupDeleteProd, threads, groups,
                         threadBefrOps, threadThrdOps, threadPostOps,
                         groupBefrOps, groupThrdOps, groupPostOps,
                         syncThreads, syncGroups;

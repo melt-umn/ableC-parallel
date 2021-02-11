@@ -46,6 +46,29 @@ top::ExtType ::= sys::Decorated SyncSystem
 
   top.host = sysType.withTypeQualifiers;
 
-  top.newProd = sys.groupNewProd;
+  top.ovrld:lEqProd = just(groupSetProd(sys, _, _, location=_));
+  top.newProd = just(groupNewProd(_, location=_));
   top.deleteProd = sys.groupDeleteProd;
+}
+
+abstract production groupNewProd
+top::Expr ::= args::Exprs
+{
+  forwards to errorExpr([err(top.location,
+    "Constructing a group can only occur on the rhs of an assignment")],
+    location=top.location);
+}
+
+abstract production groupSetProd
+top::Expr ::= sys::Decorated SyncSystem lhs::Expr rhs::Expr
+{
+  top.pp = ppConcat([lhs.pp, text(" = "), rhs.pp]);
+
+  forwards to 
+    case rhs of
+    | newExpr(_, args) -> sys.initializeGroup(lhs, args, top.location)
+    | _ -> errorExpr([err(top.location, 
+                    "Groups can only be assigned a constructed value (using new)")],
+              location=top.location)
+    end;
 }

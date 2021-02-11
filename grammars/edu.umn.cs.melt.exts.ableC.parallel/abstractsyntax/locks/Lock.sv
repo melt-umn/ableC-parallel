@@ -46,6 +46,29 @@ top::ExtType ::= sys::Decorated LockSystem
 
   top.host = sysType.withTypeQualifiers;
 
-  top.newProd = sys.lockNewProd;
+  top.ovrld:lEqProd = just(lockSetProd(sys, _, _, location=_));
+  top.newProd = just(lockNewProd(_, location=_));
   top.deleteProd = sys.lockDeleteProd;
+}
+
+abstract production lockNewProd
+top::Expr ::= args::Exprs
+{
+  forwards to errorExpr([err(top.location,
+    "Constructing a lock can only occur on the rhs of an assignment")],
+    location=top.location);
+}
+
+abstract production lockSetProd
+top::Expr ::= sys::Decorated LockSystem lhs::Expr rhs::Expr
+{
+  top.pp = ppConcat([lhs.pp, text(" = "), rhs.pp]);
+
+  forwards to 
+    case rhs of
+    | newExpr(_, args) -> sys.initializeLock(lhs, args, top.location)
+    | _ -> errorExpr([err(top.location, 
+                    "Locks can only be assigned a constructed value (using new)")],
+              location=top.location)
+    end;
 }

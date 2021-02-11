@@ -46,6 +46,29 @@ top::ExtType ::= sys::Decorated LockSystem
 
   top.host = condType.withTypeQualifiers;
 
-  top.newProd = sys.condvarNewProd;
+  top.ovrld:lEqProd = just(condvarSetProd(sys, _, _, location=_));
+  top.newProd = just(condvarNewProd(_, location=_));
   top.deleteProd = sys.condvarDeleteProd;
+}
+
+abstract production condvarNewProd
+top::Expr ::= args::Exprs
+{
+  forwards to errorExpr([err(top.location,
+    "Constructing a condvar can only occur on the rhs of an assignment")],
+    location=top.location);
+}
+
+abstract production condvarSetProd
+top::Expr ::= sys::Decorated LockSystem lhs::Expr rhs::Expr
+{
+  top.pp = ppConcat([lhs.pp, text(" = "), rhs.pp]);
+
+  forwards to 
+    case rhs of
+    | newExpr(_, args) -> sys.initializeCondvar(lhs, args, top.location)
+    | _ -> errorExpr([err(top.location, 
+                    "Condvars can only be assigned a constructed value (using new)")],
+              location=top.location)
+    end;
 }

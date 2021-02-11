@@ -61,9 +61,9 @@ top::LockSystem ::=
   top.signalCV = nullStmt();
   top.broadcastCV = nullStmt();
 
-  top.lockNewProd = nothing();
+  top.initializeLock = error("testing lock cannot be initialize");
   top.lockDeleteProd = nothing();
-  top.condvarNewProd = nothing();
+  top.initializeCondvar = error("testing condvar cannot be initialize");
   top.condvarDeleteProd = nothing();
 }
 
@@ -91,9 +91,9 @@ top::SyncSystem ::=
   top.groupPostOps = nullStmt();
   top.syncGroups = nullStmt();
 
-  top.threadNewProd = nothing();
+  top.initializeThread = error("testing thread cannot be initialized");
   top.threadDeleteProd = nothing();
-  top.groupNewProd = nothing();
+  top.initializeGroup = error("testing group cannot be initialized");
   top.groupDeleteProd = nothing();
 }
 

@@ -21,3 +21,10 @@ Type ::= t::Type
     | _ -> pointerType(nilQualifier(), t)
     end;
 }
+
+abstract production exprAsType
+top::Expr ::= e::Expr t::Type
+{
+  top.typerep = t;
+  forwards to e;
+}

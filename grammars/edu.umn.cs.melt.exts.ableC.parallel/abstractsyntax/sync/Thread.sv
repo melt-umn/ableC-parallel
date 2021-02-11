@@ -46,6 +46,29 @@ top::ExtType ::= sys::Decorated SyncSystem
 
   top.host = sysType.withTypeQualifiers;
 
-  top.newProd = sys.threadNewProd;
+  top.ovrld:lEqProd = just(threadSetProd(sys, _, _, location=_));
+  top.newProd = just(threadNewProd(_, location=_));
   top.deleteProd = sys.threadDeleteProd;
+}
+
+abstract production threadNewProd
+top::Expr ::= args::Exprs
+{
+  forwards to errorExpr([err(top.location,
+    "Constructing a thread can only occur on the rhs of an assignment")],
+    location=top.location);
+}
+
+abstract production threadSetProd
+top::Expr ::= sys::Decorated SyncSystem lhs::Expr rhs::Expr
+{
+  top.pp = ppConcat([lhs.pp, text(" = "), rhs.pp]);
+
+  forwards to 
+    case rhs of
+    | newExpr(_, args) -> sys.initializeThread(lhs, args, top.location)
+    | _ -> errorExpr([err(top.location, 
+                    "Thread can only be assigned a constructed value (using new)")],
+              location=top.location)
+    end;
 }
