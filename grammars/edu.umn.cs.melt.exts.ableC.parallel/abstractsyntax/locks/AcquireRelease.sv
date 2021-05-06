@@ -25,6 +25,7 @@ top::Stmt ::= locks::Exprs sysFunc::(Stmt ::= LockSystem Decorated Env [Expr]) n
       map(\ ty::Type -> case ty of 
                         | extType(_, lockType(s)) -> s 
                         | pointerType(_, extType(_, lockType(s))) -> s
+                        | _ -> error("Wrong type should be caught by errors attribute")
                         end,
         locks.typereps));
 
@@ -36,6 +37,7 @@ top::Stmt ::= locks::Exprs sysFunc::(Stmt ::= LockSystem Decorated Env [Expr]) n
               breakValid=top.breakValid; continueValid=top.continueValid;}).typerep of 
           | extType(_, lockType(s)) -> s.parName == sys.parName 
           | pointerType(_, extType(_, lockType(s))) -> s.parName == sys.parName
+          | _ -> error("Wrong type should be caught by errors attribute")
           end,
           locks.exprList)
         ),

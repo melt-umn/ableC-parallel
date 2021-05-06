@@ -1,6 +1,8 @@
 #ifndef INCLUDE_ABLEC_PARALLEL_
 #define INCLUDE_ABLEC_PARALLEL_
 
+#include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include <pthread.h>
 
@@ -55,9 +57,25 @@ extern size_t __ableC_stack_size;
 #ifndef ABLEC_NON_MAIN
 void __attribute__((constructor)) __ableC_init_stack_size() {
   pthread_attr_t attr;
-  pthread_attr_init(&attr);
-  pthread_attr_getstacksize(&attr, &__ableC_stack_size);
-  pthread_attr_destroy(&attr);
+
+  int errnum;
+  errnum = pthread_attr_init(&attr);
+  if (errnum) {
+    fprintf(stderr, "Error in pthread_attr_init during setup: %s\n", strerror(errnum));
+    exit(-1);
+  }
+
+  errnum = pthread_attr_getstacksize(&attr, &__ableC_stack_size);
+  if (errnum) {
+    fprintf(stderr, "Error in pthread_attr_getstacksize during setup: %s\n", strerror(errnum));
+    exit(-1);
+  }
+
+  errnum = pthread_attr_destroy(&attr);
+  if (errnum) {
+    fprintf(stderr, "Error in pthread_attr_destroy during setup: %s\n", strerror(errnum));
+    exit(-1);
+  }
 }
 #endif
 
@@ -79,6 +97,80 @@ static void inline __ableC_spinlock_acquire(__ableC_spinlock* lk) {
 
 static void inline __ableC_spinlock_release(__ableC_spinlock* lk) {
   (*lk) = 0;
+}
+
+// Functions for using pthread mutex/condvars with appropriate error checking
+static void inline checked_pthread_mutex_lock(pthread_mutex_t* lk) {
+  int errnum = pthread_mutex_lock(lk);
+  if (__builtin_expect(errnum, 0)) {
+    fprintf(stderr, "Error in pthread_mutex_lock: %s\n", strerror(errnum));
+    exit(-1);
+  }
+}
+static void inline checked_pthread_mutex_unlock(pthread_mutex_t* lk) {
+  int errnum = pthread_mutex_unlock(lk);
+  if (__builtin_expect(errnum, 0)) {
+    fprintf(stderr, "Error in pthread_mutex_unlock: %s\n", strerror(errnum));
+    exit(-1);
+  }
+}
+static void inline checked_pthread_cond_wait(pthread_cond_t* cv, pthread_mutex_t* lk) {
+  int errnum = pthread_cond_wait(cv, lk);
+  if (__builtin_expect(errnum, 0)) {
+    fprintf(stderr, "Error in pthread_cond_wait: %s\n", strerror(errnum));
+    exit(-1);
+  }
+}
+static void inline checked_pthread_cond_signal(pthread_cond_t* cv) {
+  int errnum = pthread_cond_signal(cv);
+  if (__builtin_expect(errnum, 0)) {
+    fprintf(stderr, "Error in pthread_cond_signal: %s\n", strerror(errnum));
+    exit(-1);
+  }
+}
+static void inline checked_pthread_cond_broadcast(pthread_cond_t* cv) {
+  int errnum = pthread_cond_broadcast(cv);
+  if (__builtin_expect(errnum, 0)) {
+    fprintf(stderr, "Error in pthread_cond_broadcast: %s\n", strerror(errnum));
+    exit(-1);
+  }
+}
+static void inline checked_pthread_mutex_init(pthread_mutex_t* lk, const pthread_mutexattr_t *restrict attr) {
+  int errnum = pthread_mutex_init(lk, attr);
+  if (__builtin_expect(errnum, 0)) {
+    fprintf(stderr, "Error in pthread_mutex_init: %s\n", strerror(errnum));
+    exit(-1);
+  }
+}
+static void inline checked_pthread_mutex_destroy(pthread_mutex_t* lk) {
+  int errnum = pthread_mutex_destroy(lk);
+  if (__builtin_expect(errnum, 0)) {
+    fprintf(stderr, "Error in pthread_mutex_destroy: %s\n", strerror(errnum));
+    exit(-1);
+  }
+}
+static void inline checked_pthread_cond_init(pthread_cond_t* cv, const pthread_condattr_t *restrict attr) {
+  int errnum = pthread_cond_init(cv, attr);
+  if (__builtin_expect(errnum, 0)) {
+    fprintf(stderr, "Error in pthread_cond_init: %s\n", strerror(errnum));
+    exit(-1);
+  }
+}
+static void inline checked_pthread_cond_destroy(pthread_cond_t* cv) {
+  int errnum = pthread_cond_destroy(cv);
+  if (__builtin_expect(errnum, 0)) {
+    fprintf(stderr, "Error in pthread_cond_destroy: %s\n", strerror(errnum));
+    exit(-1);
+  }
+}
+static void inline checked_pthread_create(pthread_t* restrict thread,
+                      const pthread_attr_t* restrict attr,
+                      void* (*start_routine)(void*), void* restrict arg) {
+  int errnum = pthread_create(thread, attr, start_routine, arg);
+  if (__builtin_expect(errnum, 0)) {
+    fprintf(stderr, "Error in pthread_create: %s\n", strerror(errnum));
+    exit(-1);
+  }
 }
 
 #endif // INCLUDE_ABLEC_PARALLEL_

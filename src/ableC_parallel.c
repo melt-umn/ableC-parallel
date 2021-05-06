@@ -6,30 +6,31 @@
 
 _Thread_local struct __ableC_tcb* __ableC_thread_tcb;
 
+
 void __ableC_main_thread_block(struct __ableC_tcb* tcb) {
   struct __ableC_main_thread_info* info = 
     (struct __ableC_main_thread_info*) (tcb->thread_info);
 
-  pthread_mutex_lock(&(info->lk));
+  checked_pthread_mutex_lock(&(info->lk));
   while (tcb->status != UNBLOCKING) {
     tcb->status = BLOCKING;
-    pthread_cond_wait(&(info->cv), &(info->lk));
+    checked_pthread_cond_wait(&(info->cv), &(info->lk));
   }
   tcb->status = RUNNING;
-  pthread_mutex_unlock(&(info->lk));
+  checked_pthread_mutex_unlock(&(info->lk));
 }
 
 void __ableC_main_thread_unblock(struct __ableC_tcb* tcb) {
   struct __ableC_main_thread_info* info = 
     (struct __ableC_main_thread_info*) (tcb->thread_info);
 
-  pthread_mutex_lock(&(info->lk));
+  checked_pthread_mutex_lock(&(info->lk));
   if (tcb->status == BLOCKING) {
-    pthread_cond_signal(&(info->cv));
+    checked_pthread_cond_signal(&(info->cv));
   }
   
   tcb->status = UNBLOCKING;
-  pthread_mutex_unlock(&(info->lk));
+  checked_pthread_mutex_unlock(&(info->lk));
 }
 
 struct __ableC_system_info __ableC_main_thread = 

@@ -40,6 +40,7 @@ top::Stmt ::= expr::Expr annts::SpawnAnnotations
   local sys :: ParallelSystem = 
     case systemType of
     | extType(_, parallelType(s)) -> s
+    | _ -> error("Bad type should be caught by errors attribute")
     end;
 
   forwards to

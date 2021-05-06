@@ -43,12 +43,14 @@ top::Stmt ::= tasks::Exprs
         case p.snd of
         | extType(_, threadType(_)) -> true
         | extType(_, groupType(_))  -> false
+        | _ -> error("Wrong type should be caught by errors attribute")
         end,
       \p::Pair<Pair<Expr SyncSystem> Type> -> p.fst,
       map(\p::Pair<Expr Type> ->
         case p.snd of
         | extType(_, threadType(sys)) -> pair(pair(p.fst, sys), p.snd)
         | extType(_, groupType(sys))  -> pair(pair(p.fst, sys), p.snd)
+        | _ -> error("Wrong type should be caught by errors attributes")
         end,
         exprs
       )

@@ -19,6 +19,7 @@ top::Stmt ::= cv::Expr sysOp::(Stmt ::= LockSystem Decorated Env Expr) nm::Strin
     case cv.typerep of 
     | extType(_, condvarType(s)) -> s 
     | pointerType(_, extType(_, condvarType(s))) -> s
+    | _ -> error("Wrong type should be caught by errors attribute")
     end;
 
   forwards to
