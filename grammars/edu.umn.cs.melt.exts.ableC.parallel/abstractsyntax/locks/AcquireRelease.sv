@@ -33,8 +33,8 @@ top::Stmt ::= locks::Exprs sysFunc::(Stmt ::= LockSystem Decorated Env [Expr]) n
     map(\ sys::LockSystem ->
       sysFunc(sys, top.env, 
         filter(\ex::Expr -> 
-          case (decorate ex with {env=top.env; returnType=top.returnType;
-              breakValid=top.breakValid; continueValid=top.continueValid;}).typerep of 
+          case (decorate ex with {env=top.env;
+              controlStmtContext = top.controlStmtContext;}).typerep of 
           | extType(_, lockType(s)) -> s.parName == sys.parName 
           | pointerType(_, extType(_, lockType(s))) -> s.parName == sys.parName
           | _ -> error("Wrong type should be caught by errors attribute")

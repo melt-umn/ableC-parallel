@@ -1,7 +1,7 @@
 grammar edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:parallel:spawn;
 
-closed nonterminal SpawnAnnotations with errors, env, returnType, breakValid,
-  continueValid, bySystem, asThreads, inGroups, publics, privates, globals;
+closed nonterminal SpawnAnnotations with errors, env, controlStmtContext,
+  bySystem, asThreads, inGroups, publics, privates, globals;
 
 abstract production consSpawnAnnotations
 top::SpawnAnnotations ::= hd::SpawnAnnotation tl::SpawnAnnotations
@@ -34,8 +34,8 @@ top::SpawnAnnotations ::=
   top.globals = [];
 }
 
-closed nonterminal SpawnAnnotation with errors, env, returnType, breakValid,
-  continueValid, bySystem, asThreads, inGroups, location, publics, privates, globals;
+closed nonterminal SpawnAnnotation with errors, env, controlStmtContext,
+  bySystem, asThreads, inGroups, location, publics, privates, globals;
 
 propagate errors on SpawnAnnotation;
 

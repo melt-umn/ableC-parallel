@@ -32,9 +32,7 @@ top::Stmt ::= expr::Expr annts::SpawnAnnotations
   -- Because we exectue in parallel, don't allow anything that is based on
   -- executing in this location (so no return, break, or continue based on
   -- the current location of code)
-  spawnBy.returnType = nothing();
-  spawnBy.breakValid = false;
-  spawnBy.continueValid = false;
+  spawnBy.controlStmtContext = initialControlStmtContext;
 
   local systemType :: Type = spawnBy.typerep;
   local sys :: ParallelSystem = 
