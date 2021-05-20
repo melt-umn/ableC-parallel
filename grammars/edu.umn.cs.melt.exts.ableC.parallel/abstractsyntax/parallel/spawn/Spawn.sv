@@ -7,6 +7,7 @@ top::Stmt ::= expr::Expr annts::SpawnAnnotations
 
   top.pp = ppConcat([text("spawn"), space(), expr.pp, semi()]);
   top.functionDefs := [];
+  top.labelDefs := [];
 
   local privateVars :: [Name] = nub(annts.privates);
   local publicVars  :: [Name] = nub(annts.publics);

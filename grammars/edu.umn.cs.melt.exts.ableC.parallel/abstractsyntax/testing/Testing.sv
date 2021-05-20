@@ -17,6 +17,7 @@ top::Stmt ::= locks::[Expr] val::Integer
 {
   top.pp = text("fake_lock_operation");
   top.functionDefs := [];
+  top.labelDefs := [];
 
   forwards to foldStmt(
     map(\ e::Expr -> 

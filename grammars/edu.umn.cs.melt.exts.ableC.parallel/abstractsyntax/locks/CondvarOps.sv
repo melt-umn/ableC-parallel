@@ -7,6 +7,7 @@ top::Stmt ::= cv::Expr sysOp::(Stmt ::= LockSystem Decorated Env Expr) nm::Strin
 
   top.pp = ppConcat([text(nm), space(), cv.pp]);
   top.functionDefs := [];
+  top.labelDefs := [];
 
   local localErrors :: [Message] = cv.errors
     ++ case cv.typerep of

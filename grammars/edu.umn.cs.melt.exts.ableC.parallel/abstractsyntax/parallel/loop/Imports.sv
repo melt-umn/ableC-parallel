@@ -6,6 +6,7 @@ imports edu:umn:cs:melt:ableC:abstractsyntax:construction;
 
 imports silver:langutil;
 imports silver:langutil:pp;
+imports silver:util:treemap as tm;
 
 imports edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax;
 imports edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:parallel;

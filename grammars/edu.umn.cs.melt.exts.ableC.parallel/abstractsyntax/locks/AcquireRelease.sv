@@ -8,6 +8,7 @@ top::Stmt ::= locks::Exprs sysFunc::(Stmt ::= LockSystem Decorated Env [Expr]) n
     ppImplode(cat(comma(), space()), locks.pps)]);
 
   top.functionDefs := [];
+  top.labelDefs := [];
 
   -- TODO: location
   local localErrors :: [Message] = locks.errors

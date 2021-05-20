@@ -10,6 +10,7 @@ top::Stmt ::= init::Decl cond::MaybeExpr iter::Expr body::Stmt
                               iter.pp])),
                     line(), braces(nestlines(2, body.pp))]);
   top.functionDefs := body.functionDefs;
+  top.labelDefs := []; -- Prevent labels from propagating up
 
   local loopS :: Stmt = ableC_Stmt {
       for($Decl{init} $Expr{cond.justTheExpr.fromJust}; $Expr{iter}) $Stmt{body}
@@ -17,11 +18,11 @@ top::Stmt ::= init::Decl cond::MaybeExpr iter::Expr body::Stmt
   -- Breaking from a parallel loop is not allowed because we're running
   -- iterations in parallel. A continue is fine (we require that the
   -- impleemntation use a loop, so this behaves as expected)
-  loopS.controlStmtContext = controlStmtContext(nothing(), false, true);
+  loopS.controlStmtContext = controlStmtContext(nothing(), false, true, tm:add(body.labelDefs, tm:empty()));
   loopS.env = top.env;
 
   local normalizedS :: Stmt = loopS.normalizeLoops;
-  normalizedS.controlStmtContext = controlStmtContext(nothing(), false, true);
+  normalizedS.controlStmtContext = controlStmtContext(nothing(), false, true, tm:add(body.labelDefs, tm:empty()));
   normalizedS.env = loopS.env;
 
   local normalizedProperly :: Boolean =

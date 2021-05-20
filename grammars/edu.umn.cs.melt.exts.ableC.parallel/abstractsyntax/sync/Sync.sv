@@ -17,6 +17,7 @@ top::Stmt ::= tasks::Exprs
   top.pp = ppConcat([text("sync"), space(), 
     ppImplode(cat(comma(), space()), tasks.pps)]);
   top.functionDefs := [];
+  top.labelDefs := [];
 
   tasks.env = top.env;
 
