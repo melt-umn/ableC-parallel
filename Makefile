@@ -9,14 +9,6 @@
 # `make analyses`: run the modular analyses that provide strong composability
 #                  guarantees
 #
-# `make mda`: run the modular determinism analysis that ensures that the
-#             composed specification of the lexical and context-free syntax is
-#             free of ambiguities
-#
-# `make mwda`: run the modular well-definedness analysis that ensures that the
-#              composed attribute grammar is well-defined and thus the semantic
-#              analysis and code generation phases will complete successfully
-#
 # `make test`: run the extension's test suite
 #
 # note: the modular analyses and tests will not be rerun if no changes to the
@@ -42,12 +34,6 @@ examples:
 analyses:
 	$(MAKE) -C modular_analyses
 
-mda:
-	$(MAKE) -C modular_analyses mda
-
-mwda:
-	$(MAKE) -C modular_analyses mwda
-
 test:
 	$(MAKE) -C tests -k
 
@@ -57,5 +43,5 @@ clean:
 	$(MAKE) -C modular_analyses clean
 	$(MAKE) -C tests clean
 
-.PHONY: all build examples analyses mda mwda test clean
+.PHONY: all build examples analyses test clean
 .NOTPARALLEL: # Avoid running multiple Silver builds in parallel
