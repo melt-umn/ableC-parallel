@@ -2,4 +2,4 @@
 
 library "github.com/melt-umn/jenkins-lib"
 
-ableC.buildSilverAbleCExtension('ableC-parallel')
+ableC.buildSilverAbleCExtension('ableC-parallel', ['ableC-cilk'])

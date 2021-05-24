@@ -1,12 +1,11 @@
 #include <stdio.h>
 #include <ableC_parallel.h>
-
-#include "testing.xh"
+#include <ableC_posix.h>
 
 int main() {
   int i = 0;
 
-  testing parallel system;
+  posix parallel system;
   parallel for (; i < 10; i++) { by system;
     printf("%d\n", i);
   }

@@ -14,6 +14,7 @@ import edu:umn:cs:melt:ableC:drivers:compile;
 parser extendedParser :: cst:Root {
   edu:umn:cs:melt:ableC:concretesyntax;
   edu:umn:cs:melt:exts:ableC:parallel;
+  edu:umn:cs:melt:exts:ableC:parallel:impl:posix;
 } 
 
 function main

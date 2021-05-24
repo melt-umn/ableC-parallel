@@ -1,35 +1,33 @@
-# Path from current directory to top level ableC repository
-ABLEC_BASE?=../../../ableC
-# Path from current directory to top level extensions directory
-EXTS_BASE?=../../../extensions
+all: base blocking cilk lvars posix synchronization thrdpool
 
-# The Silver compiler to use
-SILVER=silver-ableC
-# The artifact specification grammars to compile
-MDA_ARTIFACT=determinism
-MWDA_ARTIFACT=well_definedness
-# All directories containing grammars that may be included
-GRAMMAR_DIRS=$(ABLEC_BASE)/grammars $(wildcard $(EXTS_BASE)/*/grammars)
-# All silver files in included grammars, to be included as dependancies
-GRAMMAR_SOURCES=$(shell find $(GRAMMAR_DIRS) -name *.sv -print0 | xargs -0)
-# Flags passed to silver including the appropriate directories
-override SVFLAGS+=$(addprefix -I , $(GRAMMAR_DIRS))
+base:
+	$(MAKE) -C base
 
-all: mda mwda
-mda: mda.test
-mwda: mwda.test
+blocking:
+	$(MAKE) -C blocking
 
-mda.test: $(GRAMMAR_SOURCES)
-	touch $(wildcard $(MDA_ARTIFACT)/*.sv)
-	$(SILVER) --dont-translate $(SVFLAGS) $(MDA_ARTIFACT)
-	touch $@
+cilk:
+	$(MAKE) -C cilk
 
-mwda.test: $(GRAMMAR_SOURCES)
-	touch $(wildcard $(MWDA_ARTIFACT)/*.sv)
-	$(SILVER) --dont-translate $(SVFLAGS) --clean --mwda $(MWDA_ARTIFACT)
-	touch $@
+lvars:
+	$(MAKE) -C lvars
+
+posix:
+	$(MAKE) -C posix
+
+synchronization:
+	$(MAKE) -C synchronization
+
+thrdpool:
+	$(MAKE) -C thrdpool
 
 clean:
-	rm -f *~ *.jar *.copperdump.html build.xml *.test
+	$(MAKE) -C base clean
+	$(MAKE) -C blocking clean
+	$(MAKE) -C cilk clean
+	$(MAKE) -C lvars clean
+	$(MAKE) -C posix clean
+	$(MAKE) -C synchronization clean
+	$(MAKE) -C thrdpool clean
 
-.PHONY: all mda mwda clean
+.PHONY: all base blocking cilk lvars posix synchronization thrdpool clean

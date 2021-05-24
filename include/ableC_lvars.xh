@@ -1,0 +1,37 @@
+#ifndef ABLEC_LVARS_XH_
+#define ABLEC_LVARS_XH_
+
+#include <ableC_parallel.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+template<typename a>
+datatype Maybe {
+  Just(a val);
+  Nothing();
+};
+
+template<typename a>
+int isNothing(Maybe<a> val) {
+  match (&val) {
+    &Just(x)    -> { return 0; }
+    &Nothing()  -> { return 1; }
+  }
+}
+
+template<typename a>
+a fromJust(Maybe<a> val) {
+  match (&val) {
+    &Just(x)    -> { return x; }
+    &Nothing()  -> { fprintf(stderr, "Cannot fromJust a nothing\n"); exit(-1); }
+  }
+}
+
+template<typename a>
+datatype Value {
+  Bottom();
+  Of(a val);
+  Top();
+};
+
+#endif  // ABLEC_LVARS_XH_
