@@ -1,27 +1,30 @@
 all: blocking cilk lvars posix synchronization thrdpool server
 
+libs:
+	$(MAKE) -C ../src
+
 build:
 	$(MAKE) -C server ableC.jar
 
-blocking:
+blocking: libs
 	$(MAKE) -C blocking
 
-cilk:
+cilk: libs
 	$(MAKE) -C cilk
 
-lvars:
+lvars: libs
 	$(MAKE) -C lvars
 
-posix:
+posix: libs
 	$(MAKE) -C posix
 
-synchronization:
+synchronization: libs
 	$(MAKE) -C synchronization
 
-thrdpool:
+thrdpool: libs
 	$(MAKE) -C thrdpool
 
-server:
+server: libs
 	$(MAKE) -C server
 
 clean:
@@ -33,4 +36,4 @@ clean:
 	$(MAKE) -C thrdpool clean
 	$(MAKE) -C server clean
 
-.PHONY: all build blocking cilk lvars posix synchronization thrdpool server clean
+.PHONY: all build blocking cilk lvars posix synchronization thrdpool server clean libs
