@@ -1,3 +1,4 @@
+.NOTPARALLEL:
 all: base blocking cilk lvars posix synchronization thrdpool
 
 base:

@@ -1,3 +1,4 @@
+.NOTPARALLEL:
 all: blocking cilk lvars posix synchronization thrdpool server
 
 build:
