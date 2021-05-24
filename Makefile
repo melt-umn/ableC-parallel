@@ -34,7 +34,7 @@ MAKEOVERRIDES=ABLEC_BASE=$(abspath $(ABLEC_BASE)) EXTS_BASE=$(abspath $(EXTS_BAS
 all: examples analyses test
 
 build:
-	$(MAKE) -C examples ableC.jar
+	$(MAKE) -C examples build
 
 examples:
 	$(MAKE) -C examples
