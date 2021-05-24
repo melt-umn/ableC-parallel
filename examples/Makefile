@@ -1,8 +1,4 @@
-.NOTPARALLEL:
 all: blocking cilk lvars posix synchronization thrdpool server
-
-build:
-	$(MAKE) -C server ableC.jar
 
 blocking:
 	$(MAKE) -C blocking
@@ -35,3 +31,13 @@ clean:
 	$(MAKE) -C server clean
 
 .PHONY: all build blocking cilk lvars posix synchronization thrdpool server clean
+
+build:
+	$(MAKE) -C blocking ableC.jar
+	$(MAKE) -C cilk ableC.jar
+	$(MAKE) -C lvars ableC.jar
+	$(MAKE) -C posix ableC.jar
+	$(MAKE) -C synchronization ableC.jar
+	$(MAKE) -C thrdpool ableC.jar
+	$(MAKE) -C server ableC.jar
+
