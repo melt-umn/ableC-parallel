@@ -53,12 +53,12 @@ int main() {
 
   spawn testFunc(&lv); by threads; as thd; public lv; global testFunc;
 
-  Value<int> v1 = (get lv at int_atleast_3);
+  Value<int> v1 = get lv at int_atleast_3;
   print_value_int(&v1);
   
   sync thd; delete thd;
   
-  Value<int> x = (freeze lv);
+  Value<int> x = freeze lv;
   print_value_int(&x);
 
   return 0;

@@ -17,15 +17,15 @@ concrete productions top::AssignOp_c
 | '<-' { top.ast = lvarPut(top.leftExpr, top.rightExpr, location=top.exprLocation); }
 
 
-concrete productions top::Expr_c
-| 'freeze' lvar::Expr_c {
+concrete productions top::AssignExpr_c
+| 'freeze' lvar::AssignExpr_c {
     top.ast = lvarFreeze(lvar.ast, location=top.location);
   }
-| 'get' id::Identifier_t 'at' func::Expr_c {
+| 'get' id::Identifier_t 'at' func::AssignExpr_c {
     top.ast = lvarGet(
       declRefExpr(name(id.lexeme, location=id.location), location=id.location),
       func.ast, location=top.location);
   }
-| 'get' '(' lvar::Expr_c ')' 'at' func::Expr_c {
+| 'get' '(' lvar::Expr_c ')' 'at' func::AssignExpr_c {
     top.ast = lvarGet(lvar.ast, func.ast, location=top.location);
   }
