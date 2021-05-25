@@ -42,10 +42,11 @@ override CFLAGS+=-g
 # All directories contining extension libraries that may be linked
 LIB_DIRS=$(wildcard $(EXTS_BASE)/*/lib)
 # Flags passed to the linker specifying the appropriate directories
-override LDFLAGS+=$(addprefix -L,$(LIB_DIRS))
+override LDFLAGS+=$(addprefix -L,$(LIB_DIRS)) -g
 # Flags passed to the linker specifying libraries to link
-# Specify ableC_parallel is to be linked statically, everything else dynamically
-LDLIBS=-Wl,-Bstatic -lableC_parallel -Wl,-Bdynamic -lpthread
+# Specify ableC_parallel and ableC_parallel_workstlr is to be linked statically, everything 
+# else dynamically
+LDLIBS=-Wl,-Bstatic -lableC_parallel -lableC_parallel_workstlr -Wl,-Bdynamic -lpthread
 
 # All directories contining extension library sources
 SRC_DIRS=$(wildcard $(EXTS_BASE)/*/src)

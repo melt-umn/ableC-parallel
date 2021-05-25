@@ -1,5 +1,5 @@
 .NOTPARALLEL:
-all: base blocking cilk lvars posix synchronization thrdpool
+all: base blocking workstlr lvars posix synchronization thrdpool
 
 base:
 	$(MAKE) -C base
@@ -7,8 +7,8 @@ base:
 blocking:
 	$(MAKE) -C blocking
 
-cilk:
-	$(MAKE) -C cilk
+workstlr:
+	$(MAKE) -C workstlr
 
 lvars:
 	$(MAKE) -C lvars
@@ -25,10 +25,10 @@ thrdpool:
 clean:
 	$(MAKE) -C base clean
 	$(MAKE) -C blocking clean
-	$(MAKE) -C cilk clean
+	$(MAKE) -C workstlr clean
 	$(MAKE) -C lvars clean
 	$(MAKE) -C posix clean
 	$(MAKE) -C synchronization clean
 	$(MAKE) -C thrdpool clean
 
-.PHONY: all base blocking cilk lvars posix synchronization thrdpool clean
+.PHONY: all base blocking workstlr lvars posix synchronization thrdpool clean

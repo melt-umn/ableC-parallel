@@ -9,7 +9,7 @@
 #include <netinet/ip.h>
 
 #include <ableC_blocking.h>
-#include <ableC_cilk.h>
+#include <ableC_workstlr.h>
 #include <ableC_posix.h>
 #include <ableC_thrdpool.h>
 
@@ -193,7 +193,7 @@ int nqueens_find_next(const int n, chess_board* board, int iR, int iC, int goUp)
   }
 }
 
-cilk_func int count_helper(int n, chess_board* board, int r) {
+workstlr_func int count_helper(int n, chess_board* board, int r) {
   while (r < n && board->order[r] != '\0')
     r++;
 
@@ -238,7 +238,7 @@ cilk_func int count_helper(int n, chess_board* board, int r) {
   return cnt;
 }
 
-cilk_func int count_nqueens(int n, char* init) {
+workstlr_func int count_nqueens(int n, char* init) {
   chess_board* board = malloc(sizeof(chess_board));
   if (board == NULL || initialize_board(n, board) != 1) exit(50);
 
@@ -260,7 +260,7 @@ bounded_buffer* to_deliver;
 
 thrdpool parallel processing;
 thrdpool parallel searching;
-cilk parallel counting;
+workstlr parallel counting;
 
 void handle_request(struct request* req);
 
@@ -363,7 +363,7 @@ int main() {
 
   processing = new thrdpool parallel(N_PROCESS);
   searching = new thrdpool parallel(N_SEARCH);
-  counting = new cilk parallel(N_COUNT);
+  counting = new workstlr parallel(N_COUNT);
 
   posix parallel threads = new posix parallel();
   posix group readers; readers = new posix group();

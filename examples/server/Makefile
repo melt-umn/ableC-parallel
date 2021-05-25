@@ -46,7 +46,7 @@ override LDFLAGS+=-ggdb $(addprefix -L,$(LIB_DIRS))
 # Flags passed to the linker specifying libraries to link
 # Specify ableC_parallel and ableC_parallel_thrdpool is to be linked statically, everything 
 # else dynamically
-LDLIBS=-Wl,-Bstatic -lableC_parallel -lableC_parallel_thrdpool -lableC_parallel_cilk -Wl,-Bdynamic -lpthread
+LDLIBS=-Wl,-Bstatic -lableC_parallel -lableC_parallel_thrdpool -lableC_parallel_workstlr -Wl,-Bdynamic -lpthread
 
 # All directories contining extension library sources
 SRC_DIRS=$(wildcard $(EXTS_BASE)/*/src)

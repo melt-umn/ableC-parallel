@@ -1,17 +1,17 @@
-all: base cilk thrdpool
+all: base workstlr thrdpool
 
 base:
 	$(MAKE) -C base
 
-cilk:
-	$(MAKE) -C cilk
+workstlr:
+	$(MAKE) -C workstlr
 
 thrdpool:
 	$(MAKE) -C thrdpool
 
 clean:
 	$(MAKE) -C base clean
-	$(MAKE) -C cilk clean
+	$(MAKE) -C workstlr clean
 	$(MAKE) -C thrdpool clean
 
-.PHONY: all base cilk thrdpool clean
+.PHONY: all base workstlr thrdpool clean
