@@ -12,7 +12,6 @@ parser extendedParser :: cst:Root {
   edu:umn:cs:melt:exts:ableC:cilk;
   edu:umn:cs:melt:exts:ableC:parallel;
   edu:umn:cs:melt:exts:ableC:parallel:impl:workstlr;
-  edu:umn:cs:melt:exts:ableC:parallel:impl:blocking;
   edu:umn:cs:melt:exts:ableC:parallel:impl:posix;
 }
 
