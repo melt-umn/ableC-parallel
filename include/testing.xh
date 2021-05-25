@@ -1,3 +1,0 @@
-struct __attribute__((refId("edu:umn:cs:melt:exts:ableC:parallel:test"))) system_test {
-  int tmp;
-};
