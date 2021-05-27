@@ -17,7 +17,7 @@ top::Stmt ::= init::Decl cond::MaybeExpr iter::Expr body::Stmt
     };
   -- Breaking from a parallel loop is not allowed because we're running
   -- iterations in parallel. A continue is fine (we require that the
-  -- impleemntation use a loop, so this behaves as expected)
+  -- implemntation use a loop, so this behaves as expected)
   loopS.controlStmtContext = controlStmtContext(nothing(), false, true, tm:add(body.labelDefs, tm:empty()));
   loopS.env = top.env;
 

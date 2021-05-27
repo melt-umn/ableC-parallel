@@ -39,7 +39,7 @@ concrete productions top::ParallelAnnotation_c
 | 'in' grp::Expr_c {
     top.ast = parallelInAnnotation(grp.ast, location=top.location);
   }
-| 'num_threads' num::Expr_c {
+| 'num-threads' num::Expr_c {
     top.ast = parallelNumThreadsAnnotation(num.ast, location=top.location);
   }
 | 'private' nms::IdentifierList_c {

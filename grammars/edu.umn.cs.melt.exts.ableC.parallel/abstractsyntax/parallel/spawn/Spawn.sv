@@ -13,7 +13,7 @@ top::Stmt ::= expr::Expr annts::SpawnAnnotations
   local publicVars  :: [Name] = nub(annts.publics);
   local globalVars  :: [Name] = nub(annts.globals);
 
-  -- TODO: Location; Default system
+  -- TODO: Location
   local localErrors :: [Message] =
     expr.errors ++ annts.errors 
     ++ (if !annts.bySystem.isJust

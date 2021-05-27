@@ -369,10 +369,10 @@ int main() {
   posix group readers; readers = new posix group();
   posix group writers; writers = new posix group();
 
-  parallel for (int i = 0; i < N_WRITERS; i++) { by threads; in writers; num_threads N_WRITERS; global write_thread;
+  parallel for (int i = 0; i < N_WRITERS; i++) { by threads; in writers; num-threads N_WRITERS; global write_thread;
     write_thread();
   }
-  parallel for (int i = 0; i < N_READERS; i++) { by threads; in readers; num_threads N_READERS; global read_thread;
+  parallel for (int i = 0; i < N_READERS; i++) { by threads; in readers; num-threads N_READERS; global read_thread;
     read_thread();
   }
 

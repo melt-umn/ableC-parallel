@@ -28,4 +28,4 @@ terminal Private_t 'private' lexer classes {Keyword, Reserved};
 terminal Public_t  'public'  lexer classes {Keyword, Reserved};
 terminal Global_t  'global'  lexer classes {Keyword, Reserved};
 
-terminal NumThreads_t 'num_threads' lexer classes {Keyword, Reserved};
+terminal NumThreads_t 'num-threads' lexer classes {Keyword, Reserved};

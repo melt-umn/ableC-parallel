@@ -108,7 +108,7 @@ int main() {
   // I'm not a fan of the fact that buffer must be public, but...
   spawn sum = total_buffer(&buffer); by threads; as th; public buffer; global total_buffer; public sum;
 
-  parallel for (int i = 0; i < 16; i++) { by threads; in grp; public buffer; global generate; num_threads 16;
+  parallel for (int i = 0; i < 16; i++) { by threads; in grp; public buffer; global generate; num-threads 16;
     generate(&buffer, i);
   }
 
