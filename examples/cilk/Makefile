@@ -46,7 +46,7 @@ override LDFLAGS+=$(addprefix -L,$(LIB_DIRS)) -L/usr/local/lib/ -L/usr/local/lib
 # Flags passed to the linker specifying libraries to link
 # Specify ableC_parallel and ableC_parallel_workstlr is to be linked statically, everything 
 # else dynamically
-LDLIBS=-Wl,-Bstatic -lableC_parallel -lcilk -lcilkrt0 -Wl,-Bdynamic -lpthread
+LDLIBS=-lcilk -lcilkrt0 -Wl,-Bstatic -lableC_parallel -Wl,-Bdynamic -lpthread
 
 # All directories contining extension library sources
 SRC_DIRS=$(wildcard $(EXTS_BASE)/*/src)
