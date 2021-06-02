@@ -12,5 +12,5 @@ parser ablecParParser :: cst:Root {
 }
 
 copper_mda testConcreteSyntax(ablecParParser) {
-  edu:umn:cs:melt:exts:ableC:parallel:impl:blocking;
+  edu:umn:cs:melt:exts:ableC:parallel:impl:vector;
 }

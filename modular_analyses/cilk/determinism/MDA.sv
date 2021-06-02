@@ -4,10 +4,14 @@ grammar determinism;
    compiler, it only serves as a grammar for running the modular
    determinism analysis. -}
 
-import edu:umn:cs:melt:ableC:host;
+import edu:umn:cs:melt:ableC:concretesyntax as cst;
 
-copper_mda testConcreteSyntax(ablecParser) {
-  edu:umn:cs:melt:exts:ableC:cilk:concretesyntax;
+parser ablecParParser :: cst:Root {
+  edu:umn:cs:melt:ableC:concretesyntax;
   edu:umn:cs:melt:exts:ableC:parallel:concretesyntax;
+  edu:umn:cs:melt:exts:ableC:cilk;
+}
+
+copper_mda testConcreteSyntax(ablecParParser) {
   edu:umn:cs:melt:exts:ableC:parallel:impl:cilk;
 }

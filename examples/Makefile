@@ -1,4 +1,4 @@
-all: blocking cilk workstlr lvars posix synchronization thrdpool server
+all: blocking cilk workstlr lvars posix synchronization thrdpool vector server
 
 blocking:
 	$(MAKE) -C blocking
@@ -21,6 +21,9 @@ synchronization:
 thrdpool:
 	$(MAKE) -C thrdpool
 
+vector:
+	$(MAKE) -C vector
+
 server:
 	$(MAKE) -C server
 
@@ -32,9 +35,10 @@ clean:
 	$(MAKE) -C posix clean
 	$(MAKE) -C synchronization clean
 	$(MAKE) -C thrdpool clean
+	$(MAKE) -C vector clean
 	$(MAKE) -C server clean
 
-.PHONY: all build blocking cilk workstlr lvars posix synchronization thrdpool server clean
+.PHONY: all build blocking cilk workstlr lvars posix synchronization thrdpool vector server clean
 
 build:
 	$(MAKE) -C blocking ableC.jar
@@ -44,5 +48,6 @@ build:
 	$(MAKE) -C posix ableC.jar
 	$(MAKE) -C synchronization ableC.jar
 	$(MAKE) -C thrdpool ableC.jar
+	$(MAKE) -C vector ableC.jar
 	$(MAKE) -C server ableC.jar
 
