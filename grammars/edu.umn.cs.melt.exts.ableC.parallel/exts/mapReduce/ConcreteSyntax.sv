@@ -4,6 +4,7 @@ marking terminal MMap_t 'map' lexer classes {Keyword, Reserved};
 marking terminal Reduce_t 'reduce' lexer classes {Keyword, Reserved};
 
 terminal IMap_t 'map';
+
 terminal Lambda_t /\\/;
 terminal By_t 'by';
 terminal From_t 'from';
