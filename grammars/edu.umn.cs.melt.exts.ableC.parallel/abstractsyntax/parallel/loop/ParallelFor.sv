@@ -8,7 +8,7 @@ top::Stmt ::= init::Decl cond::MaybeExpr iter::Expr body::Stmt
               parens(ppConcat([init.pp, space(), 
                               cond.pp, semi(), space(), 
                               iter.pp])),
-                    line(), braces(nestlines(2, body.pp))]);
+                    line(), annts.pp, line(), braces(nestlines(2, body.pp))]);
   top.functionDefs := body.functionDefs;
   top.labelDefs := []; -- Prevent labels from propagating up
 

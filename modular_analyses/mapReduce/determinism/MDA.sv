@@ -6,10 +6,11 @@ grammar determinism;
 
 import edu:umn:cs:melt:ableC:concretesyntax as cst;
 
-parser ablecParse :: cst:Root {
+parser ablecParParser :: cst:Root {
   edu:umn:cs:melt:ableC:concretesyntax;
+  edu:umn:cs:melt:exts:ableC:parallel:concretesyntax;
 }
 
-copper_mda testConcreteSyntax(ablecParse) {
-  edu:umn:cs:melt:exts:ableC:parallel:exts:synchronization:concretesyntax;
+copper_mda testConcreteSyntax(ablecParParser) {
+  edu:umn:cs:melt:exts:ableC:parallel:exts:mapReduce;
 }

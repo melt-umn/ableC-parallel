@@ -1,11 +1,13 @@
 grammar edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:parallel:loop;
 
 nonterminal ParallelAnnotations with errors, env, controlStmtContext,
-  bySystem, inGroups, publics, privates, globals, numParallelThreads;
+  bySystem, inGroups, publics, privates, globals, numParallelThreads, pp;
 
 abstract production consParallelAnnotations
 top::ParallelAnnotations ::= hd::ParallelAnnotation tl::ParallelAnnotations
 {
+  top.pp = ppConcat([hd.pp, semi(), space(), tl.pp]);
+
   top.bySystem = if hd.bySystem.isJust then hd.bySystem else tl.bySystem;
   top.inGroups = hd.inGroups ++ tl.inGroups;
 
@@ -28,6 +30,8 @@ top::ParallelAnnotations ::= hd::ParallelAnnotation tl::ParallelAnnotations
 abstract production nilParallelAnnotations
 top::ParallelAnnotations ::=
 {
+  top.pp = notext();
+
   top.errors := [];
   top.bySystem = nothing();
   top.inGroups = [];
@@ -39,7 +43,7 @@ top::ParallelAnnotations ::=
 
 closed nonterminal ParallelAnnotation with errors, env, controlStmtContext,
   location, bySystem, inGroups, publics, privates, globals,
-  numParallelThreads;
+  numParallelThreads, pp;
 
 propagate errors on ParallelAnnotation;
 
@@ -57,12 +61,14 @@ top::ParallelAnnotation ::=
 abstract production parallelByAnnotation
 top::ParallelAnnotation ::= expr::Expr
 {
+  top.pp = ppConcat([text("by"), space(), expr.pp]);
   top.bySystem = just(expr);
 }
 
 abstract production parallelInAnnotation
 top::ParallelAnnotation ::= group::Expr
 {
+  top.pp = ppConcat([text("in"), space(), group.pp]);
   top.inGroups = group :: [];
   top.errors <- case group.typerep of
                 | extType(_, groupType(_)) -> []
@@ -73,23 +79,30 @@ top::ParallelAnnotation ::= group::Expr
 abstract production parallelPublicAnnotation
 top::ParallelAnnotation ::= ids::[Name]
 {
+  top.pp = ppConcat([text("public"), space(),
+              ppImplode(comma(), map(\n::Name -> text(n.name), ids))]);
   top.publics = ids;
 }
 
 abstract production parallelPrivateAnnotation
 top::ParallelAnnotation ::= ids::[Name]
 {
+  top.pp = ppConcat([text("private"), space(),
+              ppImplode(comma(), map(\n::Name -> text(n.name), ids))]);
   top.privates = ids;
 }
 
 abstract production parallelGlobalAnnotation
 top::ParallelAnnotation ::= ids::[Name]
 {
+  top.pp = ppConcat([text("global"), space(),
+              ppImplode(comma(), map(\n::Name -> text(n.name), ids))]);
   top.globals = ids;
 }
 
 abstract production parallelNumThreadsAnnotation
 top::ParallelAnnotation ::= num::Expr
 {
+  top.pp = ppConcat([text("num-threads"), space(), num.pp]);
   top.numParallelThreads = just(num);
 }
