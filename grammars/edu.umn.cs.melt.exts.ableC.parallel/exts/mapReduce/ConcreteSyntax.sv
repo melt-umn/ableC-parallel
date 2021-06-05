@@ -8,6 +8,7 @@ terminal Lambda_t /\\/;
 terminal By_t 'by';
 terminal From_t 'from';
 terminal Fuse_t 'fuse';
+terminal SyncBy_t 'sync-by';
 terminal MapMap_t 'map-map';
 terminal ReduceMap_t 'reduce-map';
 
@@ -75,4 +76,7 @@ concrete productions top::MapReduceAnnt_c
   }
 | 'fuse' 'reduce-map' {
     top.ast = mapReduceFusionAnnt(reduceMapFusion(), location=top.location);
+  }
+| 'sync-by' q::TypeQualifier_c {
+    top.ast = mapReduceSyncAnnt(q.typeQualifiers, location=top.location);
   }

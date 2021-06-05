@@ -2,8 +2,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define aligned_malloc(alignment, size) ({ void* res = NULL; posix_memalign(&res, alignment, size); res; })
-
 int main() {
   vectorize parallel vect = new vectorize parallel();
   

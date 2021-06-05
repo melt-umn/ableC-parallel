@@ -89,6 +89,25 @@ top::MapReduceArray ::= arr::MapReduceArray var::Name body::Expr annts::MapReduc
       | _ -> [err(top.location, "A map-map fusion cannot be performed because the inner value is not a map")]
       end
     | nothing() -> []
+    end
+    ++
+    case annts.bySystem, annts.syncBy of
+    | nothing(), nothing() -> []
+    | just(byEx), just(syQual) ->
+      case (decorate byEx with {env=top.env; controlStmtContext=cscx;}).typerep of
+      | extType(_, parallelType(_)) -> []
+      | _ -> [err(top.location, "The argument to the by annotation must be a parallel interface")]
+      end
+      ++
+      case syQual of
+      | consQualifier(q, nilQualifier()) ->
+        case q.syncSystem of
+        | just(_) -> []
+        | nothing() -> [err(q.location, "The qualifier given to sync-by must specify a sync system")]
+        end
+      | _ -> [err(top.location, "The argument to the sync-by annotation must be a single qualifier")]
+      end
+    | _, _ -> [err(top.location, "On a map, both the by and sync-by annotations must be provided or neither can be provided")]
     end;
 
   top.arrayLength = arr.arrayLength;
@@ -99,7 +118,87 @@ top::MapReduceArray ::= arr::MapReduceArray var::Name body::Expr annts::MapReduc
     replaceExprVariable(body, var, ableC_Expr{__src[__idx]}, top.env,
                     cscx);
 
-  -- TODO: Parallelism (if specified)
+  -- Add __src and __res as private variables to the annotations
+  local parallelize :: Boolean =
+    case annts.bySystem of
+    | nothing() -> false
+    | just(_) -> true
+    end;
+  local parAnnts :: ParallelAnnotations =
+    consParallelAnnotations(
+      parallelInAnnotation(ableC_Expr{__group}, location=top.location),
+      consParallelAnnotations(
+        parallelPrivateAnnotation(
+          name("__src", location=top.location) ::
+          name("__res", location=top.location) ::
+          {- add non-global free variables from body -}
+          filter(\n::Name ->
+              case (decorate n with {env=nonGlobalEnv(top.env);}).valueItem of
+              | errorValueItem() -> false
+              | _ -> true
+              end,
+            body.freeVariables
+          ),
+          location=top.location
+        ),
+        consParallelAnnotations(
+          parallelGlobalAnnotation(
+            {- add global free variables from body -}
+            filter(\n::Name ->
+                case (decorate n with {env=nonGlobalEnv(top.env);}).valueItem of
+                | errorValueItem() -> true
+                | _ -> false
+                end,
+              body.freeVariables
+            ),
+            location=top.location
+          ),
+          toParallelAnnotations(annts)
+        )
+      )
+    );
+  local parSystem :: ParallelSystem =
+    case annts.bySystem of
+    | just(e) ->
+      case (decorate e with {env=top.env; controlStmtContext=cscx;}).typerep of
+      | extType(_, parallelType(s)) -> s
+      | _ -> error("Bad type should be caught by errors attribute")
+      end
+    | _ -> error("This local is not used in this case")
+    end;
+  local syncSystem :: SyncSystem =
+    case annts.syncBy of
+    | just(consQualifier(q, nilQualifier())) -> q.syncSystem.fromJust
+    | _ -> error("This local is not used in this case")
+    end;
+  syncSystem.groups = [ableC_Expr{__group}];
+  syncSystem.env =
+    addEnv(
+      valueDef("__group", 
+        declaratorValueItem(
+          decorate
+            declarator(
+              name("__group", location=top.location),
+              baseTypeExpr(), nilAttribute(), nothingInitializer()
+            )
+          with {
+            env=top.env; baseType=extType(nilQualifier(), groupType(syncSystem));
+            typeModifierIn=baseTypeExpr(); givenAttributes=nilAttribute();
+            isTopLevel=false; isTypedef=false;
+            controlStmtContext=cscx; givenStorageClasses=nilStorageClass();
+          }
+        )
+      ) :: [],
+      top.env
+    );
+
+  local resultLoop :: Stmt =
+    ableC_Stmt {
+      for (unsigned long __idx = 0; __idx < __mapReduceLength; __idx++) {
+        __res[__idx] = $Expr{replacedBody};
+      }
+    };
+
   top.arrayResult =
     ableC_Expr {
       ({
@@ -110,8 +209,25 @@ top::MapReduceArray ::= arr::MapReduceArray var::Name body::Expr annts::MapReduc
         $directTypeExpr{top.elemType}* __res =
           malloc(sizeof($directTypeExpr{top.elemType}) * __mapReduceLength);
 
-        for (unsigned long __idx = 0; __idx < __mapReduceLength; __idx++) {
-          __res[__idx] = $Expr{replacedBody};
+        // The actual loop (either sequential or parallelized)
+        $Stmt{
+          if !parallelize
+          then resultLoop
+          else 
+            ableC_Stmt {
+              $directTypeExpr{extType(nilQualifier(), groupType(syncSystem))} __group;
+              $Expr{syncSystem.initializeGroup(
+                ableC_Expr{ __group },
+                nilExpr(), top.location)};
+
+              $Stmt{parSystem.fFor(resultLoop, top.location, parAnnts)}
+              
+              $Stmt{syncSystem.syncGroups}
+              $Stmt{case syncSystem.groupDeleteProd of
+                    | nothing() -> nullStmt()
+                    | just(f) -> f(ableC_Expr{__group})
+                    end}
+            }
         }
 
         $Stmt{if arr.shouldFree

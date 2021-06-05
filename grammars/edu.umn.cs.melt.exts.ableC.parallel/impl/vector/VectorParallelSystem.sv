@@ -44,7 +44,8 @@ top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
     | nothing() ->
         case annts.publics, annts.privates, annts.globals, annts.inGroups, annts.numParallelThreads of
         | [], [], [], [], nothing() -> []
-        | _, _, _, _, _ -> [err(loc, "Vector parallel for-loops do not support annotations (other than by) unless the par-by annotation is specified to parallelize the vectorized loop")]
+        -- Removing this error so that mapReduce can work with vectorize
+        | _, _, _, _, _ -> [] --[err(loc, "Vector parallel for-loops do not support annotations (other than by) unless the par-by annotation is specified to parallelize the vectorized loop")]
         end
     | just(_) ->
         case systemType of

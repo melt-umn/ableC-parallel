@@ -72,7 +72,7 @@ top::ParallelAnnotation ::= group::Expr
   top.inGroups = group :: [];
   top.errors <- case group.typerep of
                 | extType(_, groupType(_)) -> []
-                | _ -> [err(group.location, "Annotation 'in' on spawn expects object of group type")]
+                | _ -> [err(group.location, "Annotation 'in' on parallel-for expects object of group type")]
                 end;
 }
 

@@ -11,6 +11,7 @@ parser extendedParser :: cst:Root {
   edu:umn:cs:melt:exts:ableC:constructor;
   edu:umn:cs:melt:exts:ableC:parallel;
   edu:umn:cs:melt:exts:ableC:parallel:impl:posix;
+  edu:umn:cs:melt:exts:ableC:parallel:impl:vector;
   edu:umn:cs:melt:exts:ableC:parallel:exts:mapReduce;
 }
 
