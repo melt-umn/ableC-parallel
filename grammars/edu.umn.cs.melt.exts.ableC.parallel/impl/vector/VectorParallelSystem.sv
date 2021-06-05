@@ -226,7 +226,6 @@ top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
   local parAnnts :: ParallelAnnotations =
     consParallelAnnotations(
       parallelPrivateAnnotation(
-        name("__bound", location=loc) :: name("__vecNum", location=loc) ::
         map(\s::String -> name(s"__vec_${s}", location=loc),
           arrays
         ),
