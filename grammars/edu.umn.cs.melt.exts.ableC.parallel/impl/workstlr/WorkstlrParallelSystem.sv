@@ -49,11 +49,7 @@ top::Stmt ::= e::Expr loc::Location annts::SpawnAnnotations
           else []
         | _ -> [err(e.location, "Attempted to call a value of non-function type")]
         end
-      end)
-    ++
-    (if !null(annts.privates) || !null(annts.publics) || !null(annts.globals)
-    then [err(e.location, "Workstlr spawns do not currently support public/private/global annotations")]
-    else []);
+      end);
 
   local validForm :: Boolean =
     case e of
