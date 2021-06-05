@@ -19,6 +19,7 @@ top::ParallelAnnotation ::=
 abstract production parallelFurtherByAnnotation
 top::ParallelAnnotation ::= expr::Expr
 {
+  top.pp = ppConcat([text("par-by"), space(), expr.pp]);
   top.furtherBySystem = just(expr);
   top.errors := [];
 }
