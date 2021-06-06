@@ -26,12 +26,14 @@ int main(int argc, char** argv) {
   sync thd;
   delete thd;
 
-  /*posix group grp; grp = new posix group();
+  printf("\nA\n");
+
+  posix group grp; grp = new posix group();
   parallel for (int i = 0; i < 5; i++) { by sys; in grp; global f;
     f(i);
   }
   sync grp;
-  delete grp;*/
+  delete grp;
 
   delete sys;
 

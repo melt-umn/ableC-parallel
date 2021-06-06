@@ -29,47 +29,53 @@ top::Stmt ::= expr::Expr annts::SpawnAnnotations
   local validForm :: Boolean =
     case expr of
     | ovrld:eqExpr(_, directCallExpr(_, _)) -> true
+    | ovrld:eqExpr(_, callExpr(declRefExpr(_), _)) -> true
     | directCallExpr(_, _) -> true
+    | callExpr(declRefExpr(_), _) -> true
     | _ -> false
     end;
 
   local lhs :: Maybe<Expr> = 
     case expr of
-    | ovrld:eqExpr(l, directCallExpr(_, _)) -> just(l)
+    | ovrld:eqExpr(l, _) -> just(l)
     | _ -> nothing()
     end;
   local fname:: String = 
     case expr of
     | ovrld:eqExpr(_, directCallExpr(n, _)) -> n.name
+    | ovrld:eqExpr(_, callExpr(declRefExpr(n), _)) -> n.name
     | directCallExpr(n, _) -> n.name
+    | callExpr(declRefExpr(n), _) -> n.name
     | _ -> error("Invalid forms reported via errors attribute")
     end;
   local args :: Exprs =
     case expr of
     | ovrld:eqExpr(_, directCallExpr(_, a)) -> a
+    | ovrld:eqExpr(_, callExpr(_, a)) -> a
     | directCallExpr(_, a) -> a
+    | callExpr(_, a) -> a
     | _ -> error("Invalid forms reported via errors attribute")
     end;
 
   local lhsAssignment :: Maybe<Expr> =
     case expr of
-    | ovrld:eqExpr(declRefExpr(n), directCallExpr(_, _)) -> just(ableC_Expr{$Name{n}})
-    | ovrld:eqExpr(_, directCallExpr(_, _)) -> just(ableC_Expr{*__ret})
+    | ovrld:eqExpr(declRefExpr(n), _) -> just(ableC_Expr{$Name{n}})
+    | ovrld:eqExpr(_, _) -> just(ableC_Expr{*__ret})
     | _ -> nothing()
     end;
   local preAssignment :: Maybe<Stmt> =
     case expr of
-    | ovrld:eqExpr(declRefExpr(_), directCallExpr(_, _)) -> nothing()
-    | ovrld:eqExpr(_, directCallExpr(_, _)) -> just(ableC_Stmt {
+    | ovrld:eqExpr(declRefExpr(_), _) -> nothing()
+    | ovrld:eqExpr(_, _) -> just(ableC_Stmt {
           typeof($Expr{lhs.fromJust})* __ret = &($Expr{lhs.fromJust});
         })
     | _ -> nothing()
     end;
   local rhsPointer :: Maybe<Expr> =
     case expr of
-    | ovrld:eqExpr(declRefExpr(n), directCallExpr(_, _)) ->
+    | ovrld:eqExpr(declRefExpr(n), _) ->
         just(referenceAVariable(n.name, top.env))
-    | ovrld:eqExpr(_, directCallExpr(_, _)) -> just(ableC_Expr{__ret})
+    | ovrld:eqExpr(_, _) -> just(ableC_Expr{__ret})
     | _ -> nothing()
     end;
 

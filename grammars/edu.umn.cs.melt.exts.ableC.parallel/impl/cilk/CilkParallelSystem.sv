@@ -457,7 +457,7 @@ top::Stmt ::= e::Expr loc::Location annts::SpawnAnnotations
 abstract production cilkParFor
 top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
 {
-  top.pp = ppConcat([text("parallel"), loop.pp]);
+  top.pp = ppConcat([text("parallel"), space(), loop.pp]);
   top.functionDefs := [];
   top.labelDefs := [];
 

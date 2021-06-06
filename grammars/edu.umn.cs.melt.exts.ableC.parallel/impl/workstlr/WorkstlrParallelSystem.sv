@@ -464,10 +464,272 @@ top::Stmt ::= e::Expr loc::Location annts::SpawnAnnotations
 }
 
 abstract production workstlrParFor
-top::Stmt ::= l::Stmt loc::Location annts::ParallelAnnotations
+top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
 {
+  top.pp = ppConcat([text("parallel"), space(), loop.pp]);
+  top.functionDefs := [];
+  top.labelDefs := [];
+
+  local privateVars :: [Name] = nub(annts.privates);
+  local publicVars  :: [Name] = nub(annts.publics);
+  local globalVars  :: [Name] = nub(annts.globals);
+
+  local localErrors :: [Message] = loop.errors ++ annts.errors ++ missingVars;
+
+  local liftedName :: String =
+    s"__lifted_workstlr_parallel_${substitute(":", "_", substitute(".", "_", loc.unparse))}";
+  
+  local freeVars :: [Name] = nub(loop.freeVariables);
+
+  local freePublic  :: [Name] = intersect(freeVars, publicVars);
+  local freePrivate :: [Name] = intersect(freeVars, privateVars);
+  local freeGlobal  :: [Name] = intersect(freeVars, globalVars);
+
+  -- It's an error if any of the elements in freeGlobal is NOT a global
+  -- variable
+  local globalenvr :: Decorated Env = globalEnv(top.env);
+  local missingVars :: [Message] =
+    flatMap(
+      \n :: Name ->
+        if contains(n, freePublic) || contains(n, freePrivate)
+        then []
+        else if contains(n, freeGlobal)
+        then
+          if null((decorate n with {env=globalenvr;}).valueLookupCheck)
+          then []
+          else [err(loc, s"Variable '${n.name}' used in parallel-for is given a global annotation but is not a global variable")]
+        else [err(loc, s"Variable '${n.name}' used in parallel-for not given a public/private/global annotation")],
+      freeVars);
+
+  local publicVarTypes :: [Type] = map(
+    \n::Name ->
+      pointerType(
+        nilQualifier(),
+        (decorate n with {env=top.env;}).valueItem.typerep
+      ),
+    freePublic);
+  local privateVarTypes :: [Type] = map(
+    \n::Name ->
+      (decorate n with {env=top.env;}).valueItem.typerep,
+    freePrivate);
+
+  local structItemNames :: [Name] = freePublic ++ freePrivate;
+  local structItemTypes :: [Type] = publicVarTypes ++ privateVarTypes;
+  local structItemInits :: [Expr] =
+    map(\n::Name -> ableC_Expr{&$Name{n}}, freePublic)
+    ++ map(\n::Name -> ableC_Expr{$Name{n}}, freePrivate);
+
+  local structItems :: [StructItem] =
+    map(\p::Pair<Name Type> ->
+        structItem(nilAttribute(), p.snd.baseTypeExpr,
+          consStructDeclarator(
+            structField(p.fst, p.snd.typeModifierExpr, nilAttribute()),
+            nilStructDeclarator()
+          )
+        ),
+      zipWith(pair, structItemNames, structItemTypes));
+  local struct :: StructDecl =
+    structDecl(
+      consAttribute(
+        gccAttribute(
+          consAttrib(
+            appliedAttrib(
+              attribName(name("refId", location=loc)),
+              consExpr(
+                mkStringConst("edu:umn:cs:melt:exts:ableC:parallel:impl:workstlr:input" ++ liftedName, loc),
+                nilExpr()
+              )
+            ),
+            nilAttrib()
+          )
+        ),
+        nilAttribute()),
+      justName(name(liftedName ++ "_struct", location=loc)),
+      foldStructItem(structItems), location=loc);
+  local structDcl :: Decl =
+    typeExprDecl(nilAttribute(), structTypeExpr(nilQualifier(), struct));
+
+  structDcl.controlStmtContext = initialControlStmtContext;
+  structDcl.isTopLevel = true;
+  structDcl.env = globalEnv(top.env);
+
+  local globalEnvStruct :: Decorated Env =
+    addEnv(
+      structDcl.defs,
+      globalEnv(top.env)
+    );
+  local transformedEnv :: Decorated Env =
+    addEnv(
+      valueDef("args",
+        declaratorValueItem(
+          decorate declarator(
+            name("args", location=loc),
+            pointerTypeExpr(nilQualifier(), baseTypeExpr()),
+            nilAttribute(),
+            nothingInitializer()
+          ) with {
+            typeModifierIn = baseTypeExpr();
+            controlStmtContext = initialControlStmtContext;
+            isTypedef = false;
+            isTopLevel = false;
+            givenStorageClasses = nilStorageClass();
+            givenAttributes = nilAttribute();
+            baseType =
+              extType(nilQualifier(),
+                refIdExtType(
+                  structSEU(),
+                  just(liftedName ++ "_struct"),
+                  "edu:umn:cs:melt:exts:ableC:parallel:impl:workstlr:input" ++ liftedName
+                )
+              );
+            env = globalEnvStruct;
+          }
+        )
+      )
+      ::
+      map(
+        \n::Name ->
+          valueDef(n.name,
+            declaratorValueItem(
+              decorate declarator(
+                n,
+                baseTypeExpr(),
+                nilAttribute(),
+                nothingInitializer()
+              ) with {
+                typeModifierIn = baseTypeExpr();
+                controlStmtContext = initialControlStmtContext;
+                isTypedef = false;
+                isTopLevel = false;
+                givenStorageClasses = nilStorageClass();
+                givenAttributes = nilAttribute();
+                baseType = extType(nilQualifier(), fakePublicForLift());
+                env = globalEnvStruct;
+              }
+            )
+          ),
+        freePublic
+      )
+      ++
+      map(
+        \n::Name ->
+          valueDef(n.name,
+            declaratorValueItem(
+              decorate declarator(
+                n,
+                baseTypeExpr(),
+                nilAttribute(),
+                nothingInitializer()
+              ) with {
+                typeModifierIn = baseTypeExpr();
+                controlStmtContext = initialControlStmtContext;
+                isTypedef = false;
+                isTopLevel = false;
+                givenStorageClasses = nilStorageClass();
+                givenAttributes = nilAttribute();
+                baseType = extType(nilQualifier(), fakePrivateForLift());
+                env = globalEnvStruct;
+              }
+            )
+          ),
+        freePrivate
+      ),
+      openScopeEnv(
+        globalEnvStruct
+      )
+    );
+
+  local transformedLoop :: Stmt =
+    (decorate loop with {env=transformedEnv;
+                controlStmtContext=initialControlStmtContext;}).forLift;
+  transformedLoop.env = transformedEnv;
+  transformedLoop.controlStmtContext = initialControlStmtContext;
+
+  local loopDesc :: (Decl, MaybeExpr, Expr, Stmt) =
+    case transformedLoop of
+    | ableC_Stmt { for ($Decl{decl} $Expr{cond}; $Expr{iter}) $Stmt{body} }
+        -> (decl, justExpr(cond), iter, cleanLoopBody(body, transformedEnv))
+    | _ -> error("Only invoked when the loop is of this form")
+    end;
+  local workstlrFunction :: Decl =
+    workstlrParFunctionConverter(
+      cilkFunctionDecl(
+        nilStorageClass(), nilSpecialSpecifier(),
+        builtinTypeExpr(nilQualifier(), signedType(intType())),
+        functionTypeExprWithArgs(
+          baseTypeExpr(),
+          consParameters(
+            parameterDecl(
+              nilStorageClass(),
+              extTypeExpr(nilQualifier(),
+                refIdExtType(
+                  structSEU(),
+                  just(liftedName ++ "_struct"),
+                  "edu:umn:cs:melt:exts:ableC:parallel:impl:workstlr:input" ++ liftedName
+                )
+              ),
+              pointerTypeExpr(nilQualifier(), baseTypeExpr()),
+              justName(name("args", location=loc)),
+              nilAttribute()
+            ),
+            nilParameters()
+          ),
+          false,
+          nilQualifier()
+        ),
+        name(liftedName, location=loc),
+        nilAttribute(),
+        nilDecl(),
+        ableC_Stmt {
+          // Loop
+          $Stmt{parallelFor(loopDesc.1, loopDesc.2, loopDesc.3, loopDesc.4, 
+            nilParallelAnnotations())}
+
+          // Sync
+          $Stmt{syncTask(nilExpr())}
+
+          free(args);
+          return 0;
+        }
+      )
+    );
+  
+  local spawnAnnts :: SpawnAnnotations =
+    consSpawnAnnotations(
+      spawnPrivateAnnotation(name("args", location=loc) :: [], location=loc),
+      parallelToSpawnAnnts(annts)
+    );
+  local fwrdStmt :: Stmt =
+    ableC_Stmt {
+      {
+        struct $name{liftedName ++ "_struct"}* args =
+          malloc(sizeof(struct $name{liftedName ++ "_struct"}));
+        $Stmt{foldStmt(map(
+          \p::Pair<Name Expr> ->
+            ableC_Stmt {
+              args->$Name{p.fst} = $Expr{p.snd};
+            },
+          zipWith(pair, structItemNames, structItemInits)))}
+
+        int __tmp;
+        $Stmt{workstlrSpawn(
+          ableC_Expr {
+            __tmp = $name{liftedName}(args)
+          },
+          loc,
+          spawnAnnts
+        )}
+      }
+    };
+
   forwards to
-    warnStmt([err(loc, "The Workstlr system does not currently support parallel for loops")]);
+    if !null(localErrors)
+    then warnStmt(localErrors)
+    else
+      injectGlobalDeclsStmt(
+        consDecl(structDcl, consDecl(workstlrFunction, nilDecl())),
+        fwrdStmt
+      );
 }
 
 abstract production workstlrParallelNew
@@ -535,4 +797,37 @@ top::Stmt ::= e::Expr
           stop_workstlr_system(_sys);
         }
       };
+}
+
+function parallelToSpawnAnnts
+SpawnAnnotations ::= annts::ParallelAnnotations
+{
+  return
+    case annts of
+    | consParallelAnnotations(hd, tl) ->
+      case hd of
+      | parallelByAnnotation(e) ->
+          consSpawnAnnotations(
+            spawnByAnnotation(e, location=hd.location),
+            parallelToSpawnAnnts(tl))
+      | parallelInAnnotation(g) ->
+          consSpawnAnnotations(
+            spawnInAnnotation(g, location=hd.location),
+            parallelToSpawnAnnts(tl))
+      | parallelPublicAnnotation(n) ->
+          consSpawnAnnotations(
+            spawnPublicAnnotation(n, location=hd.location),
+            parallelToSpawnAnnts(tl))
+      | parallelPrivateAnnotation(n) ->
+          consSpawnAnnotations(
+            spawnPrivateAnnotation(n, location=hd.location),
+            parallelToSpawnAnnts(tl))
+      | parallelGlobalAnnotation(n) ->
+          consSpawnAnnotations(
+            spawnGlobalAnnotation(n, location=hd.location),
+            parallelToSpawnAnnts(tl))
+      | _ -> parallelToSpawnAnnts(tl)
+      end
+    | nilParallelAnnotations() -> nilSpawnAnnotations()
+    end;
 }
