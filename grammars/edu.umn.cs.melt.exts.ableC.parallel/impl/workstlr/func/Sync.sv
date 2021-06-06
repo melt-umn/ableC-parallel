@@ -3,6 +3,8 @@ grammar edu:umn:cs:melt:exts:ableC:parallel:impl:workstlr:func;
 aspect production syncTask
 top::Stmt ::= tasks::Exprs
 {
+  top.workstlrParForConverted = top;
+
   -- A Workstlr sync does not have any tasks
   local fwrd :: Stmt = new(top.forward);
   fwrd.workstlrParFuncName = top.workstlrParFuncName;

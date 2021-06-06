@@ -3,6 +3,8 @@ grammar edu:umn:cs:melt:exts:ableC:parallel:impl:workstlr:func;
 aspect production spawnTask
 top::Stmt ::= expr::Expr annts::SpawnAnnotations
 {
+  top.workstlrParForConverted = top;
+
   -- A Workstlr spawn does not have a by ...; annotation and also shouldn't have
   -- any other annotations on it
 

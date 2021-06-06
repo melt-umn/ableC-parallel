@@ -5,18 +5,8 @@ top::Stmt ::= init::Decl cond::MaybeExpr iter::Expr body::Stmt
               annts::ParallelAnnotations
 {
   -- A Workstlr for-loop does not have a by ...; annotation and also shouldn't have
-  -- any other annotations on it
-  
-  local fwrd :: Stmt = new(top.forward);
-  fwrd.workstlrParFuncName = top.workstlrParFuncName;
-  fwrd.workstlrParInitState = top.workstlrParInitState;
-  fwrd.controlStmtContext = top.controlStmtContext;
-  fwrd.env = top.env;
-  
-  -- Not sure if this is actually correct for non-Workstlr for-loop. Depends on
-  -- lifting behavior
-  top.workstlrParNeedStates = if annts.bySystem.isJust
-    then fwrd.workstlrParNeedStates else 0;
+  -- any other annotations on it. We translate it to a for-loop containing a
+  -- spawn
   
   local anyAnnotations :: Boolean =
     case annts of
@@ -24,16 +14,45 @@ top::Stmt ::= init::Decl cond::MaybeExpr iter::Expr body::Stmt
     | _ -> true
     end;
 
-  top.workstlrParFastClone =
-    if annts.bySystem.isJust
-    then fwrd.workstlrParFastClone
-    else if anyAnnotations
-    then warnStmt([err(iter.location, "Annotations not currently supported on workstlr-style parallel loops.")])
-    else warnStmt([err(iter.location, "Workstlr parallel for-loops not currently supported")]);
-  top.workstlrParSlowClone =
-    if annts.bySystem.isJust
-    then fwrd.workstlrParSlowClone
-    else if anyAnnotations
-    then warnStmt([err(iter.location, "Annotations not currently supported on workstlr-style parallel loops.")])
-    else warnStmt([err(iter.location, "Workstlr parallel for-loops not currently supported")]);
+  top.workstlrParForConverted =
+    if anyAnnotations
+    then top
+    else
+      case decorate cleanLoopBody(body, top.env)
+            with {env=top.env; controlStmtContext=initialControlStmtContext;}
+      of
+      | exprStmt(ex) ->
+        forDeclStmt(
+          init, cond, justExpr(iter),
+          spawnTask(ex, nilSpawnAnnotations())
+        )
+      | _ -> warnStmt([err(iter.location, "Workstlr parallel-for loop must contain only a single expression")])
+      end;
+}
+
+function cleanLoopBody
+Stmt ::= s::Stmt env::Decorated Env
+{
+  s.controlStmtContext = initialControlStmtContext;
+  s.env = env;
+
+  return
+    case s of
+    | exprStmt(e) -> exprStmt(cleanLoopBodyExpr(e, env))
+    | ableC_Stmt { { $Stmt{i} } } -> cleanLoopBody(i, env)
+    | _ -> s
+    end;
+}
+
+function cleanLoopBodyExpr
+Expr ::= e::Expr env::Decorated Env
+{
+  e.controlStmtContext = initialControlStmtContext;
+  e.env = env;
+
+  return
+    case e of
+    | ableC_Expr { ( $Expr{i} ) } -> cleanLoopBodyExpr(i, env)
+    | _ -> e
+    end;
 }

@@ -13,12 +13,21 @@ autocopy attribute workstlrParFuncName :: String occurs on AsmArgument,
   Declarators, Decls, Expr, Exprs, Init, Initializer, InitList, MaybeExpr,
   MaybeInitializer, Stmt;
 
+functor attribute workstlrParForConverted occurs on AsmArgument, AsmOperand,
+  AsmOperands, AsmStatement, Decl, Declarator, Declarators,
+  Decls, Expr, Exprs, Init, Initializer, InitList, MaybeExpr,
+  MaybeInitializer, Stmt;
 functor attribute workstlrParFastClone occurs on AsmArgument, AsmOperand,
   AsmOperands, AsmStatement, Decl, Declarator, Declarators,
   Decls, Expr, Exprs, Init, Initializer, InitList, MaybeExpr,
   MaybeInitializer, Stmt;
 functor attribute workstlrParSlowClone occurs on AsmArgument, AsmOperand,
   AsmOperands,  AsmStatement, Decl, Declarator, Declarators,
+  Decls, Expr, Exprs, Init, Initializer, InitList, MaybeExpr,
+  MaybeInitializer, Stmt;
+
+propagate workstlrParForConverted on AsmArgument, AsmOperand,
+  AsmOperands, AsmStatement, Decl, Declarator, Declarators,
   Decls, Expr, Exprs, Init, Initializer, InitList, MaybeExpr,
   MaybeInitializer, Stmt;
 

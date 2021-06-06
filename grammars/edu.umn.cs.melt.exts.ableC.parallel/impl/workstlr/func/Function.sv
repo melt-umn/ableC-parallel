@@ -121,7 +121,7 @@ top::Decl ::= cilkDecl :: Decl
           \decl::Decorated Decl stmt::Stmt ->
             seqStmt(declStmt(decl.host), stmt),
           nullStmt(), functionDecls),
-        dropFunctionDecls(b))
+        dropFunctionDecls(b.workstlrParForConverted))
     | _ -> error("Invalid forms reported via errors attribute")
     end;
   body.controlStmtContext = controlStmtContext(just(retType), false, false, tm:add(body.labelDefs, tm:empty()));
