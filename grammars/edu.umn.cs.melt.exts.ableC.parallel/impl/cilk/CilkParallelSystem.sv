@@ -639,7 +639,7 @@ top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
   local loopDesc :: (Decl, MaybeExpr, Expr, Stmt) =
     case transformedLoop of
     | ableC_Stmt { for ($Decl{decl} $Expr{cond}; $Expr{iter}) $Stmt{body} }
-        -> (decl, justExpr(cond), iter, cleanLoopBody(body, transformedEnv))
+        -> (decl, justExpr(cond), iter, cleanStmt(body, transformedEnv))
     | _ -> error("Only invoked when the loop is of this form")
     end;
   local cilkFunction :: Decl =
@@ -688,7 +688,7 @@ top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
   local spawnAnnts :: SpawnAnnotations =
     consSpawnAnnotations(
       spawnPrivateAnnotation(name("args", location=loc) :: [], location=loc),
-      parallelToSpawnAnnts(annts)
+      annts.parToSpawnAnnts
     );
   local fwrdStmt :: Stmt =
     ableC_Stmt {
@@ -788,64 +788,4 @@ top::Stmt ::= e::Expr
           stop_ableC_parallel_cilk(_sys);
         }
       };
-}
-
-function parallelToSpawnAnnts
-SpawnAnnotations ::= annts::ParallelAnnotations
-{
-  return
-    case annts of
-    | consParallelAnnotations(hd, tl) ->
-      case hd of
-      | parallelByAnnotation(e) ->
-          consSpawnAnnotations(
-            spawnByAnnotation(e, location=hd.location),
-            parallelToSpawnAnnts(tl))
-      | parallelInAnnotation(g) ->
-          consSpawnAnnotations(
-            spawnInAnnotation(g, location=hd.location),
-            parallelToSpawnAnnts(tl))
-      | parallelPublicAnnotation(n) ->
-          consSpawnAnnotations(
-            spawnPublicAnnotation(n, location=hd.location),
-            parallelToSpawnAnnts(tl))
-      | parallelPrivateAnnotation(n) ->
-          consSpawnAnnotations(
-            spawnPrivateAnnotation(n, location=hd.location),
-            parallelToSpawnAnnts(tl))
-      | parallelGlobalAnnotation(n) ->
-          consSpawnAnnotations(
-            spawnGlobalAnnotation(n, location=hd.location),
-            parallelToSpawnAnnts(tl))
-      | _ -> parallelToSpawnAnnts(tl)
-      end
-    | nilParallelAnnotations() -> nilSpawnAnnotations()
-    end;
-}
-
-function cleanLoopBody
-Stmt ::= s::Stmt env::Decorated Env
-{
-  s.controlStmtContext = initialControlStmtContext;
-  s.env = env;
-
-  return
-    case s of
-    | exprStmt(e) -> exprStmt(cleanLoopBodyExpr(e, env))
-    | ableC_Stmt { { $Stmt{i} } } -> cleanLoopBody(i, env)
-    | _ -> s
-    end;
-}
-
-function cleanLoopBodyExpr
-Expr ::= e::Expr env::Decorated Env
-{
-  e.controlStmtContext = initialControlStmtContext;
-  e.env = env;
-
-  return
-    case e of
-    | ableC_Expr { ( $Expr{i} ) } -> cleanLoopBodyExpr(i, env)
-    | _ -> e
-    end;
 }

@@ -648,7 +648,7 @@ top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
   local loopDesc :: (Decl, MaybeExpr, Expr, Stmt) =
     case transformedLoop of
     | ableC_Stmt { for ($Decl{decl} $Expr{cond}; $Expr{iter}) $Stmt{body} }
-        -> (decl, justExpr(cond), iter, cleanLoopBody(body, transformedEnv))
+        -> (decl, justExpr(cond), iter, cleanStmt(body, transformedEnv))
     | _ -> error("Only invoked when the loop is of this form")
     end;
   local workstlrFunction :: Decl =
@@ -697,7 +697,7 @@ top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
   local spawnAnnts :: SpawnAnnotations =
     consSpawnAnnotations(
       spawnPrivateAnnotation(name("args", location=loc) :: [], location=loc),
-      parallelToSpawnAnnts(annts)
+      annts.parToSpawnAnnts
     );
   local fwrdStmt :: Stmt =
     ableC_Stmt {
@@ -797,37 +797,4 @@ top::Stmt ::= e::Expr
           stop_workstlr_system(_sys);
         }
       };
-}
-
-function parallelToSpawnAnnts
-SpawnAnnotations ::= annts::ParallelAnnotations
-{
-  return
-    case annts of
-    | consParallelAnnotations(hd, tl) ->
-      case hd of
-      | parallelByAnnotation(e) ->
-          consSpawnAnnotations(
-            spawnByAnnotation(e, location=hd.location),
-            parallelToSpawnAnnts(tl))
-      | parallelInAnnotation(g) ->
-          consSpawnAnnotations(
-            spawnInAnnotation(g, location=hd.location),
-            parallelToSpawnAnnts(tl))
-      | parallelPublicAnnotation(n) ->
-          consSpawnAnnotations(
-            spawnPublicAnnotation(n, location=hd.location),
-            parallelToSpawnAnnts(tl))
-      | parallelPrivateAnnotation(n) ->
-          consSpawnAnnotations(
-            spawnPrivateAnnotation(n, location=hd.location),
-            parallelToSpawnAnnts(tl))
-      | parallelGlobalAnnotation(n) ->
-          consSpawnAnnotations(
-            spawnGlobalAnnotation(n, location=hd.location),
-            parallelToSpawnAnnts(tl))
-      | _ -> parallelToSpawnAnnts(tl)
-      end
-    | nilParallelAnnotations() -> nilSpawnAnnotations()
-    end;
 }

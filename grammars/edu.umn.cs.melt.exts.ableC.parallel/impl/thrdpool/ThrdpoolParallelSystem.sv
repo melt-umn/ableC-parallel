@@ -408,7 +408,7 @@ top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
         spawnPrivateAnnotation(name("_n_iters_per_thread", location=loc) :: [], location=loc),
         consSpawnAnnotations(
           spawnPrivateAnnotation(name("_n_iters_extra", location=loc) :: [], location=loc),
-          parallelToSpawnAnnts(annts)
+          annts.parToSpawnAnnts
         )
       )
     );
@@ -452,39 +452,6 @@ top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
         }
       }
     };
-}
-
-function parallelToSpawnAnnts
-SpawnAnnotations ::= annts::ParallelAnnotations
-{
-  return 
-    case annts of
-    | consParallelAnnotations(hd, tl) ->
-      case hd of
-      | parallelByAnnotation(e) -> 
-          consSpawnAnnotations(
-            spawnByAnnotation(e, location=hd.location), 
-            parallelToSpawnAnnts(tl))
-      | parallelInAnnotation(g) ->
-          consSpawnAnnotations(
-            spawnInAnnotation(g, location=hd.location), 
-            parallelToSpawnAnnts(tl))
-      | parallelPublicAnnotation(n) ->
-          consSpawnAnnotations(
-            spawnPublicAnnotation(n, location=hd.location), 
-            parallelToSpawnAnnts(tl))
-      | parallelPrivateAnnotation(n) ->
-          consSpawnAnnotations(
-            spawnPrivateAnnotation(n, location=hd.location), 
-            parallelToSpawnAnnts(tl))
-      | parallelGlobalAnnotation(n) ->
-          consSpawnAnnotations(
-            spawnGlobalAnnotation(n, location=hd.location), 
-            parallelToSpawnAnnts(tl))
-      | _ -> parallelToSpawnAnnts(tl)
-      end
-    | nilParallelAnnotations() -> nilSpawnAnnotations()
-    end;
 }
 
 abstract production thrdpoolParallelNew

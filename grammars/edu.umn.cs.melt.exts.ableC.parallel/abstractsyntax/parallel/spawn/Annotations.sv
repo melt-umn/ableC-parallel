@@ -1,6 +1,6 @@
 grammar edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:parallel:spawn;
 
-closed nonterminal SpawnAnnotations with errors, env, controlStmtContext,
+nonterminal SpawnAnnotations with errors, env, controlStmtContext,
   bySystem, asThreads, inGroups, publics, privates, globals;
 
 abstract production consSpawnAnnotations
