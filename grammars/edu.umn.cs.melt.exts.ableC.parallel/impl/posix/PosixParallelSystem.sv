@@ -58,7 +58,7 @@ top::Stmt ::= e::Expr loc::Location annts::SpawnAnnotations
         then
           if null((decorate n with {env=globalenvr;}).valueLookupCheck)
           then []
-          else [err(loc, "Variable '${n.name}' used in spawn is given a global annotation but is not a global variable")]
+          else [err(loc, s"Variable '${n.name}' used in spawn is given a global annotation but is not a global variable")]
         else [err(loc, s"Variable '${n.name}' used in spawn not given a public/private/global annotation")],
       freeVars);
 
@@ -386,7 +386,7 @@ top::Stmt ::= e::Expr loc::Location annts::SpawnAnnotations
 abstract production posixFor
 top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
 {
-  top.pp = ppConcat([text("parallel"), top.pp]);
+  top.pp = ppConcat([text("parallel"), loop.pp]);
   top.functionDefs := loop.functionDefs;
   top.labelDefs := [];
 

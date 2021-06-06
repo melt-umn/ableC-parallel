@@ -19,7 +19,13 @@ top::Stmt ::= init::Decl cond::MaybeExpr iter::Expr body::Stmt
 
   local form :: Maybe<(Expr, Exprs)> =
     case body of
+    | exprStmt(directCallExpr(f, args)) ->
+          just((ableC_Expr{$name{s"_cilk_${f.name}"}}, new(args)))
+    | exprStmt(callExpr(declRefExpr(f), args)) ->
+          just((ableC_Expr{$name{s"_cilk_${f.name}"}}, new(args)))
     | ableC_Stmt { { $Expr{directCallExpr(f, args)}; } } ->
+          just((ableC_Expr{$name{s"_cilk_${f.name}"}}, new(args)))
+    | ableC_Stmt { { $Expr{callExpr(declRefExpr(f), args)}; } } ->
           just((ableC_Expr{$name{s"_cilk_${f.name}"}}, new(args)))
     | _ -> nothing()
     end;
