@@ -26,6 +26,8 @@ int main(int argc, char** argv) {
   sync thd;
   delete thd;
 
+  printf("A\n");
+
   posix group grp; grp = new posix group();
   parallel for (int i = 0; i < 5; i++) { by sys; in grp; global f;
     f(i);

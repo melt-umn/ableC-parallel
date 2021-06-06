@@ -50,6 +50,11 @@ top::Stmt ::= e::Expr loc::Location annts::SpawnAnnotations
         | _ -> [err(e.location, "Attempted to call a value of non-function type")]
         end
       end);
+  
+  local anntWarnings :: [Message] =
+    if !null(annts.privates) || !null(annts.publics) || !null(annts.globals)
+    then [wrn(e.location, "public/private/global annotations on cilk spawn ignored")]
+    else [];
 
   local validForm :: Boolean =
     case e of
@@ -459,7 +464,7 @@ top::Stmt ::= e::Expr loc::Location annts::SpawnAnnotations
     else
       injectGlobalDeclsStmt(
         consDecl(closureDecl, consDecl(interfaceDecl, nilDecl())),
-        fwrdStmt
+        seqStmt(warnStmt(anntWarnings), fwrdStmt)
       );
 }
 

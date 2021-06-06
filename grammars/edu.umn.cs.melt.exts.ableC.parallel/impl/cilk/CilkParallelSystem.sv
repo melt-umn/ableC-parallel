@@ -100,6 +100,11 @@ top::Stmt ::= e::Expr loc::Location annts::SpawnAnnotations
         end
       end);
 
+  local anntWarnings :: [Message] =
+    if !null(annts.privates) || !null(annts.publics) || !null(annts.globals)
+    then [wrn(e.location, "public/private/global annotations on cilk spawn ignored")]
+    else [];
+
   local liftedName :: String =
     s"__${fName}_interface_${substitute(":", "_", substitute(".", "_", loc.unparse))}";
 
@@ -451,7 +456,7 @@ top::Stmt ::= e::Expr loc::Location annts::SpawnAnnotations
     else
         injectGlobalDeclsStmt(
           consDecl(structDecl, consDecl(functionDecl, consDecl(sigDecl, nilDecl()))),
-          fwrdStmt);
+          seqStmt(warnStmt(anntWarnings), fwrdStmt));
 }
 
 abstract production cilkParFor

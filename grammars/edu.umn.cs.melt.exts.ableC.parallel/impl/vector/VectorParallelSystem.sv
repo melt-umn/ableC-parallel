@@ -48,6 +48,15 @@ top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
         | _ -> [err(loc, "Argument to par-by annotation must be a parallel interface")]
         end
     end;
+  local anntWarnings :: [Message] =
+    case annts.furtherBySystem of
+    | nothing() ->
+      case annts.publics, annts.privates, annts.globals, annts.inGroups, annts.numParallelThreads of
+      | [], [], [], [], nothing() -> []
+      | _, _, _, _, _ -> [wrn(loc, "Vector parallel for-loops ignore all annotations (except by) unless par-by is specified")]
+      end
+    | _ -> []
+    end;
 
   -- type of variable, name of variable, loop bound, expression in the body
   local loopInfo :: (BaseTypeExpr, Name, Expr, Expr) =
@@ -248,7 +257,8 @@ top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
     else ableC_Stmt { 
       {
         proto_typedef size_t;
-        $Stmt{prepare};
+        $Stmt{warnStmt(anntWarnings)}
+        $Stmt{prepare}
         
         $BaseTypeExpr{varType} __bound = $Expr{bound};
         const size_t __vecNum = 32 / sizeof($TypeName{vectorElemType});
