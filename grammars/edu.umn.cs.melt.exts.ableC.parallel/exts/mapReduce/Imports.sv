@@ -13,4 +13,5 @@ imports silver:langutil:pp;
 imports edu:umn:cs:melt:exts:ableC:parallel:concretesyntax;
 imports edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:parallel;
 imports edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:parallel:loop;
+imports edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:parallel:spawn;
 imports edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:sync;

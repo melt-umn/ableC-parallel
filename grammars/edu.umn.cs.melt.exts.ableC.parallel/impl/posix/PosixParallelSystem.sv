@@ -38,7 +38,7 @@ top::Stmt ::= e::Expr loc::Location annts::SpawnAnnotations
   local localErrors :: [Message] = e.errors ++ annts.errors ++ missingVars;
 
   local liftedName :: String =
-    s"__lifted_posix_parallel_${substitute(":", "_", substitute(".", "_", loc.unparse))}";
+    s"__lifted_posix_parallel_${substitute(":", "_", substitute(".", "_", loc.unparse))}_u${toString(genInt())}";
 
   local freeVars :: [Name] = nub(e.freeVariables);
 
@@ -440,7 +440,7 @@ top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
         const int _n_threads = $Expr{annts.numParallelThreads.fromJust};
         if (__builtin_expect(_n_threads < 1, 0)) {
           fprintf(stderr,
-            $stringLiteralExpr{s"Parallel for-loop must have positive number of threads ({loc.unparse})"});
+            $stringLiteralExpr{s"Parallel for-loop must have positive number of threads (${loc.unparse})"});
           exit(-1);
         }
 

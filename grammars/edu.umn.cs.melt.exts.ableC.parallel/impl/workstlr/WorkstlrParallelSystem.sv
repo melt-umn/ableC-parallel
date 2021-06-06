@@ -53,7 +53,7 @@ top::Stmt ::= e::Expr loc::Location annts::SpawnAnnotations
   
   local anntWarnings :: [Message] =
     if !null(annts.privates) || !null(annts.publics) || !null(annts.globals)
-    then [wrn(e.location, "public/private/global annotations on cilk spawn ignored")]
+    then [wrn(loc, "public/private/global annotations on cilk spawn ignored")]
     else [];
 
   local validForm :: Boolean =
@@ -194,7 +194,7 @@ top::Stmt ::= e::Expr loc::Location annts::SpawnAnnotations
     );
 
   local liftedName :: String =
-    s"__${fName}_interface_${substitute(":", "_", substitute(".", "_", loc.unparse))}";
+    s"__${fName}_interface_${substitute(":", "_", substitute(".", "_", loc.unparse))}_u${toString(genInt())}";
 
   local closureDecl :: Decl =
     ableC_Decl {
@@ -482,7 +482,7 @@ top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
   local localErrors :: [Message] = loop.errors ++ annts.errors ++ missingVars;
 
   local liftedName :: String =
-    s"__lifted_workstlr_parallel_${substitute(":", "_", substitute(".", "_", loc.unparse))}";
+    s"__lifted_workstlr_parallel_${substitute(":", "_", substitute(".", "_", loc.unparse))}_u${toString(genInt())}";
   
   local freeVars :: [Name] = nub(loop.freeVariables);
 

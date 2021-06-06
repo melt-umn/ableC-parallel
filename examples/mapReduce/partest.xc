@@ -12,8 +12,10 @@ int main() {
   int* arr = malloc(sizeof(int) * 100);
   for (int i = 0; i < 100; i++) arr[i] = i;
 
+  posix parallel thrds; thrds = new posix parallel();
+  
   int tmp =
-    reduce[fuse reduce-map;]
+    reduce[fuse reduce-map; by thrds; sync-by posix; num-threads 4; par-comb \x y -> x + y;]
       (map[fuse map-map;]
         (map arr[100] by \x -> ({struct pair p = {x, x+1}; p;}))
         by \p -> p.x + p.y + 1)
@@ -22,15 +24,13 @@ int main() {
   printf("%d\n", tmp);
 
   int val =
-    reduce[fuse reduce-map;]
+    reduce[by thrds; sync-by posix; num-threads 4; par-comb \x y -> x + y;]
       (map[fuse map-map;]
         (map arr[100] by \x -> x * x)
       by \x -> x * 2)
     from (0)
     by \x t -> x + t;
   printf("%d\n", val);
-
-  posix parallel thrds; thrds = new posix parallel();
 
   int* fourths =
     map[fuse map-map; by thrds; num-threads 4; sync-by posix;] 

@@ -6,10 +6,13 @@ marking terminal Reduce_t 'reduce' lexer classes {Keyword, Reserved};
 terminal IMap_t 'map';
 
 terminal Lambda_t /\\/;
+
 terminal By_t 'by';
 terminal From_t 'from';
 terminal Fuse_t 'fuse';
 terminal SyncBy_t 'sync-by';
+terminal ParComb_t 'par-comb';
+
 terminal MapMap_t 'map-map';
 terminal ReduceMap_t 'reduce-map';
 
@@ -77,6 +80,9 @@ concrete productions top::MapReduceAnnt_c
   }
 | 'sync-by' q::TypeQualifier_c {
     top.ast = mapReduceSyncAnnt(q.typeQualifiers, location=top.location);
+  }
+| 'par-comb' l::Lambda_t v1::Identifier_c v2::Identifier_c '->' bd::Expr_c {
+    top.ast = mapReduceParCombAnnt(v1.ast, v2.ast, bd.ast, location=top.location);
   }
 
 nonterminal Fusion_c with location, ast<Fusion>;
