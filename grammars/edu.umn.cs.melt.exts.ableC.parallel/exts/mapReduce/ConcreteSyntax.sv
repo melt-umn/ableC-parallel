@@ -72,12 +72,14 @@ concrete productions top::MapReduceAnnt_c
 | annt::ParallelAnnotation_c {
     top.ast = mapReduceParallelAnnt(annt.ast, location=top.location);
   }
-| 'fuse' 'map-map' {
-    top.ast = mapReduceFusionAnnt(mapMapFusion(), location=top.location);
-  }
-| 'fuse' 'reduce-map' {
-    top.ast = mapReduceFusionAnnt(reduceMapFusion(), location=top.location);
+| 'fuse' fusion::Fusion_c {
+    top.ast = mapReduceFusionAnnt(fusion.ast, location=top.location);
   }
 | 'sync-by' q::TypeQualifier_c {
     top.ast = mapReduceSyncAnnt(q.typeQualifiers, location=top.location);
   }
+
+nonterminal Fusion_c with location, ast<Fusion>;
+concrete productions top::Fusion_c
+| 'map-map' { top.ast = mapMapFusion(location=top.location); }
+| 'reduce-map' { top.ast = reduceMapFusion(location=top.location); }

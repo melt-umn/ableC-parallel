@@ -54,19 +54,19 @@ top::Expr ::= arr::MapReduceArray init::Expr arrVar::Name accumVar::Name
   fusedArr.controlStmtContext = cscx;
   fusedArr.env = top.env;
 
-  top.errors := arr.errors ++ annts.errors ++ body.errors ++
+  local localErrors :: [Message] =
+    arr.errors ++ annts.errors ++ body.errors ++
     (if !typeAssignableTo(init.typerep, body.typerep)
     then [err(body.location, "Return type of the reduction function must match the type of the initial value")]
     else [])
     ++
     case annts.fusion of
-    | just(mapMapFusion()) -> [err(top.location, "A map-map fusion cannot be performed on a reduce")]
-    | just(reduceMapFusion()) ->
-      case arr of
-      | mapExpr(_, _, _, _) -> []
-      | _ -> [err(top.location, "A reduce-map fusion cannot be performed because the inner value is not a map")]
-      end
     | nothing() -> []
+    | just(_) ->
+      case reduceFusion of
+      | left(_) -> []
+      | right(errs) -> errs
+      end
     end;
 
   local replacedBody :: Expr =
@@ -96,18 +96,23 @@ top::Expr ::= arr::MapReduceArray init::Expr arrVar::Name accumVar::Name
       })
     };
 
+  local fusion :: Fusion = annts.fusion.fromJust;
+  fusion.env = top.env;
+  fusion.controlStmtContext = cscx;
+  fusion.annts = annts;
+  fusion.innerArray = fusedArr;
+  fusion.reduceSpec = (init, arrVar, accumVar, new(body));
+
+  local reduceFusion :: Either<Expr [Message]> = fusion.reduceFusion;
+
   forwards to
-    case annts.fusion of
-    | just(reduceMapFusion()) ->
-      case fusedArr of
-      | mapExpr(inn, iV, iB, _) ->
-          reduceExpr(inn, init, iV, accumVar,
-            replaceExprVariable(body, arrVar, iB, top.env, cscx),
-            removeFusion(annts), location=top.location)
-      | _ -> fwrd
-      end
-    | _ -> fwrd
-    end;
+    if !null(localErrors)
+    then errorExpr(localErrors, location=top.location)
+    else
+      case annts.fusion of
+      | nothing() -> fwrd
+      | just(_) -> reduceFusion.fromLeft
+      end;
 }
 
 abstract production mapExprBridge

@@ -82,13 +82,12 @@ top::MapReduceArray ::= arr::MapReduceArray var::Name body::Expr annts::MapReduc
 
   top.errors := arr.errors ++ annts.errors ++ body.errors ++
     case annts.fusion of
-    | just(reduceMapFusion()) -> [err(top.location, "A reduce-map fusion cannot be performed on a map")]
-    | just(mapMapFusion()) ->
-      case arr of
-      | mapExpr(_, _, _, _) -> []
-      | _ -> [err(top.location, "A map-map fusion cannot be performed because the inner value is not a map")]
-      end
     | nothing() -> []
+    | just(_) ->
+      case mapFusion of
+      | left(_) -> []
+      | right(errs) -> errs
+      end
     end
     ++
     case annts.bySystem, annts.syncBy of
@@ -237,21 +236,18 @@ top::MapReduceArray ::= arr::MapReduceArray var::Name body::Expr annts::MapReduc
       })
     };
 
-  {- Replacing the variable with the appropriate transformation can make for
-   - weird code since it may repeat those computations, but I think a
-   - good optimizing compiler should be able to avoid most of that. The
-   - advantage of this approach is that it makes code that is possible to
-   - vectorize still, though I don't know how often that would come up -}
+  local fusion :: Fusion = annts.fusion.fromJust;
+  fusion.env = top.env;
+  fusion.controlStmtContext = cscx;
+  fusion.annts = annts;
+  fusion.innerArray = fusedArr;
+  fusion.mapSpec = (var, new(body));
+
+  local mapFusion :: Either<MapReduceArray [Message]> = fusion.mapFusion;
+
   top.fusionResult =
     case annts.fusion of
-    | just(mapMapFusion()) ->
-        case fusedArr of
-        | mapExpr(inn, iV, iB, _) ->
-            mapExpr(inn, iV,
-              replaceExprVariable(body, var, iB, top.env, cscx),
-              removeFusion(annts), location=top.location)
-        | _ -> top
-        end
-    | _ -> top
+    | nothing() -> top
+    | just(_) -> mapFusion.fromLeft
     end;
 }
