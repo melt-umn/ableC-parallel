@@ -53,7 +53,7 @@ top::Stmt ::= e::Expr loc::Location annts::SpawnAnnotations
   
   local anntWarnings :: [Message] =
     if !null(annts.privates) || !null(annts.publics) || !null(annts.globals)
-    then [wrn(loc, "public/private/global annotations on cilk spawn ignored")]
+    then [wrn(loc, "public/private/global annotations on workstlr spawn ignored")]
     else [];
 
   local validForm :: Boolean =

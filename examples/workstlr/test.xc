@@ -2,6 +2,30 @@
 #include <ableC_posix.h>
 #include <stdio.h>
 
+int fib(int n) {
+  if (n <= 1) return n;
+  return fib(n-1) + fib(n-2);
+}
+
+int pfib(int n) {
+  posix parallel thrds = new posix parallel();
+  posix thread thd; thd = new posix group();
+
+  int x;
+  spawn x = fib(n); by thrds; as thd; public x; private n; global fib;
+
+  sync thd;
+  delete thd;
+  delete thrds;
+
+  return x;
+}
+
+workstlr_func int h(int n) {
+  int x = pfib(n);
+  return x;
+}
+
 workstlr_func void f(int n) {
   printf("%d\n", n);
   return;
@@ -34,6 +58,14 @@ int main(int argc, char** argv) {
   }
   sync grp;
   delete grp;
+
+  thd = new posix thread();
+
+  spawn tmp = h(12); by sys; as thd;
+  sync thd;
+  delete thd;
+
+  printf("fib(12) = %d\n", tmp);
 
   delete sys;
 
