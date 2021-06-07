@@ -88,10 +88,26 @@ top::Stmt ::= e::MaybeExpr
   top.workstlrParNeedStates = e.workstlrParNeedStates;
   e.workstlrParInitState = top.workstlrParInitState;
 
-  top.workstlrParFastClone = 
-    if e.isJust
-    then ableC_Stmt { __retVal = $Expr{e.justTheExpr.fromJust}; goto $name{s"__${top.workstlrParFuncName}_fast_return"}; }
-    else ableC_Stmt { goto $name{s"__${top.workstlrParFuncName}_fast_return"}; };
+  local retValErrors :: [Message] =
+    case top.controlStmtContext.returnType, e.maybeTyperep of
+    | nothing(), nothing() -> []
+    | just(builtinType(_, voidType())), nothing() -> []
+    | just(expected), just(actual) ->
+        if typeAssignableTo(expected, actual) then []
+        else [err(e.justTheExpr.fromJust.location,
+              "Incorrect return type, expected " ++ showType(expected) ++ " but found " ++ showType(actual))]
+    | nothing(), just(actual) -> [err(e.justTheExpr.fromJust.location, "Unexpected return")]
+    | just(expected), nothing() ->
+      [err(loc("TODOWorkstlrReturn",-1,-1,-1,-1,-1,-1), "Expected return value, but found valueless return")]
+    end;
+
+  top.workstlrParFastClone =
+    if null(retValErrors)
+    then
+      if e.isJust
+      then ableC_Stmt { __retVal = $Expr{e.justTheExpr.fromJust}; goto $name{s"__${top.workstlrParFuncName}_fast_return"}; }
+      else ableC_Stmt { goto $name{s"__${top.workstlrParFuncName}_fast_return"}; }
+    else warnStmt(retValErrors);
   top.workstlrParSlowClone =
     if e.isJust
     then ableC_Stmt { __retVal = $Expr{e.justTheExpr.fromJust}; goto $name{s"__${top.workstlrParFuncName}_slow_return"}; }
