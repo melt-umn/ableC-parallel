@@ -167,6 +167,6 @@ top::Stmt ::= decls::Decls lifted::Stmt
   lifted.workstlrParInitState = top.workstlrParInitState;
   decls.workstlrParInitState = 1; -- Just setting for MWDA
 
-  top.workstlrParFastClone = injectGlobalDeclsStmt(decls, lifted.workstlrParFastClone);
+  top.workstlrParFastClone = lifted.workstlrParFastClone;
   top.workstlrParSlowClone = injectGlobalDeclsStmt(decls, lifted.workstlrParSlowClone);
 }

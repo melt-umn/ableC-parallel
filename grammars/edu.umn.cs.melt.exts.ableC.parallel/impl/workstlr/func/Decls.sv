@@ -94,7 +94,7 @@ aspect production injectGlobalDeclsDecl
 top::Decl ::= decls::Decls
 {
   decls.workstlrParInitState = 1; -- Since injected into the global state (really just for MWDA)
-  top.workstlrParFastClone = injectGlobalDeclsDecl(decls);
+  top.workstlrParFastClone = edu:umn:cs:melt:ableC:abstractsyntax:host:decls(nilDecl());
   top.workstlrParSlowClone = injectGlobalDeclsDecl(decls);
 }
 

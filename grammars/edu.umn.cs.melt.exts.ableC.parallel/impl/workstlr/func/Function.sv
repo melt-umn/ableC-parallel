@@ -124,7 +124,9 @@ top::Decl ::= cilkDecl :: Decl
         dropFunctionDecls(b.workstlrParForConverted))
     | _ -> error("Invalid forms reported via errors attribute")
     end;
-  body.controlStmtContext = controlStmtContext(just(retType), false, false, tm:add(body.labelDefs, tm:empty()));
+  local bodyCscx :: ControlStmtContext =
+    controlStmtContext(just(retType), false, false, tm:add(body.labelDefs, tm:empty()));
+  body.controlStmtContext = bodyCscx;
   body.env = bodyEnv;
 
   body.workstlrParFuncName = fname.name;
@@ -387,6 +389,5 @@ abstract production dropFunctionDecls
 top::Stmt ::= bd::Stmt
 {
   top.functionDecls := [];
-
   forwards to bd;
 }

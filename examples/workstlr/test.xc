@@ -7,9 +7,9 @@ int fib(int n) {
   return fib(n-1) + fib(n-2);
 }
 
-int pfib(int n) {
+workstlr_func int h(int n) {
   posix parallel thrds = new posix parallel();
-  posix thread thd; thd = new posix group();
+  posix thread thd; thd = new posix thread();
 
   int x;
   spawn x = fib(n); by thrds; as thd; public x; private n; global fib;
@@ -17,12 +17,7 @@ int pfib(int n) {
   sync thd;
   delete thd;
   delete thrds;
-
-  return x;
-}
-
-workstlr_func int h(int n) {
-  int x = pfib(n);
+ 
   return x;
 }
 

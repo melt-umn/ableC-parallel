@@ -197,6 +197,7 @@ top::Stmt ::= e::Expr loc::Location annts::SpawnAnnotations
     s"__${fName}_interface_${substitute(":", "_", substitute(".", "_", loc.unparse))}_u${toString(genInt())}";
 
   local closureDecl :: Decl =
+    maybeValueDecl(liftedName ++ "_closure",
     ableC_Decl {
       struct $name{liftedName ++ "_closure"} {
         void (*func)(void*);
@@ -219,7 +220,7 @@ top::Stmt ::= e::Expr loc::Location annts::SpawnAnnotations
             )}
         } frame;
       };
-    };
+    });
   closureDecl.controlStmtContext = initialControlStmtContext;
   closureDecl.isTopLevel = true;
   closureDecl.env = globalEnv(top.env);
@@ -285,6 +286,7 @@ top::Stmt ::= e::Expr loc::Location annts::SpawnAnnotations
    - Cleanup (for threads and groups)
    -}
   local interfaceDecl :: Decl =
+    maybeValueDecl(liftedName ++ "_closure",
     ableC_Decl {
       void $name{liftedName}(void* arg) {
         struct $name{liftedName ++ "_closure"}* __closure = arg;
@@ -402,7 +404,7 @@ top::Stmt ::= e::Expr loc::Location annts::SpawnAnnotations
         free(__closure);
         return; // To the scheduler
       }
-    };
+    });
 
   local fwrdStmt :: Stmt =
     ableC_Stmt {
@@ -700,10 +702,7 @@ top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
     );
   
   local spawnAnnts :: SpawnAnnotations =
-    consSpawnAnnotations(
-      spawnPrivateAnnotation(name("args", location=loc) :: [], location=loc),
-      annts.parToSpawnAnnts
-    );
+    annts.parToSpawnAnnts.dropShareAnnotations;
   local fwrdStmt :: Stmt =
     ableC_Stmt {
       {

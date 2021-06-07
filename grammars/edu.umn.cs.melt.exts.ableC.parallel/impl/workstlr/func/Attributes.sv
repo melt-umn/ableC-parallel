@@ -31,6 +31,8 @@ propagate workstlrParForConverted on AsmArgument, AsmOperand,
   Decls, Expr, Exprs, Init, Initializer, InitList, MaybeExpr,
   MaybeInitializer, Stmt;
 
+-- NOTE: We drop global injections from the fast clone copy since the slow clone
+-- should be placed first, and retains these injections
 propagate workstlrParFastClone, workstlrParSlowClone on AsmArgument, AsmOperand,
   AsmOperands, AsmStatement, Decl, Declarator, Declarators,
   Decls, Expr, Exprs, Init, Initializer, InitList, MaybeExpr,

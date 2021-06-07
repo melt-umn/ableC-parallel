@@ -6,6 +6,13 @@ top::Expr ::=
   top.workstlrParNeedStates = 0;
 }
 
+aspect production exprAsType
+top::Expr ::= e::Expr t::Type
+{
+  e.workstlrParInitState = top.workstlrParInitState;
+  propagate workstlrParForConverted, workstlrParFastClone, workstlrParSlowClone;
+}
+
 aspect production qualifiedExpr
 top::Expr ::= q::Qualifiers e::Expr
 {
@@ -466,7 +473,7 @@ top::Expr ::= decls::Decls lifted::Expr
   lifted.workstlrParInitState = top.workstlrParInitState;
   decls.workstlrParInitState = 1; -- Just setting for MWDA
 
-  top.workstlrParFastClone = injectGlobalDeclsExpr(decls, lifted.workstlrParFastClone, location=top.location);
+  top.workstlrParFastClone = lifted.workstlrParFastClone;
   top.workstlrParSlowClone = injectGlobalDeclsExpr(decls, lifted.workstlrParSlowClone, location=top.location);
 }
 
