@@ -10,9 +10,11 @@ int main() {
   for (int i = 0; i < 100; i++) arr[i] = i;
 
   int* fourths =
-    map[fuse map-map; by vect; sync-by posix;] 
-      (map arr[100] by \x -> x * x)
-    by \x -> x * x;
+    map[fuse map-map; by vect; sync-by posix;]
+    (
+      \x -> x * x,
+      map(\x -> x * x, arr[100])
+    );
   
   printf("%d %d %d %d %d %d\n", fourths[0], fourths[5], fourths[10], fourths[25], fourths[50], fourths[99]);
   free(fourths);
