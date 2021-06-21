@@ -1,0 +1,49 @@
+Force-blocking    Parallel-for    Direct Translation
+2.866s            2.831s          2.971s
+2.845s            2.840s          3.029s
+2.862s            2.832s          3.023s
+2.847s            2.842s          3.032s
+2.842s            2.835s          2.981s
+2.866s            2.836s          3.015s
+2.854s            2.829s          3.000s
+2.847s            2.825s          2.962s
+2.860s            2.837s          3.002s
+2.855s            2.836s          2.983s
+
+2.854             2.834           3.000
+(0.008)           (0.005)         (0.024)
+
+Parallel-for < Force-blocking < Direct Translation
+|----------- 1 -------------|
+               |------------- 2 -----------------|
+|----------------------- 3 ----------------------|
+
+1: p<0.01
+2: p<0.01
+3: p<0.01
+
+What each of these is:
+  Translate for (int i = 0; i < 1000; i++) foo(i);
+ 
+
+Force-blocking:
+  for (int i = start; i < end; i++) {
+    spawn foo(i);
+    sync;
+  }
+
+Parallel-for:
+  parallel for (int i = start; i < end; i++) {
+    foo(i);
+  }
+  sync;
+
+Direct Translation (ignores num-threads):
+  parallel for (int i = 0; i < 1000; i++) {
+    foo(i);
+  }
+  sync;
+
+These results make sense; blocking improves locality and splits it into several
+closures, which should reduce stealing/contention. But, allowing each block to
+still be stolen and parallelized helps divide the work even further (if needed)

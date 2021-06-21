@@ -4,7 +4,11 @@
 #include <ableC_parallel.h>
 
 // An easier to use aligned malloc than the POSIX version
-#define aligned_malloc(alignment, size) ({ void* res = NULL; posix_memalign(&res, alignment, size); res; })
+inline void* aligned_malloc(size_t alignment, size_t size) {
+  void* res = NULL;
+  posix_memalign(&res, alignment, size);
+  return res;
+}
 
 // Typedef a bunch of 256 bit vector types (since these are the size of AVX
 // registers, there is a AVX-512 extension, but I haven't actually found a

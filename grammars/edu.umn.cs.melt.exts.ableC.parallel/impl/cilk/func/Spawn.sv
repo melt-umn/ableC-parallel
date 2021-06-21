@@ -17,31 +17,36 @@ top::Stmt ::= expr::Expr annts::SpawnAnnotations
   local validForm :: Boolean =
     case expr of
     | directCallExpr(_, _) -> true
-    | ovrld:eqExpr(_, directCallExpr(_, _)) -> true
+    | callExpr(declRefExpr(_), _) -> true
+    | eqExpr(_, directCallExpr(_, _)) -> true
+    | eqExpr(_, callExpr(declRefExpr(_), _)) -> true
     | _ -> false
     end;
   local hasLhs :: Boolean =
     case expr of
-    | directCallExpr(_, _) -> false
-    | ovrld:eqExpr(_, directCallExpr(_, _)) -> true
+    | eqExpr(_,  _) -> true
     | _ -> false
     end;
 
   local lhs :: Expr = 
     case expr of
-    | ovrld:eqExpr(l, directCallExpr(_, _)) -> l
+    | eqExpr(l, _) -> l
     | _ -> error("Invalid forms reported via errors attribute")
     end;
   local fname:: String = 
     case expr of
-    | ovrld:eqExpr(_, directCallExpr(n, _)) -> n.name
+    | eqExpr(_, directCallExpr(n, _)) -> n.name
+    | eqExpr(_, callExpr(declRefExpr(n), _)) -> n.name
     | directCallExpr(n, _) -> n.name
+    | callExpr(declRefExpr(n), _) -> n.name
     | _ -> error("Invalid forms reported via errors attribute")
     end;
   local args :: Exprs =
     case expr of
-    | ovrld:eqExpr(_, directCallExpr(_, a)) -> a
+    | eqExpr(_, directCallExpr(_, a)) -> a
+    | eqExpr(_, callExpr(_, a)) -> a
     | directCallExpr(_, a) -> a
+    | callExpr(_, a) -> a
     | _ -> error("Invalid forms reported via errors attribute")
     end;
 

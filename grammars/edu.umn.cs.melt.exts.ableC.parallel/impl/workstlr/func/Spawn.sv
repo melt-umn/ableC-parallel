@@ -28,8 +28,8 @@ top::Stmt ::= expr::Expr annts::SpawnAnnotations
   -- TODO: Add support for implicit inlets for += / -= / ...
   local validForm :: Boolean =
     case expr of
-    | ovrld:eqExpr(_, directCallExpr(_, _)) -> true
-    | ovrld:eqExpr(_, callExpr(declRefExpr(_), _)) -> true
+    | eqExpr(_, directCallExpr(_, _)) -> true
+    | eqExpr(_, callExpr(declRefExpr(_), _)) -> true
     | directCallExpr(_, _) -> true
     | callExpr(declRefExpr(_), _) -> true
     | _ -> false
@@ -37,21 +37,21 @@ top::Stmt ::= expr::Expr annts::SpawnAnnotations
 
   local lhs :: Maybe<Expr> = 
     case expr of
-    | ovrld:eqExpr(l, _) -> just(l)
+    | eqExpr(l, _) -> just(l)
     | _ -> nothing()
     end;
   local fname:: String = 
     case expr of
-    | ovrld:eqExpr(_, directCallExpr(n, _)) -> n.name
-    | ovrld:eqExpr(_, callExpr(declRefExpr(n), _)) -> n.name
+    | eqExpr(_, directCallExpr(n, _)) -> n.name
+    | eqExpr(_, callExpr(declRefExpr(n), _)) -> n.name
     | directCallExpr(n, _) -> n.name
     | callExpr(declRefExpr(n), _) -> n.name
     | _ -> error("Invalid forms reported via errors attribute")
     end;
   local args :: Exprs =
     case expr of
-    | ovrld:eqExpr(_, directCallExpr(_, a)) -> a
-    | ovrld:eqExpr(_, callExpr(_, a)) -> a
+    | eqExpr(_, directCallExpr(_, a)) -> a
+    | eqExpr(_, callExpr(_, a)) -> a
     | directCallExpr(_, a) -> a
     | callExpr(_, a) -> a
     | _ -> error("Invalid forms reported via errors attribute")
@@ -59,23 +59,23 @@ top::Stmt ::= expr::Expr annts::SpawnAnnotations
 
   local lhsAssignment :: Maybe<Expr> =
     case expr of
-    | ovrld:eqExpr(declRefExpr(n), _) -> just(ableC_Expr{$Name{n}})
-    | ovrld:eqExpr(_, _) -> just(ableC_Expr{*__ret})
+    | eqExpr(declRefExpr(n), _) -> just(ableC_Expr{$Name{n}})
+    | eqExpr(_, _) -> just(ableC_Expr{*__ret})
     | _ -> nothing()
     end;
   local preAssignment :: Maybe<Stmt> =
     case expr of
-    | ovrld:eqExpr(declRefExpr(_), _) -> nothing()
-    | ovrld:eqExpr(_, _) -> just(ableC_Stmt {
+    | eqExpr(declRefExpr(_), _) -> nothing()
+    | eqExpr(_, _) -> just(ableC_Stmt {
           typeof($Expr{lhs.fromJust})* __ret = &($Expr{lhs.fromJust});
         })
     | _ -> nothing()
     end;
   local rhsPointer :: Maybe<Expr> =
     case expr of
-    | ovrld:eqExpr(declRefExpr(n), _) ->
+    | eqExpr(declRefExpr(n), _) ->
         just(referenceAVariable(n.name, top.env))
-    | ovrld:eqExpr(_, _) -> just(ableC_Expr{__ret})
+    | eqExpr(_, _) -> just(ableC_Expr{__ret})
     | _ -> nothing()
     end;
 
