@@ -11,6 +11,7 @@ top::Stmt ::= init::Decl cond::MaybeExpr iter::Expr body::Stmt
                     line(), annts.pp, line(), braces(nestlines(2, body.pp))]);
   top.functionDefs := body.functionDefs;
   top.labelDefs := []; -- Prevent labels from propagating up
+  init.isTopLevel = false;
 
   local loopS :: Stmt = ableC_Stmt {
       for($Decl{init} $Expr{cond.justTheExpr.fromJust}; $Expr{iter}) $Stmt{body}

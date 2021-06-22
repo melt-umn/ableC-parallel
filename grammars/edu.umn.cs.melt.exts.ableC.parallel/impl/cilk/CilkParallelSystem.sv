@@ -106,7 +106,7 @@ top::Stmt ::= e::Expr loc::Location annts::SpawnAnnotations
     else [];
 
   local liftedName :: String =
-    s"__${fName}_interface_${substitute(":", "_", substitute(".", "_", loc.unparse))}_u${toString(genInt())}";
+    s"__${fName}_interface_${cleanLocName(loc.unparse)}_u${toString(genInt())}";
 
   local funcArgTypes :: [Type] =
     case valType of
@@ -478,9 +478,17 @@ top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
     end;
 
   local liftedName :: String =
-    s"__lifted_cilk_parallel_${substitute(":", "_", substitute(".", "_", loc.unparse))}_u${toString(genInt())}";
+    s"__lifted_cilk_parallel_${cleanLocName(loc.unparse)}_u${toString(genInt())}";
 
-  local freeVars :: [Name] = nub(loop.freeVariables);
+  local freeVars :: [Name] =
+    case loop of
+    | ableC_Stmt { for($BaseTypeExpr{_} $Name{n} = host::(0); host::$Name{_} host::< $Expr{_}; host::$Name{_} host::++) $Stmt{bd} }
+      -> filter(
+          \nm::Name -> nm != n,
+          nub((decorate bd with {controlStmtContext=initialControlStmtContext;
+                                env=top.env;}).freeVariables))
+    | _ -> error("Invalid for-loop type should be handled in the base system")
+    end;
 
   local freePublic  :: [Name] = intersect(freeVars, publicVars);
   local freePrivate :: [Name] = intersect(freeVars, privateVars);
@@ -733,12 +741,7 @@ top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
             justExpr(ableC_Expr{$Name{loopInfo.2} < __bound}),
             ableC_Expr{$Name{loopInfo.2}++},
             transformedBody, nilParallelAnnotations())}
-          /*for ($BaseTypeExpr{loopInfo.1} $Name{loopInfo.2} = __init;
-                $Name{loopInfo.2} < __bound;
-                $Name{loopInfo.2}++) {
-            $Stmt{spawnedBody}
-            $Stmt{syncTask(nilExpr())}
-          }*/
+          
           $Stmt{syncTask(nilExpr())}
 
           free(args);

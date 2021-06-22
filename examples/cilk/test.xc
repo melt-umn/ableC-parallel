@@ -7,11 +7,6 @@ cilk_func int f(int n) {
   return 0;
 }
 
-cilk_func void h(int n) {
-  printf("%d\n", n);
-  return 0;
-}
-
 cilk_func int foo() {
   parallel for (int i = 0; i < 10; ++i) {
     f(i);
@@ -35,7 +30,7 @@ int main(int argc, char** argv) {
 
   posix group grp; grp = new posix group();
   parallel for (int i = 0; i < 10; i++) { by sys; in grp; global f; num-threads 4;
-    h(i);
+    f(i);
   }
   sync grp;
   delete grp;

@@ -56,6 +56,9 @@ void stop_ableC_parallel_cilk(struct __ableC_system_info* sys_info) {
   free(sys_info);
 }
 
+// TODO: Does this actually improve performance?
+_Atomic int ableC_cilk_counter = 0;
+
 void ableC_parallel_cilk_spawn(CilkContext* context, CilkProcInfo* sig, CilkStackFrame* f) {
   Closure* t = Cilk_Closure_create_malloc(context, NULL);
   t->parent = NULL;
@@ -68,7 +71,7 @@ void ableC_parallel_cilk_spawn(CilkContext* context, CilkProcInfo* sig, CilkStac
 
   t->frame = f;
 
-  int target = 0; //rand() % USE_PARAMETER1(active_size); // rand() isn't thread-safe
+  int target = ableC_cilk_counter++ % USE_PARAMETER1(active_size); //rand() % USE_PARAMETER1(active_size); // rand() isn't thread-safe
   Cilk_mutex_wait(context, NULL, &USE_PARAMETER1(deques)[target].mutex);
   t->next_ready = USE_PARAMETER1(deques)[target].top;
   t->prev_ready = NULL;

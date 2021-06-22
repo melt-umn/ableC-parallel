@@ -33,9 +33,10 @@ int main(int argc, char** argv) {
   for (int i = 0; i < 1000; i++) nums[i] = rand() % 30;
 
   parallel for (int i = 0; i < 1000; i++) by sys; in grp; num-threads 4;
-                                      global fib_into, rand, tmp; private nums;
+                                      global fib; private nums;
   {
-    tmp = fib_into(nums[i], nums + i);
+    //fib_into(nums[i], nums+i);
+    nums[i] = fib(nums[i]);
   }
   sync grp;
 

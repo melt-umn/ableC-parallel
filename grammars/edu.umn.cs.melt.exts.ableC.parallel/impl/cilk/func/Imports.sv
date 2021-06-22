@@ -12,6 +12,7 @@ imports silver:langutil:pp;
 imports silver:util:treemap as tm;
 
 imports edu:umn:cs:melt:exts:ableC:cilk;
+imports edu:umn:cs:melt:exts:ableC:parallel:impl:cilk;
 
 imports edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax;
 imports edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:parallel;

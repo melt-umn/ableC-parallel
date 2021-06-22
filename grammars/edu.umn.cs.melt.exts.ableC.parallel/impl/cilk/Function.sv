@@ -47,19 +47,22 @@ top::Decl ::= decl::Decl
     | cilkFunctionDecl(storage, fnquals, bty, mty, fname, attrs, dcls, body)
       -> decls(
           consDecl(
-            functionDeclaration(
-              functionDecl(storage, fnquals, bty, mty, fname, attrs, dcls,
-                ableC_Stmt {
-                  fprintf(stderr, $stringLiteralExpr{s"Directly called ${fname.name} rather than invoking it through a cilk-spawn"});
-                  exit(25);
-                }
-              )
-            ),
+            decls(foldDecl(map(\d::Decorated Decl -> new(d), body.globalDecls))),
             consDecl(
-              cilkFunctionDecl(storage, fnquals, bty, mty,
-                name("_cilk_" ++ fname.name, location=fname.location),
-                attrs, dcls, body.cilkVersion),
-              nilDecl()
+              functionDeclaration(
+                functionDecl(storage, fnquals, bty, mty, fname, attrs, dcls,
+                  ableC_Stmt {
+                    fprintf(stderr, $stringLiteralExpr{s"Directly called ${fname.name} rather than invoking it through a cilk-spawn"});
+                    exit(25);
+                  }
+                )
+              ),
+              consDecl(
+                cilkFunctionDecl(storage, fnquals, bty, mty,
+                  name("_cilk_" ++ fname.name, location=fname.location),
+                  attrs, dcls, body.cilkVersion),
+                nilDecl()
+              )
             )
           )
         )

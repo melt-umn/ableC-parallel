@@ -14,19 +14,19 @@ propagate cilkVersion on AsmArgument, AsmOperand,
 aspect production injectGlobalDeclsExpr
 top::Expr ::= decls::Decls lifted::Expr
 {
-  top.cilkVersion = injectGlobalDeclsExpr(decls, lifted.cilkVersion, location=top.location);
+  top.cilkVersion = lifted.cilkVersion;
 }
 
 aspect production injectGlobalDeclsStmt
 top::Stmt ::= decls::Decls lifted::Stmt
 {
-  top.cilkVersion = injectGlobalDeclsStmt(decls, lifted.cilkVersion);
+  top.cilkVersion = lifted.cilkVersion;
 }
 
 aspect production injectGlobalDeclsDecl
-top::Decl ::= decls::Decls
+top::Decl ::= dcls::Decls
 {
-  top.cilkVersion = injectGlobalDeclsDecl(decls);
+  top.cilkVersion = decls(nilDecl());
 }
 
 aspect production injectFunctionDeclsDecl

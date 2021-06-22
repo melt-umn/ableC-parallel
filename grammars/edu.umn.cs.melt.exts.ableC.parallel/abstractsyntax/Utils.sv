@@ -28,3 +28,14 @@ top::Expr ::= e::Expr t::Type
   top.typerep = t;
   forwards to e;
 }
+
+function cleanLocName
+String ::= inpt::String
+{
+  return
+    substitute("/", "_", 
+      substitute(":", "_",
+        substitute(".", "_", inpt)
+      )
+    );
+}
