@@ -172,7 +172,7 @@ void stop_workstlr_system(struct __ableC_system_info* sysInfo) {
     exit(-1);
   }
 
-  workstlr_free(system->deques, sizeof(struct deque) * system->nThreads);
+  workstlr_free(system->deques, sizeof(struct workstlr_deque) * system->nThreads);
   workstlr_free(system->threads, sizeof(pthread_t) * system->nThreads);
   workstlr_free(system, sizeof(struct workstlr_system));
   workstlr_free(sysInfo, sizeof(struct __ableC_system_info));

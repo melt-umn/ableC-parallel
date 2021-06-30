@@ -1,4 +1,4 @@
-all: blocking cilk workstlr lvars posix synchronization thrdpool vector mapReduce server
+all: blocking cilk workstlr lvars posix synchronization thrdpool vector mapReduce server bthrdpool bworkstlr
 
 blocking:
 	$(MAKE) -C blocking
@@ -30,6 +30,12 @@ mapReduce:
 server:
 	$(MAKE) -C server
 
+bthrdpool:
+	$(MAKE) -C bthrdpool
+
+bworkstlr:
+	$(MAKE) -C bworkstlr
+
 clean:
 	$(MAKE) -C blocking clean
 	$(MAKE) -C cilk clean
@@ -41,8 +47,10 @@ clean:
 	$(MAKE) -C vector clean
 	$(MAKE) -C mapReduce clean
 	$(MAKE) -C server clean
+	$(MAKE) -C bthrdpool clean
+	$(MAKE) -C bworkstlr clean
 
-.PHONY: all build blocking cilk workstlr lvars posix synchronization thrdpool vector mapReduce server clean
+.PHONY: all build blocking cilk workstlr lvars posix synchronization thrdpool vector mapReduce server bthrdpool bworkstlr clean
 
 build:
 	$(MAKE) -C blocking ableC.jar
@@ -55,4 +63,5 @@ build:
 	$(MAKE) -C vector ableC.jar
 	$(MAKE) -C mapReduce ableC.jar
 	$(MAKE) -C server ableC.jar
-
+	$(MAKE) -C bthrdpool ableC.jar
+	$(MAKE) -C bworkstlr ableC.jar

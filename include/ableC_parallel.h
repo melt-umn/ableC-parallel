@@ -173,4 +173,27 @@ static void inline checked_pthread_create(pthread_t* restrict thread,
   }
 }
 
+static void inline checked_pthread_attr_init(pthread_attr_t* attr) {
+  int errnum = pthread_attr_init(attr);
+  if (__builtin_expect(errnum, 0)) {
+    fprintf(stderr, "Error in pthread_attr_init: %s\n", strerror(errnum));
+    exit(-1);
+  }
+}
+static void inline checked_pthread_attr_destroy(pthread_attr_t* attr) {
+  int errnum = pthread_attr_destroy(attr);
+  if (__builtin_expect(errnum, 0)) {
+    fprintf(stderr, "Error in pthread_attr_destroy: %s\n", strerror(errnum));
+    exit(-1);
+  }
+}
+static void inline checked_pthread_attr_setdetachstate(pthread_attr_t* attr,
+                                                            int detachstate) {
+  int errnum = pthread_attr_setdetachstate(attr, detachstate);
+  if (__builtin_expect(errnum, 0)) {
+    fprintf(stderr, "Error in pthread_attr_setdetachstate: %s\n", strerror(errnum));
+    exit(-1);
+  }
+}
+
 #endif // INCLUDE_ABLEC_PARALLEL_
