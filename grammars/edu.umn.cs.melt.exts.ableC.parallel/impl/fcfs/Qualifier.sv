@@ -1,4 +1,4 @@
-grammar edu:umn:cs:melt:exts:ableC:parallel:exts:balancer:impl:fcfs;
+grammar edu:umn:cs:melt:exts:ableC:parallel:impl:fcfs;
 
 marking terminal Fcfs_t 'fcfs' lexer classes {Keyword, Reserved};
 

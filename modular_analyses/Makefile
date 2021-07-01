@@ -1,11 +1,8 @@
 .NOTPARALLEL:
-all: base balancer fcfs bthrdpool bworkstlr blocking cilk workstlr lvars posix synchronization thrdpool vector mapReduce
+all: base fcfs bthrdpool bworkstlr blocking cilk workstlr lvars posix synchronization thrdpool vector mapReduce
 
 base:
 	$(MAKE) -C base
-
-balancer:
-	$(MAKE) -C balancer
 
 fcfs:
 	$(MAKE) -C fcfs
@@ -45,7 +42,6 @@ mapReduce:
 
 clean:
 	$(MAKE) -C base clean
-	$(MAKE) -C balancer clean
 	$(MAKE) -C fcfs clean
 	$(MAKE) -C bthrdpool clean
 	$(MAKE) -C bworkstlr clean
@@ -58,4 +54,4 @@ clean:
 	$(MAKE) -C vector clean
 	$(MAKE) -C mapReduce clean
 
-.PHONY: all base balancer fcfs bthrdpool bworkstlr blocking cilk workstlr lvars posix synchronization thrdpool vector mapReduce clean
+.PHONY: all base fcfs bthrdpool bworkstlr blocking cilk workstlr lvars posix synchronization thrdpool vector mapReduce clean

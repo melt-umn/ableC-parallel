@@ -10,9 +10,8 @@ parser extendedParser :: cst:Root {
   edu:umn:cs:melt:ableC:concretesyntax;
   edu:umn:cs:melt:exts:ableC:constructor;
   edu:umn:cs:melt:exts:ableC:parallel;
-  edu:umn:cs:melt:exts:ableC:parallel:exts:balancer;
-  edu:umn:cs:melt:exts:ableC:parallel:exts:balancer:uses:bthrdpool;
-  edu:umn:cs:melt:exts:ableC:parallel:exts:balancer:impl:fcfs;
+  edu:umn:cs:melt:exts:ableC:parallel:impl:bthrdpool;
+  edu:umn:cs:melt:exts:ableC:parallel:impl:fcfs;
   edu:umn:cs:melt:exts:ableC:parallel:impl:posix;
   edu:umn:cs:melt:exts:ableC:parallel:impl:thrdpool;
 }

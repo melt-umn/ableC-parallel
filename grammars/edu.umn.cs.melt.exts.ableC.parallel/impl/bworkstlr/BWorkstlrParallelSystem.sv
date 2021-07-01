@@ -1,4 +1,4 @@
-grammar edu:umn:cs:melt:exts:ableC:parallel:exts:balancer:uses:bworkstlr;
+grammar edu:umn:cs:melt:exts:ableC:parallel:impl:bworkstlr;
 
 abstract production bworkstlrParallelSystem
 top::ParallelSystem ::= 

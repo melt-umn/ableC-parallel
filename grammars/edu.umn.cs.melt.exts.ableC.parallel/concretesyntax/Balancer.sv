@@ -1,6 +1,4 @@
-grammar edu:umn:cs:melt:exts:ableC:parallel:exts:balancer:base;
-
-marking terminal Balancer_t 'balancer' lexer classes {Keyword, Type, Reserved};
+grammar edu:umn:cs:melt:exts:ableC:parallel:concretesyntax;
 
 concrete productions top::TypeSpecifier_c
 | 'balancer' {

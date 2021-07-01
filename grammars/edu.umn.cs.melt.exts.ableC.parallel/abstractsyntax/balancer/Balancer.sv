@@ -1,4 +1,4 @@
-grammar edu:umn:cs:melt:exts:ableC:parallel:exts:balancer:base;
+grammar edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:balancer;
 
 abstract production balancerTypeExpr
 top::BaseTypeExpr ::= q::Qualifiers

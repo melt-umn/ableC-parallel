@@ -1,6 +1,7 @@
 grammar edu:umn:cs:melt:exts:ableC:parallel:concretesyntax;
 
 marking terminal Parallel_t 'parallel' lexer classes {Keyword, Type, Reserved};
+marking terminal Balancer_t 'balancer' lexer classes {Keyword, Type, Reserved};
 
 marking terminal Spawn_t 'spawn' lexer classes {Keyword, Reserved};
 marking terminal Sync_t 'sync' lexer classes {Keyword, Reserved};

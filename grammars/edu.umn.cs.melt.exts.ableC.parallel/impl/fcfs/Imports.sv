@@ -1,4 +1,4 @@
-grammar edu:umn:cs:melt:exts:ableC:parallel:exts:balancer:impl:fcfs;
+grammar edu:umn:cs:melt:exts:ableC:parallel:impl:fcfs;
 
 imports edu:umn:cs:melt:ableC:concretesyntax;
 
@@ -11,6 +11,6 @@ imports silver:langutil;
 imports silver:langutil:pp;
 
 imports edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax;
-imports edu:umn:cs:melt:exts:ableC:parallel:exts:balancer;
+imports edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:balancer;
 
 imports edu:umn:cs:melt:exts:ableC:constructor:abstractsyntax;

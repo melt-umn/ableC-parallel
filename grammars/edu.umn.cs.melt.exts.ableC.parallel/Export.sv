@@ -6,4 +6,11 @@ grammar edu:umn:cs:melt:exts:ableC:parallel;
     the abstract syntax and concrete syntax of an extension by importing this
     grammar. -}
 exports edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax;
+exports edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:balancer;
+exports edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:locks;
+exports edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:sync;
+exports edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:parallel;
+exports edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:parallel:spawn;
+exports edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:parallel:loop;
+
 exports edu:umn:cs:melt:exts:ableC:parallel:concretesyntax;

@@ -1,4 +1,4 @@
-grammar edu:umn:cs:melt:exts:ableC:parallel:exts:balancer:uses:bthrdpool;
+grammar edu:umn:cs:melt:exts:ableC:parallel:impl:bthrdpool;
 
 marking terminal BThrdpool_t 'bthrdpool' lexer classes {Keyword, Reserved};
 

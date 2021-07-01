@@ -5,4 +5,4 @@ grammar well_definedness;
     well-definedness analysis. -}
 
 import edu:umn:cs:melt:ableC:host;
-import edu:umn:cs:melt:exts:ableC:parallel:exts:balancer:impl:fcfs;
+import edu:umn:cs:melt:exts:ableC:parallel:impl:fcfs;

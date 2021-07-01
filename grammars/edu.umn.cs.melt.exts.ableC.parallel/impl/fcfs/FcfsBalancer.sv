@@ -1,4 +1,4 @@
-grammar edu:umn:cs:melt:exts:ableC:parallel:exts:balancer:impl:fcfs;
+grammar edu:umn:cs:melt:exts:ableC:parallel:impl:fcfs;
 
 abstract production fcfsBalancerSystem
 top::BalancerSystem ::=

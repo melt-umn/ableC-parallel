@@ -1,4 +1,4 @@
-grammar edu:umn:cs:melt:exts:ableC:parallel:exts:balancer:uses:bthrdpool;
+grammar edu:umn:cs:melt:exts:ableC:parallel:impl:bthrdpool;
 
 abstract production bthrdpoolParallelSystem
 top::ParallelSystem ::= 

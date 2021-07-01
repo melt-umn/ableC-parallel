@@ -1,4 +1,4 @@
-grammar edu:umn:cs:melt:exts:ableC:parallel:exts:balancer:uses:bworkstlr;
+grammar edu:umn:cs:melt:exts:ableC:parallel:impl:bworkstlr;
 
 marking terminal BWorkstlr_t 'bworkstlr' lexer classes {Keyword, Reserved};
 
