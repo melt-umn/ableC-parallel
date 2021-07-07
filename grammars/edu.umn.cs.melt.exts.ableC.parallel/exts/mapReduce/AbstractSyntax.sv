@@ -90,7 +90,7 @@ top::Expr ::= arr::MapReduceArray init::Expr arrVar::Name accumVar::Name
       (if (decorate numPar with {env=top.env; controlStmtContext=cscx;}).typerep.isIntegerType
       then []
       else [err(top.location, "The argument to num-threads must be an integrer value")])
-    | _, _, _, _ -> [err(top.location, "On a reduce, all four of by, num-threads, ync-by, and par-comb must be provided to parallelize the reduce; otherwise none are allowed")]
+    | _, _, _, _ -> [err(top.location, "On a reduce, all four of by, num-threads, sync-by, and par-comb must be provided to parallelize the reduce; otherwise none are allowed")]
     end;
 
   local replacedBody :: Expr =

@@ -10,9 +10,8 @@ top::Stmt ::= e::Expr nm::Name bd::Stmt
   top.labelDefs := [];
 
   -- TODO: We need e to be an l-value
-  top.errors := e.errors ++ bd.errors ++
+  local localErrors :: [Message] = e.errors ++
     case e.typerep of
-    | errorType() -> []
     | extType(_, synchronizedType(_, _, _, _, _)) -> []
     | _ -> [err(e.location, "Expression must be a 'synchronized' object")]
     end;
@@ -100,7 +99,10 @@ top::Stmt ::= e::Expr nm::Name bd::Stmt
     openScopeEnv(top.env));
   sys.locks = [ableC_Expr{&($Name{nm}->lck)}];
   
-  forwards to ableC_Stmt {
+  forwards to
+    if !null(localErrors)
+    then warnStmt(localErrors)
+    else ableC_Stmt {
     {
       struct $name{mangledName}* $Name{nm} = (struct $name{mangledName}*) &$Expr{e};
       $Stmt{sys.acquireLocks}

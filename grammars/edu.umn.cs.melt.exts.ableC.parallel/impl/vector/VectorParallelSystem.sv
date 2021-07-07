@@ -260,7 +260,7 @@ top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
         $Stmt{warnStmt(anntWarnings)}
         $Stmt{prepare}
         
-        $BaseTypeExpr{varType} __bound = $Expr{bound};
+        const $BaseTypeExpr{varType} __bound = $Expr{bound};
         const size_t __vecNum = 32 / sizeof($TypeName{vectorElemType});
         
         $Stmt{if annts.furtherBySystem.isJust then parBody else vectorizedLoop}

@@ -371,6 +371,20 @@ Maybe<String> ::= e::Decorated Expr
         then just(s"${lres.fromJust}_neq_${rres.fromJust}")
         else nothing()
         end end
+    | ableC_Expr { $Expr{lhs} && $Expr{rhs} } ->
+        let lres :: Maybe<String> = mangleCondExpr(lhs) in
+        let rres :: Maybe<String> = mangleCondExpr(rhs) in
+        if lres.isJust && rres.isJust
+        then just(s"and_${lres.fromJust}_with_${rres.fromJust}")
+        else nothing()
+        end end
+    | ableC_Expr { $Expr{lhs} || $Expr{rhs} } ->
+        let lres :: Maybe<String> = mangleCondExpr(lhs) in
+        let rres :: Maybe<String> = mangleCondExpr(rhs) in
+        if lres.isJust && rres.isJust
+        then just(s"or_${lres.fromJust}_with_${rres.fromJust}")
+        else nothing()
+        end end
     | _ -> 
       -- This checks that e has a type that is interpreted as true/false
       if e.typerep.defaultFunctionArrayLvalueConversion.isScalarType
