@@ -45,19 +45,36 @@ top::Decl ::= cilkDecl :: Decl
 
   local cleanName :: String = s"__${fname.name}_";
 
-  local bty :: Decorated BaseTypeExpr =
+  local bty :: BaseTypeExpr =
     case cilkDecl of
-    | cilkFunctionProto(_, _, bty, _, _, _) -> bty
-    | cilkFunctionDecl(_, _, bty, _, _, _, _, _) -> bty
+    | cilkFunctionProto(_, _, bty, _, _, _) -> new(bty)
+    | cilkFunctionDecl(_, _, bty, _, _, _, _, _) -> new(bty)
     | _ -> error("Invalid forms reported via errors attribute")
     end;
+  bty.controlStmtContext = top.controlStmtContext;
+  bty.env = top.env;
+  bty.givenRefId = nothing();
 
-  local mty :: Decorated TypeModifierExpr =
+  local mty :: TypeModifierExpr =
     case cilkDecl of
-    | cilkFunctionProto(_, _, _, mty, _, _) -> mty
-    | cilkFunctionDecl(_, _, _, mty, _, _, _, _) -> mty
+    | cilkFunctionProto(_, _, _, mty, _, _) -> new(mty)
+    | cilkFunctionDecl(_, _, _, mty, _, _, _, _) -> new(mty)
     | _ -> error("Invalid forms reported via errors attribute")
     end;
+  mty.baseType = bty.typerep;
+  mty.typeModifierIn = bty.typeModifier;
+  mty.env = openScopeEnv(addEnv(bty.defs, top.env));
+  mty.controlStmtContext = top.controlStmtContext;
+
+  local ds :: Decls =
+    case cilkDecl of
+    | cilkFunctionProto(_, _, _, _, _, _) -> nilDecl()
+    | cilkFunctionDecl(_, _, _, _, _, _, d, _) -> d
+    | _ -> error("Invalid forms reported via errors attribute")
+    end;
+  ds.env = addEnv(mty.defs ++ args.functionDefs, mty.env);
+  ds.isTopLevel = false;
+  ds.controlStmtContext = top.controlStmtContext;
 
   local retMty :: TypeModifierExpr =
     case mty of
@@ -113,19 +130,20 @@ top::Decl ::= cilkDecl :: Decl
 
   top.functionDecls := [];
 
-  local body :: Stmt =
+  local origBody :: Stmt =
     case cilkDecl of
-    | cilkFunctionDecl(_, _, _, _, _, _, _, b) -> 
-        -- We need to inject the functionDecls below our tooling
-        seqStmt(foldr(
-          \decl::Decorated Decl stmt::Stmt ->
-            seqStmt(declStmt(decl.host), stmt),
-          nullStmt(), functionDecls),
-        dropFunctionDecls(b.workstlrParForConverted))
+    | cilkFunctionDecl(_, _, _, _, _, _, _, b) -> new(b)
     | _ -> error("Invalid forms reported via errors attribute")
     end;
-  local bodyCscx :: ControlStmtContext =
-    controlStmtContext(just(retType), false, false, tm:add(body.labelDefs, tm:empty()));
+  origBody.controlStmtContext = bodyCscx;
+  origBody.env = bodyEnv;
+
+  local body :: Stmt =
+    seqStmt(foldr(
+      \decl::Decorated Decl stmt::Stmt ->
+        seqStmt(declStmt(decl.host), stmt),
+      nullStmt(), functionDecls),
+    dropFunctionDecls(origBody.workstlrParForConverted));
   body.controlStmtContext = bodyCscx;
   body.env = bodyEnv;
 
@@ -179,7 +197,9 @@ top::Decl ::= cilkDecl :: Decl
     );
 
   local bodyEnv :: Decorated Env =
-    addEnv(mty.defs ++ args.functionDefs, openScopeEnv(addEnv(bty.defs, top.env)));
+    addEnv(ds.defs ++ origBody.functionDefs, ds.env);
+  local bodyCscx :: ControlStmtContext =
+    controlStmtContext(just(retType), false, false, tm:add(body.labelDefs, tm:empty()));
 
   forwards to
     case cilkDecl of

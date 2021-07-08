@@ -25,10 +25,11 @@ void* workstlr_scheduler(void* ptr) {
 
   // Set the thread locals
   workstlr_thread_deque = deque;
-  // This results in bad errors about already held when we attempt to acquire
-  // an unheld lock. We really should issue a TCB to every logical thread,
-  // but this is a problem (FIXME)
-  __ableC_thread_tcb = NULL;
+  // Ideally, we should allocate each logical thread its own TCB, but this is
+  // expensive (lots of allocations), so instead  for now we allocate one for
+  // each worker (FIXME)
+  struct __ableC_tcb tcb = {RUNNING, sysInfo, NULL, NULL, NULL};
+  __ableC_thread_tcb = &tcb;
 
   const int nThreads = system->nThreads;
 
