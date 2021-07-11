@@ -18,7 +18,7 @@ top::Stmt ::= init::Decl cond::MaybeExpr iter::Expr body::Stmt
     end;
 
   local cleanBody :: Stmt = cleanStmt(body, top.env);
-  cleanBody.env = top.env;
+  cleanBody.env = addEnv(init.defs, openScopeEnv(top.env));
   cleanBody.controlStmtContext = top.controlStmtContext;
 
   local form :: Maybe<(Expr, Exprs)> =
