@@ -64,7 +64,7 @@ top::Stmt ::= init::Decl cond::MaybeExpr iter::Expr body::Stmt
       end
     end;
   local funcArgs :: [(Name, Type)] =
-    foldl(\p::([(Name, Type)], Integer) t::Type ->
+    foldr(\p::([(Name, Type)], Integer) t::Type ->
       (
         (name(s"arg${toString(p.2)}", location=iter.location), t) :: p.1,
         p.2+1

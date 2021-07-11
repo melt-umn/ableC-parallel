@@ -48,7 +48,7 @@ concrete productions top::AssignExpr_c
 
 nonterminal MapReduceArray_c with location, ast<MapReduceArray>;
 concrete productions top::MapReduceArray_c
-| arr::Identifier_c '[' len::Expr_c ']' {
+| arr::Identifier_c ',' len::Expr_c {
     top.ast = arrayExpr(arr.ast, len.ast, location=top.location);
   }
 | m::IMap_t annts::MapReduceAnnts_c '(' func::AssignExpr_c ','
