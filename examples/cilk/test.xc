@@ -29,8 +29,8 @@ int main(int argc, char** argv) {
   printf("\nA\n");
 
   posix group grp; grp = new posix group();
-  parallel for (int i = 0; i < 10; i++) { by sys; in grp; global f; num-threads 4;
-    f(i);
+  parallel for (int i = 0; i < 10; i++) { by sys; in grp; global printf; num-threads 4;
+    printf("%d\n", i);
   }
   sync grp;
   delete grp;

@@ -37,7 +37,7 @@ concrete productions top::Signal_c
   }
 
 -- We only allow positive numbers for +=/-= to enforce that += is intended to
--- mean an increase and -= is intended to mean a decrease. For ==/!= we also
+-- mean an increase and -= is intended to mean a decrease. For =/!= we also
 -- allow negative values (using the DecSignConstant_t terminal)
 nonterminal ModAction_c with location, ast<ModAction>;
 concrete productions top::ModAction_c
@@ -45,7 +45,7 @@ concrete productions top::ModAction_c
 | '+=' '_' { top.ast = modIncrease(nothing()); }
 | '-=' val::DecConstant_t { top.ast = modDecrease(just(toInteger(val.lexeme))); }
 | '-=' '_' { top.ast = modDecrease(nothing()); }
-| '==' val::DecSignConstant_t { top.ast = modEquals(toInteger(val.lexeme)); }
+| '=' val::DecSignConstant_t { top.ast = modEquals(toInteger(val.lexeme)); }
 | '!=' val::DecSignConstant_t { top.ast = modNotEquals(toInteger(val.lexeme)); }
 
 nonterminal SignalAction_c with location, ast<SignalAction>;

@@ -481,7 +481,12 @@ top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
   local publicVars  :: [Name] = nub(annts.publics);
   local globalVars  :: [Name] = nub(annts.globals);
 
-  local localErrors :: [Message] = loop.errors ++ annts.errors ++ missingVars;
+  local localErrors :: [Message] =
+    loop.errors ++ annts.errors ++ missingVars ++
+    case annts.numParallelThreads of
+    | nothing() -> [err(loc, "Parallel for-loop is missing a num-threads annotation")]
+    | _ -> []
+    end;
 
   local liftedName :: String =
     s"__lifted_workstlr_parallel_${cleanLocName(loc.unparse)}_u${toString(genInt())}";
@@ -520,9 +525,28 @@ top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
       (decorate n with {env=top.env;}).valueItem.typerep,
     freePrivate);
 
-  local structItemNames :: [Name] = freePublic ++ freePrivate;
-  local structItemTypes :: [Type] = publicVarTypes ++ privateVarTypes;
+  -- Var type, var name, upper bound, loop body
+  local loopInfo :: (BaseTypeExpr, Name, Expr, Stmt) =
+    case loop of
+    | ableC_Stmt { for($BaseTypeExpr{bt} $Name{i1} = host::(0); host::$Name{_} host::< $Expr{bound}; host::$Name{_} host::++) $Stmt{bd} }
+      -> (bt, i1, bound, new(bd))
+    | _ -> error("Bad for-loop should be caught by ableC-parallel's invocation of this")
+    end;
+  local varType :: Type =
+    (decorate loopInfo.1 with
+      {env=top.env; controlStmtContext=top.controlStmtContext; givenRefId=nothing();}
+    ).typerep;
+
+  local structItemNames :: [Name] =
+    name("__init", location=loc) ::
+    name("__bound", location=loc) ::
+    freePublic ++ freePrivate;
+  local structItemTypes :: [Type] =
+    varType :: varType ::
+    publicVarTypes ++ privateVarTypes;
   local structItemInits :: [Expr] =
+    ableC_Expr { _first_iter } ::
+    ableC_Expr { _num_iters + _first_iter } ::
     map(\n::Name -> ableC_Expr{&$Name{n}}, freePublic)
     ++ map(\n::Name -> ableC_Expr{$Name{n}}, freePrivate);
 
@@ -594,6 +618,26 @@ top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
         )
       )
       ::
+      valueDef(loopInfo.2.name, -- Loop variable
+        declaratorValueItem(
+          decorate declarator(
+            loopInfo.2,
+            baseTypeExpr(),
+            nilAttribute(),
+            nothingInitializer()
+          ) with {
+            typeModifierIn = baseTypeExpr();
+            controlStmtContext = initialControlStmtContext;
+            isTypedef = false;
+            isTopLevel = false;
+            givenStorageClasses = nilStorageClass();
+            givenAttributes = nilAttribute();
+            baseType = varType;
+            env = globalEnvStruct;
+          }
+        )
+      )
+      ::
       map(
         \n::Name ->
           valueDef(n.name,
@@ -646,18 +690,12 @@ top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
       )
     );
 
-  local transformedLoop :: Stmt =
-    (decorate loop with {env=transformedEnv;
+  local transformedBody :: Stmt =
+    (decorate loopInfo.4 with {env=transformedEnv;
                 controlStmtContext=initialControlStmtContext;}).forLift;
-  transformedLoop.env = transformedEnv;
-  transformedLoop.controlStmtContext = initialControlStmtContext;
+  transformedBody.env = transformedEnv;
+  transformedBody.controlStmtContext = initialControlStmtContext;
 
-  local loopDesc :: (Decl, MaybeExpr, Expr, Stmt) =
-    case transformedLoop of
-    | ableC_Stmt { for ($Decl{decl} $Expr{cond}; $Expr{iter}) $Stmt{body} }
-        -> (decl, justExpr(cond), iter, cleanStmt(body, transformedEnv))
-    | _ -> error("Only invoked when the loop is of this form")
-    end;
   local workstlrFunction :: Decl =
     workstlrParFunctionConverter(
       cilkFunctionDecl(
@@ -688,13 +726,15 @@ top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
         nilAttribute(),
         nilDecl(),
         ableC_Stmt {
-          // Loop
-          $Stmt{parallelFor(loopDesc.1, loopDesc.2, loopDesc.3, loopDesc.4, 
-            nilParallelAnnotations())}
+          $BaseTypeExpr{loopInfo.1} __init = args->__init;
+          $BaseTypeExpr{loopInfo.1} __bound = args->__bound;
 
-          // Sync
-          $Stmt{syncTask(nilExpr())}
-
+          for($BaseTypeExpr{loopInfo.1} $Name{loopInfo.2} = __init;
+              $Name{loopInfo.2} < __bound;
+              $Name{loopInfo.2}++) {
+            $Stmt{transformedBody}
+          }
+          
           free(args);
           return 0;
         }
@@ -702,27 +742,48 @@ top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
     );
   
   local spawnAnnts :: SpawnAnnotations =
-    annts.parToSpawnAnnts.dropShareAnnotations;
+    consSpawnAnnotations(
+      spawnPrivateAnnotation(name("args", location=loc) :: [], location=loc),
+      annts.parToSpawnAnnts
+    );
   local fwrdStmt :: Stmt =
     ableC_Stmt {
       {
-        struct $name{liftedName ++ "_struct"}* args =
-          malloc(sizeof(struct $name{liftedName ++ "_struct"}));
-        $Stmt{foldStmt(map(
-          \p::Pair<Name Expr> ->
-            ableC_Stmt {
-              args->$Name{p.fst} = $Expr{p.snd};
-            },
-          zipWith(pair, structItemNames, structItemInits)))}
+        const int _n_threads = $Expr{annts.numParallelThreads.fromJust};
+        if (__builtin_expect(_n_threads < 1, 0)) {
+          fprintf(stderr,
+            $stringLiteralExpr{s"Parallel for-loop must have a positive number of threads (${loc.unparse})"});
+          exit(-1);
+        }
 
-        int __tmp;
-        $Stmt{workstlrSpawn(
-          ableC_Expr {
-            __tmp = $name{liftedName}(args)
-          },
-          loc,
-          spawnAnnts
-        )}
+        const $BaseTypeExpr{loopInfo.1} _n_iters = $Expr{loopInfo.3};
+        const $BaseTypeExpr{loopInfo.1} _n_iters_per_thread = _n_iters / _n_threads;
+        const $BaseTypeExpr{loopInfo.1} _n_iters_extra = _n_iters % _n_threads;
+
+        for (int _thread_num = 0; _thread_num < _n_threads; _thread_num++) {
+          const $BaseTypeExpr{loopInfo.1} _first_iter = _n_iters_per_thread * _thread_num
+            + (_thread_num < _n_iters_extra ? _thread_num : _n_iters_extra);
+          const $BaseTypeExpr{loopInfo.1} _num_iters = _n_iters_per_thread
+            + (_thread_num < _n_iters_extra ? 1 : 0);
+  
+          struct $name{liftedName ++ "_struct"}* args =
+            malloc(sizeof(struct $name{liftedName ++ "_struct"}));
+          $Stmt{foldStmt(map(
+           \p::Pair<Name Expr> ->
+              ableC_Stmt {
+                args->$Name{p.fst} = $Expr{p.snd};
+              },
+            zipWith(pair, structItemNames, structItemInits)))}
+
+          int __tmp;
+          $Stmt{workstlrSpawn(
+            ableC_Expr {
+              __tmp = $name{liftedName}(args)
+            },
+            loc,
+            spawnAnnts
+          )}
+        }
       }
     };
 

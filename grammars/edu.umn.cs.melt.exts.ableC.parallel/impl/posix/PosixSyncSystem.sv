@@ -25,7 +25,7 @@ top::SyncSystem ::=
                           controlStmtContext=initialControlStmtContext;})};
           checked_pthread_mutex_lock(&(_tmp->lk));
           if (__builtin_expect(_tmp->work != -1 || _tmp->waiting != 0, 0)) {
-            fprintf(stderr, $stringLiteralExpr{s"Attempted to used an in-use thread object ({t.location.unparse})\n"});
+            fprintf(stderr, $stringLiteralExpr{s"Attempted to use an in-use thread object (${t.location.unparse})\n"});
             exit(-1);
           }
           _tmp->work = 1;

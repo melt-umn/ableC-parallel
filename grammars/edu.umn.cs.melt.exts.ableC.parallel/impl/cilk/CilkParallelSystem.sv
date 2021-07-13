@@ -480,15 +480,7 @@ top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
   local liftedName :: String =
     s"__lifted_cilk_parallel_${cleanLocName(loc.unparse)}_u${toString(genInt())}";
 
-  local freeVars :: [Name] =
-    case loop of
-    | ableC_Stmt { for($BaseTypeExpr{_} $Name{n} = host::(0); host::$Name{_} host::< $Expr{_}; host::$Name{_} host::++) $Stmt{bd} }
-      -> filter(
-          \nm::Name -> nm != n,
-          nub((decorate bd with {controlStmtContext=initialControlStmtContext;
-                                env=top.env;}).freeVariables))
-    | _ -> error("Invalid for-loop type should be handled in the base system")
-    end;
+  local freeVars :: [Name] = nub(loop.freeVariables);
 
   local freePublic  :: [Name] = intersect(freeVars, publicVars);
   local freePrivate :: [Name] = intersect(freeVars, privateVars);
@@ -693,6 +685,7 @@ top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
   transformedBody.env = transformedEnv;
   transformedBody.controlStmtContext = initialControlStmtContext;
 
+  {-
   local spawnedBody :: Stmt =
     spawnTask(
       case 
@@ -703,6 +696,7 @@ top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
       | _ -> errorExpr([err(loc, "Invalid body of cilk parallel for-loop")], location=loc)
       end,
       nilSpawnAnnotations());
+  -}
 
   local cilkFunction :: Decl =
     cilkParFunctionConverter(
@@ -737,12 +731,19 @@ top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
           $BaseTypeExpr{loopInfo.1} __init = args->__init;
           $BaseTypeExpr{loopInfo.1} __bound = args->__bound;
           
+          for($BaseTypeExpr{loopInfo.1} $Name{loopInfo.2} = __init;
+              $Name{loopInfo.2} < __bound;
+              $Name{loopInfo.2}++) {
+            $Stmt{transformedBody}
+          }
+          /*
           $Stmt{parallelFor(ableC_Decl { $BaseTypeExpr{loopInfo.1} $Name{loopInfo.2} = __init; },
             justExpr(ableC_Expr{$Name{loopInfo.2} < __bound}),
             ableC_Expr{$Name{loopInfo.2}++},
             transformedBody, nilParallelAnnotations())}
           
           $Stmt{syncTask(nilExpr())}
+          */
 
           free(args);
           return 0;

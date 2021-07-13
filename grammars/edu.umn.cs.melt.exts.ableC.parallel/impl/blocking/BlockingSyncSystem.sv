@@ -25,7 +25,7 @@ top::SyncSystem ::=
                                 controlStmtContext=initialControlStmtContext;})};
           __ableC_spinlock_acquire(&(_tmp->spinlock));
           if (__builtin_expect(_tmp->work != -1 || _tmp->waiting != 0 || _tmp->waiting_head != (void*) 0, 0)) {
-            fprintf(stderr, $stringLiteralExpr{s"Attempted to used an in-use thread object ({t.location.unparse})\n"});
+            fprintf(stderr, $stringLiteralExpr{s"Attempted to use an in-use thread object (${t.location.unparse})\n"});
             exit(-1);
           }
           _tmp->work = 1;
