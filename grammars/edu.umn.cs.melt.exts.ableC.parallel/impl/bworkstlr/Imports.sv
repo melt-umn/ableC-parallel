@@ -18,5 +18,6 @@ imports edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:parallel:spawn;
 imports edu:umn:cs:melt:exts:ableC:parallel:abstractsyntax:sync;
 
 imports edu:umn:cs:melt:exts:ableC:parallel:impl:workstlr;
+imports edu:umn:cs:melt:exts:ableC:parallel:impl:workstlr:func;
 
 imports edu:umn:cs:melt:exts:ableC:constructor:abstractsyntax;

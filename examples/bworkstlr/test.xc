@@ -12,8 +12,11 @@
 #define N_FIND 48
 #define N_CNT 16
 
+bworkstlr parallel wrks;
+bthrdpool parallel thdp;
+
 int nqueens_next(const int n, char* init);
-workstlr_func int count_nqueens(int n, char* init);
+parallel by wrks int count_nqueens(int n, char* init);
 
 void find_test(bthrdpool parallel* thdp) {
   posix group grp; grp = new posix group();
@@ -71,8 +74,8 @@ void count_test(bworkstlr parallel* wrks) {
 
 int main() {
   fcfs balancer blncr = new fcfs balancer(8);
-  bworkstlr parallel wrks = new bworkstlr parallel(blncr, 8);
-  bthrdpool parallel thdp = new bthrdpool parallel(blncr);
+  wrks = new bworkstlr parallel(blncr, 8);
+  thdp = new bthrdpool parallel(blncr);
 
   posix parallel thds = new posix parallel();
 
@@ -196,7 +199,8 @@ int nqueens_find_next(const int n, chess_board* board, int iR, int iC, int goUp)
   }
 }
 
-workstlr_func int count_helper(int n, chess_board* board, int r) {
+parallel by wrks int count_helper(int n, chess_board* board, int r);
+parallel by wrks int count_helper(int n, chess_board* board, int r) {
   while (r < n && board->order[r] != '\0')
     r++;
 
@@ -241,7 +245,7 @@ workstlr_func int count_helper(int n, chess_board* board, int r) {
   return cnt;
 }
 
-workstlr_func int count_nqueens(int n, char* init) {
+parallel by wrks int count_nqueens(int n, char* init) {
   chess_board* board = malloc(sizeof(chess_board));
   if (board == NULL || initialize_board(n, board) != 1) exit(50);
 

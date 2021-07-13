@@ -9,6 +9,7 @@ top::ParallelSystem ::=
   top.fFor = cilkParFor;
   top.newProd = just(\a::Exprs l::Location -> cilkParallelNew(a, location=l));
   top.deleteProd = just(cilkParallelDelete);
+  top.transFunc = cilkParFunctionConverter;
 }
 
 aspect production systemNumbering
@@ -700,7 +701,7 @@ top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
 
   local cilkFunction :: Decl =
     cilkParFunctionConverter(
-      cilkFunctionDecl(
+      parallelFunctionDecl(
         nilStorageClass(), nilSpecialSpecifier(),
         builtinTypeExpr(nilQualifier(), signedType(intType())),
         functionTypeExprWithArgs(

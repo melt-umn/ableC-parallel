@@ -5,8 +5,10 @@
 
 #include "nqueens.h"
 
-cilk_func int count_helper(int n, chess_board* board, int r);
-cilk_func int count_nqueens(int n);
+cilk parallel sys;
+
+parallel by sys int count_helper(int n, chess_board* board, int r);
+parallel by sys int count_nqueens(int n);
 
 int main(int argc, char** argv) {
   if (argc != 2) {
@@ -22,7 +24,7 @@ int main(int argc, char** argv) {
     exit(2);
   }
   
-  cilk parallel sys = new cilk parallel(4);
+  sys = new cilk parallel(4);
   posix thread thd; thd = new posix thread();
 
   int res;
@@ -57,7 +59,7 @@ int main(int argc, char** argv) {
   return 0;
 }
 
-cilk_func int count_body(int n, chess_board* board, int r, int c, int* ret) {
+parallel by sys int count_body(int n, chess_board* board, int r, int c, int* ret) {
   if (board->cols[c] == FILLED) { return 0; }
 
   int posDiagonal = (n-1) - r + c;
@@ -84,7 +86,7 @@ cilk_func int count_body(int n, chess_board* board, int r, int c, int* ret) {
   return 0;
 }
 
-cilk_func int count_helper(int n, chess_board* board, int r) {
+parallel by sys int count_helper(int n, chess_board* board, int r) {
   if (r == n) {
     return 1;
   }
@@ -103,7 +105,7 @@ cilk_func int count_helper(int n, chess_board* board, int r) {
   return cnt;
 }
 
-cilk_func int count_nqueens(int n) {
+parallel by sys int count_nqueens(int n) {
   chess_board* board = malloc(sizeof(chess_board));
   if (board == NULL || initialize_board(n, board) != 1) exit(50);
 

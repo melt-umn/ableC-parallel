@@ -5,8 +5,9 @@
 
 #include "nqueens.h"
 
-workstlr_func int count_helper(int n, chess_board* board, int r);
-workstlr_func int count_nqueens(int n);
+workstlr parallel sys;
+parallel by sys int count_helper(int n, chess_board* board, int r);
+parallel by sys int count_nqueens(int n);
 
 int main(int argc, char** argv) {
   if (argc != 2) {
@@ -22,7 +23,7 @@ int main(int argc, char** argv) {
     exit(2);
   }
   
-  workstlr parallel sys = new workstlr parallel(4);
+  sys = new workstlr parallel(4);
   posix thread thd; thd = new posix thread();
 
   int res;
@@ -57,7 +58,7 @@ int main(int argc, char** argv) {
   return 0;
 }
 
-workstlr_func int count_helper(int n, chess_board* board, int r) {
+parallel by sys int count_helper(int n, chess_board* board, int r) {
   if (r == n) {
     destroy_board(board);
     free(board);
@@ -98,7 +99,7 @@ workstlr_func int count_helper(int n, chess_board* board, int r) {
   return cnt;
 }
 
-workstlr_func int count_nqueens(int n) {
+parallel by sys int count_nqueens(int n) {
   chess_board* board = malloc(sizeof(chess_board));
   if (board == NULL || initialize_board(n, board) != 1) exit(50);
 

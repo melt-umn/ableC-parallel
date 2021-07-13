@@ -93,7 +93,7 @@ top::Stmt ::= init::Decl cond::MaybeExpr iter::Expr body::Stmt
  
   local cilkFunction :: Decl =
     cilkParFunctionConverter(
-      cilkFunctionDecl(
+      parallelFunctionDecl(
         nilStorageClass(), nilSpecialSpecifier(),
         builtinTypeExpr(nilQualifier(), signedType(intType())),
         functionTypeExprWithArgs(

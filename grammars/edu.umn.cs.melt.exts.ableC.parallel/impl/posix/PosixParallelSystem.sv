@@ -9,6 +9,7 @@ top::ParallelSystem ::=
   top.fFor = posixFor;
   top.newProd = just(\a::Exprs l::Location -> posixParallelNew(a, location=l));
   top.deleteProd = just(posixParallelDelete);
+  top.transFunc = parallelFuncToC;
 }
 
 aspect production systemNumbering

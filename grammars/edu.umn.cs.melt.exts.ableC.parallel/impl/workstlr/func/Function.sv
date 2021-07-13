@@ -1,21 +1,21 @@
 grammar edu:umn:cs:melt:exts:ableC:parallel:impl:workstlr:func;
 
 abstract production workstlrParFunctionConverter
-top::Decl ::= cilkDecl :: Decl
+top::Decl ::= func::ParallelFunctionDecl
 {
-  top.pp = cilkDecl.pp;
+  top.pp = func.pp;
 
   -- TODO: Locations
   local localErrors :: [Message] =
-    case cilkDecl of
-    | cilkFunctionProto(storage, fnquals, bt, mt, fname, attrs) ->
+    case func of
+    | parallelFunctionProto(storage, fnquals, bt, mt, fname, attrs) ->
         fnquals.errors ++ bt.errors ++ mt.errors ++
         case storage, fnquals, attrs of
         | nilStorageClass(), nilSpecialSpecifier(), nilAttribute() -> []
         -- There's a comment about not allowing these in the ableC-cilk extension
         | _, _, _ -> [err(fname.location, s"Parallel Workstlr functions should not have storage classes, qualifiers, or attributes on them")]
         end
-    | cilkFunctionDecl(storage, fnquals, bt, mt, fname, attrs, dcls, body) ->
+    | parallelFunctionDecl(storage, fnquals, bt, mt, fname, attrs, dcls, body) ->
         fnquals.errors ++ bt.errors ++ mt.errors ++ dcls.errors ++
         -- We don't add body.errors because spawn/sync behave differently in
         -- a parallel cilk function and would otherwise result in errors
@@ -23,7 +23,6 @@ top::Decl ::= cilkDecl :: Decl
         | nilStorageClass(), nilSpecialSpecifier(), nilAttribute() -> []
         | _, _, _ -> [err(fname.location, s"Parallel Workstlr functions should not have storage classes, qualifiers, or attributes on them")]
         end
-    | _ -> error("Internal Error (ableC-parallel-workstlr)")
     end
     ++
     (if fname.name == "main"
@@ -37,29 +36,26 @@ top::Decl ::= cilkDecl :: Decl
     -- TODO: Can we detect variable shadowing and issue an error
 
   local fname :: Name =
-    case cilkDecl of
-    | cilkFunctionProto(_, _, _, _, n, _) -> n
-    | cilkFunctionDecl(_, _, _, _, n, _, _, _) -> n
-    | _ -> error("Invalid forms reported via errors attribute")
+    case func of
+    | parallelFunctionProto(_, _, _, _, n, _) -> n
+    | parallelFunctionDecl(_, _, _, _, n, _, _, _) -> n
     end;
 
   local cleanName :: String = s"__${fname.name}_";
 
   local bty :: BaseTypeExpr =
-    case cilkDecl of
-    | cilkFunctionProto(_, _, bty, _, _, _) -> new(bty)
-    | cilkFunctionDecl(_, _, bty, _, _, _, _, _) -> new(bty)
-    | _ -> error("Invalid forms reported via errors attribute")
+    case func of
+    | parallelFunctionProto(_, _, bty, _, _, _) -> new(bty)
+    | parallelFunctionDecl(_, _, bty, _, _, _, _, _) -> new(bty)
     end;
   bty.controlStmtContext = top.controlStmtContext;
   bty.env = top.env;
   bty.givenRefId = nothing();
 
   local mty :: TypeModifierExpr =
-    case cilkDecl of
-    | cilkFunctionProto(_, _, _, mty, _, _) -> new(mty)
-    | cilkFunctionDecl(_, _, _, mty, _, _, _, _) -> new(mty)
-    | _ -> error("Invalid forms reported via errors attribute")
+    case func of
+    | parallelFunctionProto(_, _, _, mty, _, _) -> new(mty)
+    | parallelFunctionDecl(_, _, _, mty, _, _, _, _) -> new(mty)
     end;
   mty.baseType = bty.typerep;
   mty.typeModifierIn = bty.typeModifier;
@@ -67,10 +63,9 @@ top::Decl ::= cilkDecl :: Decl
   mty.controlStmtContext = top.controlStmtContext;
 
   local ds :: Decls =
-    case cilkDecl of
-    | cilkFunctionProto(_, _, _, _, _, _) -> nilDecl()
-    | cilkFunctionDecl(_, _, _, _, _, _, d, _) -> d
-    | _ -> error("Invalid forms reported via errors attribute")
+    case func of
+    | parallelFunctionProto(_, _, _, _, _, _) -> nilDecl()
+    | parallelFunctionDecl(_, _, _, _, _, _, d, _) -> d
     end;
   ds.env = addEnv(mty.defs ++ args.functionDefs, mty.env);
   ds.isTopLevel = false;
@@ -121,8 +116,8 @@ top::Decl ::= cilkDecl :: Decl
     );
 
   local functionDecls :: [Decorated Decl] = 
-    case cilkDecl of
-    | cilkFunctionDecl(_, _, bty, mty, _, _, ds, bd) -> 
+    case func of
+    | parallelFunctionDecl(_, _, bty, mty, _, _, ds, bd) -> 
         bty.functionDecls ++ mty.functionDecls ++ ds.functionDecls ++
         bd.functionDecls
     | _ -> error("Invalid forms reported via errors attribute")
@@ -131,8 +126,8 @@ top::Decl ::= cilkDecl :: Decl
   top.functionDecls := [];
 
   local origBody :: Stmt =
-    case cilkDecl of
-    | cilkFunctionDecl(_, _, _, _, _, _, _, b) -> new(b)
+    case func of
+    | parallelFunctionDecl(_, _, _, _, _, _, _, b) -> new(b)
     | _ -> error("Invalid forms reported via errors attribute")
     end;
   origBody.controlStmtContext = bodyCscx;
@@ -202,8 +197,8 @@ top::Decl ::= cilkDecl :: Decl
     controlStmtContext(just(retType), false, false, tm:add(body.labelDefs, tm:empty()));
 
   forwards to
-    case cilkDecl of
-    | cilkFunctionProto(_, _, _, _, _, _) ->
+    case func of
+    | parallelFunctionProto(_, _, _, _, _, _) ->
       if !null(localErrors)
       then warnDecl(localErrors)
       else decls(
@@ -213,7 +208,7 @@ top::Decl ::= cilkDecl :: Decl
           ableC_Decl { $directTypeExpr{retType} $name{cleanName++"fast"}($Parameters{fastParams}); },
           ableC_Decl { $directTypeExpr{retType} $Name{fname}($Parameters{new(args)}) ; } -- We produce this so that the name exists
         ]))
-    | cilkFunctionDecl(_, _, _, _, _, _, _, _) ->
+    | parallelFunctionDecl(_, _, _, _, _, _, _, _) ->
       if !null(localErrors)
       then warnDecl(localErrors)
       else decls(

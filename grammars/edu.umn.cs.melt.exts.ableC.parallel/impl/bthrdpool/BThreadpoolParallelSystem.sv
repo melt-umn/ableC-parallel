@@ -9,6 +9,7 @@ top::ParallelSystem ::=
   top.fFor = thrdpoolFor;
   top.newProd = just(\a::Exprs l::Location -> bthrdpoolParallelNew(a, location=l));
   top.deleteProd = just(bthrdpoolParallelDelete);
+  top.transFunc = parallelFuncToC;
 }
 
 aspect production systemNumbering

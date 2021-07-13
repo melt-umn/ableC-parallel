@@ -2,49 +2,40 @@ grammar edu:umn:cs:melt:exts:ableC:parallel:impl:cilk;
 
 global MODULE_NAME :: String = "ableC-parallel-cilk";
 
-marking terminal CilkFunc_t 'cilk_func' lexer classes {Keyword, Reserved};
-
-concrete productions top::Declaration_c
-| 'cilk_func' d::CilkFunctionDefinition_c {
-    top.ast = cilkParFunctionConverter(d.ast);
-  }
-
 abstract production cilkParFunctionConverter
-top::Decl ::= decl::Decl
+top::Decl ::= decl::ParallelFunctionDecl
 {
-  top.pp = ppConcat([text("cilk_func"), space(), decl.pp]);
-
+  top.pp = ppConcat([text("parallel by cilk"), space(), decl.pp]);
+  
   local bty :: Decorated BaseTypeExpr =
     case decl of
-    | cilkFunctionDecl(_, _, bty, _, _, _, _, _) -> bty
-    | cilkFunctionProto(_, _, bty, _, _, _) -> bty
-    | _ -> error("Decl must be a function based on concrete syntax")
+    | parallelFunctionDecl(_, _, bty, _, _, _, _, _) -> bty
+    | parallelFunctionProto(_, _, bty, _, _, _) -> bty
     end;
   local mty :: Decorated TypeModifierExpr =
     case decl of
-    | cilkFunctionDecl(_, _, _, mty, _, _, _, _) -> mty
-    | cilkFunctionProto(_, _, _, mty, _, _) -> mty
-    | _ -> error("Decl must be a function based on concrete syntax")
+    | parallelFunctionDecl(_, _, _, mty, _, _, _, _) -> mty
+    | parallelFunctionProto(_, _, _, mty, _, _) -> mty
     end;
 
   local retMty :: TypeModifierExpr =
     case mty of
     | functionTypeExprWithArgs(r, _, _, _) -> r
     | functionTypeExprWithoutArgs(r, _, _) -> r
-    | _ -> error("Decl must be a function based on concrete syntax")
+    | _ -> error("Other types are not functions")
     end;
   local args :: Parameters =
     case mty of
     | functionTypeExprWithArgs(_, args, _, _) -> args
     | functionTypeExprWithoutArgs(_, _, _) -> nilParameters()
-    | _ -> error("Decl must be a function based on concrete syntax")
+    | _ -> error("Other types are not functions")
     end;
   local retType :: Type = (decorate retMty with {baseType=bty.typerep; typeModifierIn=baseTypeExpr();
       env=top.env; controlStmtContext=initialControlStmtContext;}).typerep;
 
   forwards to
     case decl of
-    | cilkFunctionDecl(storage, fnquals, bty, mty, fname, attrs, dcls, body)
+    | parallelFunctionDecl(storage, fnquals, bty, mty, fname, attrs, dcls, body)
       -> decls(
           consDecl(
             decls(foldDecl(map(\d::Decorated Decl -> new(d), body.globalDecls))),
@@ -66,7 +57,7 @@ top::Decl ::= decl::Decl
             )
           )
         )
-    | cilkFunctionProto(storage, fnquals, bty, mty, fname, attrs)
+    | parallelFunctionProto(storage, fnquals, bty, mty, fname, attrs)
       -> decls(
           consDecl(
             ableC_Decl { $directTypeExpr{retType} $Name{fname}($Parameters{args}) ; },
@@ -77,6 +68,5 @@ top::Decl ::= decl::Decl
             )
           )
         )
-    | _ -> error("Concrete syntax above will always produce one of these cases")
     end;
 }

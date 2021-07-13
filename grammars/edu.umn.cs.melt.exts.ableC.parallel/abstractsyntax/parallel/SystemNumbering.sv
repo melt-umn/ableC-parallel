@@ -43,4 +43,6 @@ top::ParallelSystem ::=
     -> warnStmt([err(l, "Placeholder parallel system should never be used")]);
   top.newProd = nothing();
   top.deleteProd = nothing();
+  top.transFunc = \f::ParallelFunctionDecl
+    -> warnDecl([err(builtinLoc("ableC-parallel"), "Placeholder parallel system should never be used")]);
 }

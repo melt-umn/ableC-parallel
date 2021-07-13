@@ -5,12 +5,15 @@
 
 #include "nqueens.h"
 
-cilk_func int fib(int n);
-cilk_func int count_nqueens(int n);
+cilk parallel fibSys;
+cilk parallel qnsSys;
+
+parallel by fibSys int fib(int n);
+parallel by qnsSys int count_nqueens(int n);
 
 int main() {
-  cilk parallel fibSys = new cilk parallel(4);
-  cilk parallel qnsSys = new cilk parallel(4);
+  fibSys = new cilk parallel(4);
+  qnsSys = new cilk parallel(4);
 
   posix group grp; grp = new posix group();
 
@@ -43,7 +46,7 @@ int main() {
 }
 
 /* Fibonacci Code */
-cilk_func int fib(int n) {
+parallel by fibSys int fib(int n) {
   if (n <= 1) return n;
 
   int x, y;
@@ -55,8 +58,8 @@ cilk_func int fib(int n) {
 }
 
 /* N-Queens Code */
-cilk_func int count_helper(int n, chess_board* board, int r);
-cilk_func int count_body(int n, chess_board* board, int r, int c, int* ret) {
+parallel by qnsSys int count_helper(int n, chess_board* board, int r);
+parallel by qnsSys int count_body(int n, chess_board* board, int r, int c, int* ret) {
   if (board->cols[c] == FILLED) { return 0; }
 
   int posDiagonal = (n-1) - r + c;
@@ -83,7 +86,7 @@ cilk_func int count_body(int n, chess_board* board, int r, int c, int* ret) {
   return 0;
 }
 
-cilk_func int count_helper(int n, chess_board* board, int r) {
+parallel by qnsSys int count_helper(int n, chess_board* board, int r) {
   if (r == n) {
     return 1;
   }
@@ -102,7 +105,7 @@ cilk_func int count_helper(int n, chess_board* board, int r) {
   return cnt;
 }
 
-cilk_func int count_nqueens(int n) {
+parallel by qnsSys int count_nqueens(int n) {
   chess_board* board = malloc(sizeof(chess_board));
   if (board == NULL || initialize_board(n, board) != 1) exit(50);
 

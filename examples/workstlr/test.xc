@@ -2,12 +2,14 @@
 #include <ableC_posix.h>
 #include <stdio.h>
 
+workstlr parallel sys;
+
 int fib(int n) {
   if (n <= 1) return n;
   return fib(n-1) + fib(n-2);
 }
 
-workstlr_func int h(int n) {
+parallel by sys int h(int n) {
   posix parallel thrds = new posix parallel();
   posix thread thd; thd = new posix thread();
 
@@ -21,12 +23,12 @@ workstlr_func int h(int n) {
   return x;
 }
 
-workstlr_func void f(int n) {
+parallel by sys void f(int n) {
   printf("%d\n", n);
   return;
 }
 
-workstlr_func int foo() {
+parallel by sys int foo() {
   parallel for (int i = 0; i < 10; ++i) {
     f(i);
   }
@@ -37,7 +39,7 @@ workstlr_func int foo() {
 }
 
 int main(int argc, char** argv) {
-  workstlr parallel sys = new workstlr parallel(4);
+  sys = new workstlr parallel(4);
   posix thread thd; thd = new posix thread();
   
   int tmp;

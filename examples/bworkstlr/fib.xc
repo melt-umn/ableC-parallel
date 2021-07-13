@@ -4,7 +4,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-workstlr_func int fib(int n) { 
+bworkstlr parallel thds;
+parallel by thds int fib(int n);
+parallel by thds int fib(int n) { 
   if (n <= 1) return n;
   else {
     int x, y;
@@ -23,7 +25,7 @@ int main(int argc, char** argv) {
   int n = atoi(argv[1]);
 
   fcfs balancer blncr = new fcfs balancer(8);
-  bworkstlr parallel thds = new bworkstlr parallel(blncr, 8);
+  thds = new bworkstlr parallel(blncr, 8);
 
   posix group grp; grp = new posix group();
 

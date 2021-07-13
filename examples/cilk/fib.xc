@@ -4,7 +4,9 @@
 #include <stdlib.h>
 #include <time.h>
 
-cilk_func int fib(int);
+cilk parallel sys;
+
+parallel by sys int fib(int);
 
 int main(int argc, char** argv) {
 
@@ -19,7 +21,7 @@ int main(int argc, char** argv) {
     exit(-1);
   }
 
-  cilk parallel sys = new cilk parallel(4);
+  sys = new cilk parallel(4);
   posix thread thd; thd = new posix thread();
 
   int res;
@@ -54,7 +56,7 @@ int main(int argc, char** argv) {
   return 0;
 }
 
-cilk_func int fib(int n) {
+parallel by sys int fib(int n) {
   if (n <= 1) return n;
 
   int x, y;
