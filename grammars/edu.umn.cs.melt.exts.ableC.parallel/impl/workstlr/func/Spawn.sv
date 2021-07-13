@@ -57,6 +57,36 @@ top::Stmt ::= expr::Expr annts::SpawnAnnotations
     | _ -> error("Invalid forms reported via errors attribute")
     end;
 
+  local valType :: Type = 
+    (decorate ableC_Expr{$name{s"__${fname}_fast"}} 
+      with {env=top.env; controlStmtContext=initialControlStmtContext;}).typerep;
+  local funcReturnType :: Type =
+    case valType of
+    | functionType(res, _, _) -> res
+    | _ -> error("Bad types report via errors attributes")
+    end;
+  local retVoid :: Boolean = 
+    case funcReturnType of 
+    | builtinType(_, voidType()) -> true 
+    | _ -> false
+    end;
+  local functionErrs :: [Message] =
+    let lookupErrs :: [Message] =
+      (decorate name(s"__${fname}_fast", location=expr.location) with {env=top.env;}).valueLookupCheck
+    in
+    if !null(lookupErrs)
+    then lookupErrs
+    else case valType of
+      | functionType(_, _, _) ->
+        if retVoid && lhsAssignment.isJust
+        then [err(expr.location, "Cannot assign the result of a void function")]
+        else if !retVoid && !lhsAssignment.isJust
+        then [err(expr.location, "Workstlr spawns cannot currently ignore the result of the function")]
+        else []
+      | _ -> [err(expr.location, "Attempted to call a value of non-functiontype")]
+      end
+    end;
+
   local lhsAssignment :: Maybe<Expr> =
     case expr of
     | eqExpr(declRefExpr(n), _) -> just(ableC_Expr{$Name{n}})
@@ -87,6 +117,8 @@ top::Stmt ::= expr::Expr annts::SpawnAnnotations
     then warnStmt([err(expr.location, "Annotations not currently supported on workstlr-style spawns.")])
     else if !validForm
     then warnStmt([err(expr.location, "This type of expression is not currently supported for workstlr-style spawns: " ++ hackUnparse(expr))])
+    else if !null(functionErrs)
+    then warnStmt(functionErrs)
     else ableC_Stmt {{
         $Stmt{saveVariables(top.env)}
 
