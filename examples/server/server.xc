@@ -23,6 +23,10 @@
 #define N_COUNT 4
 #define N_WRITERS 4
 
+thrdpool parallel processing;
+thrdpool parallel searching;
+workstlr parallel counting;
+
 /******************************************************************************
  * Bounded Buffer
  ******************************************************************************/
@@ -193,7 +197,8 @@ int nqueens_find_next(const int n, chess_board* board, int iR, int iC, int goUp)
   }
 }
 
-workstlr_func int count_helper(int n, chess_board* board, int r) {
+parallel by counting int count_helper(int n, chess_board* board, int r);
+parallel by counting int count_helper(int n, chess_board* board, int r) {
   while (r < n && board->order[r] != '\0')
     r++;
 
@@ -238,7 +243,7 @@ workstlr_func int count_helper(int n, chess_board* board, int r) {
   return cnt;
 }
 
-workstlr_func int count_nqueens(int n, char* init) {
+parallel by counting int count_nqueens(int n, char* init) {
   chess_board* board = malloc(sizeof(chess_board));
   if (board == NULL || initialize_board(n, board) != 1) exit(50);
 
@@ -257,10 +262,6 @@ workstlr_func int count_nqueens(int n, char* init) {
  ******************************************************************************/
 int sockfd;
 bounded_buffer* to_deliver;
-
-thrdpool parallel processing;
-thrdpool parallel searching;
-workstlr parallel counting;
 
 void handle_request(struct request* req);
 

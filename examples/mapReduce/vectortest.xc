@@ -13,7 +13,7 @@ int main() {
     map[fuse map-map; by vect; sync-by posix;]
     (
       \x -> x * x,
-      map(\x -> x * x, arr[100])
+      map(\x -> x * x, arr, 100)
     );
   
   printf("%d %d %d %d %d %d\n", fourths[0], fourths[5], fourths[10], fourths[25], fourths[50], fourths[99]);

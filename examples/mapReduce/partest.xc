@@ -22,7 +22,7 @@ int main() {
       map[fuse map-map;]
       (
         \p -> p.x + p.y + 1,
-        map(\x -> ({struct pair p = {x, x+1}; p;}), arr[100])
+        map(\x -> ({struct pair p = {x, x+1}; p;}), arr, 100)
       )
     );
   printf("%d\n", tmp);
@@ -35,7 +35,7 @@ int main() {
       map[fuse map-map;]
       (
         \x -> x * 2,
-        map(\x -> x * x, arr[100])
+        map(\x -> x * x, arr, 100)
       )
     );
   printf("%d\n", val);
@@ -44,7 +44,7 @@ int main() {
     map[fuse map-map; by thrds; num-threads 4; sync-by posix;]
     (
       square,
-      map(square, arr[100])
+      map(square, arr, 100)
     );
   printf("%d %d %d %d %d %d\n", fourths[0], fourths[5], fourths[10], fourths[25], fourths[50], fourths[99]);
   free(fourths);
