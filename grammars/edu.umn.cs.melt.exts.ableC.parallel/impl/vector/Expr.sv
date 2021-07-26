@@ -10,7 +10,7 @@ propagate vectorizeForm on Expr excluding arraySubscriptExpr;
 inherited attribute vectorizeVar :: String occurs on Expr;
 propagate vectorizeVar on Expr;
 
-flowtype vectorizeErrors {vectorizeVar} on Expr;
+flowtype vectorizeErrors {vectorizeVar, env, controlStmtContext} on Expr;
 
 aspect production exprStmt
 top::Stmt ::= d::Expr
