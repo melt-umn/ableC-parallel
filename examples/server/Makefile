@@ -3,18 +3,8 @@ ABLEC_BASE?=../../../../ableC
 # Path from current directory to top level extensions directory
 EXTS_BASE?=../../../../extensions
 
-# The Silver compiler to use
-SILVER=silver-ableC
-# The jar file to build
-ABLEC_JAR=ableC.jar
-# The artifact specification grammar to compile
-ARTIFACT=artifact
-# All directories containing grammars that may be included
-GRAMMAR_DIRS=$(ABLEC_BASE)/grammars $(wildcard $(EXTS_BASE)/*/grammars) $(ARTIFACT)
-# All silver files in included grammars, to be included as dependancies
-GRAMMAR_SOURCES=$(shell find $(GRAMMAR_DIRS) -name *.sv -print0 | xargs -0)
-# Flags passed to silver including the appropriate directories
-override SVFLAGS+=$(addprefix -I ,$(GRAMMAR_DIRS))
+# The jar file to use
+ABLEC_JAR=../ableC.jar
 
 # All extended C files to compile
 XC_FILES=$(wildcard *.xc)
@@ -57,15 +47,6 @@ SRC_SOURCES=$(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.c))
 
 all: server.out tester.out stress.out
 
-libs: $(LIBS)
-
-$(LIBS):
-	$(MAKE) -C $(@:libs=src)
-
-$(ABLEC_JAR): $(GRAMMAR_SOURCES)
-	touch $(wildcard $(ARTIFACT)/*.sv)
-	$(SILVER) -o $@ $(SVFLAGS) $(ARTIFACT)
-
 server.c: server.xc base64.h networking.h nqueens.h $(XC_INCLUDE_SOURCES) $(ABLEC_JAR)
 	java $(JAVAFLAGS) -jar $(ABLEC_JAR) $< $(XCFLAGS)
 
@@ -79,6 +60,6 @@ stress.out: stress.c
 	$(CC) -g stress.c -fopenmp -o stress.out
 
 clean:
-	rm -f *~ *.i server.c *.o *.out *.jar *.copperdump.html build.xml *.in
+	rm -f *~ *.i server.c *.o *.out *.in
 
 .PHONY: all libs $(LIBS) clean

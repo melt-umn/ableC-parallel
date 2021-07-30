@@ -4,7 +4,7 @@
 #include <ableC_parallel.h>
 
 // An easier to use aligned malloc than the POSIX version
-inline void* aligned_malloc(size_t alignment, size_t size) {
+void* aligned_malloc(size_t alignment, size_t size) {
   void* res = NULL;
   posix_memalign(&res, alignment, size);
   return res;

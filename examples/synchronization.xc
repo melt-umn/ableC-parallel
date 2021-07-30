@@ -43,7 +43,7 @@ int buffer_get(bounded_buffer* buffer) {
   int res;
 
   holding (*buffer) as buf {
-    wait while buf.empty;
+    SN::wait while buf.empty;
 
     res = buf.items[buf.head];
     buf.head = (buf.head + 1) % buf.len;
@@ -55,7 +55,7 @@ int buffer_get(bounded_buffer* buffer) {
 
 void buffer_put(bounded_buffer* buffer, int elem) {
   holding (*buffer) as buf {
-    wait while buf.full;
+    SN::wait while buf.full;
     
     buf.items[buf.tail] = elem;
     buf.tail = (buf.tail + 1) % buf.len;

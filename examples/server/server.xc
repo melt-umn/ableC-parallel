@@ -73,7 +73,7 @@ struct request* buffer_get(bounded_buffer* buffer) {
   struct request* res;
 
   holding (*buffer) as buf {
-    wait while buf.empty;
+    SN::wait while buf.empty;
 
     res = buf.items[buf.head];
     buf.head = (buf.head + 1) % buf.len;
@@ -85,7 +85,7 @@ struct request* buffer_get(bounded_buffer* buffer) {
 
 void buffer_put(bounded_buffer* buffer, struct request* elem) {
   holding (*buffer) as buf {
-    wait while buf.full;
+    SN::wait while buf.full;
     
     buf.items[buf.tail] = (void*) elem; // FIXME: Bug in types
     buf.tail = (buf.tail + 1) % buf.len;
