@@ -34,6 +34,12 @@ examples:
 analyses:
 	$(MAKE) -C modular_analyses
 
+mda:
+	$(MAKE) -C modular_analyses mda
+
+mwda:
+	$(MAKE) -C modular_analyses mwda
+
 test:
 	$(MAKE) -C tests -k
 
@@ -43,5 +49,5 @@ clean:
 	$(MAKE) -C modular_analyses clean
 	$(MAKE) -C tests clean
 
-.PHONY: all build examples analyses test clean
+.PHONY: all build examples analyses test clean mda mwda
 .NOTPARALLEL: # Avoid running multiple Silver builds in parallel
