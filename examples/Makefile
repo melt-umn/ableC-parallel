@@ -63,8 +63,7 @@ $(LIBS):
 	$(MAKE) -C $(@:libs=src)
 
 $(ABLEC_JAR): $(GRAMMAR_SOURCES) $(ARTIFACT_SV_FILES)
-	export SVJVM_FLAGS="-Xmx5000M -Xss20M"
-	silver-ableC -o $@ $(SVFLAGS) $(ARTIFACT)
+	./build.sh -o $@ $(SVFLAGS) $(ARTIFACT)
 
 %.c: %.xc $(XC_INCLUDE_SOURCES) $(ABLEC_JAR)
 	java $(JAVAFLAGS) -jar $(ABLEC_JAR) $< $(XCFLAGS)
