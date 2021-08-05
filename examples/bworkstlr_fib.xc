@@ -25,6 +25,9 @@ int main(int argc, char** argv) {
   int n = atoi(argv[1]);
 
   fcfs balancer blncr = new fcfs balancer(8);
+  // NOTE: We initialize with both the balancer and the maximum number of
+  // threads that the workstealer can ever have so that we can initialize enough
+  // deques ahead of time
   thds = new bworkstlr parallel(blncr, 8);
 
   posix group grp; grp = new posix group();

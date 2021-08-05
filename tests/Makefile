@@ -9,6 +9,8 @@ SILVER=silver-ableC
 ABLEC_JAR=ableC.jar
 # The artifact specification grammar to compile
 ARTIFACT=artifact
+# All .sv files in the artifact directory
+ARTIFACT_SV_FILES=$(wildcard $(ARTIFACT)/*.sv)
 # All directories containing grammars that may be included
 GRAMMAR_DIRS=$(ABLEC_BASE)/grammars $(wildcard $(EXTS_BASE)/*/grammars)
 # All silver files in included grammars, to be included as dependancies
@@ -34,7 +36,7 @@ XC_INCLUDE_DIRS=$(wildcard $(EXTS_BASE)/*/include)
 # All header files that may be included, to be included as dependencies
 XC_INCLUDE_SOURCES=$(foreach dir,$(XC_INCLUDE_DIRS),$(wildcard $(dir)/*.*h))
 # Flags passed to ableC including the appropriate directories
-override XCFLAGS+=$(addprefix -I,$(XC_INCLUDE_DIRS))
+override XCFLAGS+=$(addprefix -I,$(XC_INCLUDE_DIRS)) -I/usr/local/include/cilk
 # Flags passed to Java when invoking ableC
 override JAVAFLAGS+=-Xss6M
 
@@ -44,10 +46,10 @@ override CFLAGS+=
 # All directories contining extension libraries that may be linked
 LIB_DIRS=$(wildcard $(EXTS_BASE)/*/lib)
 # Flags passed to the linker specifying the appropriate directories
-override LDFLAGS+=$(addprefix -L,$(LIB_DIRS))
+override LDFLAGS+=$(addprefix -L,$(LIB_DIRS)) -L/usr/local/lib -L/usr/local/lib/cilk
 # Flags passed to the linker specifying libraries to link
 # Specify ableC_parallel is to be linked statically, everything else dynamically
-LDLIBS=-Wl,-Bstatic -lableC_parallel -Wl,-Bdynamic -lpthread
+LDLIBS=-lcilk -lcilkrt0 -Wl,-Bstatic -lableC_parallel -lableC_parallel_bthrdpool -lableC_parallel_bworkstlr -lableC_parallel_thrdpool -lableC_parallel_workstlr -Wl,-Bdynamic -lpthread
 
 # All directories contining extension library sources
 SRC_DIRS=$(wildcard $(EXTS_BASE)/*/src)
@@ -63,9 +65,8 @@ libs: $(LIBS)
 $(LIBS):
 	$(MAKE) -C $(@:libs=src)
 
-$(ABLEC_JAR): $(GRAMMAR_SOURCES)
-	touch $(wildcard $(ARTIFACT)/*.sv)
-	$(SILVER) -o $(ABLEC_JAR) $(SVFLAGS) $(ARTIFACT)
+$(ABLEC_JAR): $(GRAMMAR_SOURCES) $(ARTIFACT_SV_FILES)
+	./build.sh -o $(ABLEC_JAR) $(SVFLAGS) $(ARTIFACT)
 
 %.c: %.xc $(XC_INCLUDE_SOURCES) $(ABLEC_JAR)
 	java $(JAVAFLAGS) -jar $(ABLEC_JAR) $< $(XCFLAGS)

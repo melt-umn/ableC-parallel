@@ -1,0 +1,11 @@
+#include <ableC_blocking.h>
+#include <stdlib.h>
+
+int main() {
+  blocking lock lck; lck = new blocking lock();
+
+  acquire lck;
+  acquire lck;
+
+  return 0;
+}

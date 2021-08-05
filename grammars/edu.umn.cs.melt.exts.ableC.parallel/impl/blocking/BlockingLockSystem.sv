@@ -261,11 +261,16 @@ top::Expr ::= l::Expr args::Exprs
   forwards to
     if !null(localErrors)
     then errorExpr(localErrors, location=top.location)
-    else eqExpr(lhs, 
-          ableC_Expr { ({ struct __blocking_lock _res =
-                                      {0, 0, (void*) 0, (void*) 0, (void*) 0};
-                          _res; }) },
-          location=top.location);
+    else ableC_Expr {
+        ({
+          $Expr{lhs}.spinlock = 0;
+          $Expr{lhs}.status = 0;
+          $Expr{lhs}.cur_holding = (void*) 0;
+          $Expr{lhs}.waiting_head = (void*) 0;
+          $Expr{lhs}.waiting_tail = (void*) 0;
+          $Expr{l};
+        })
+      };
 }
 
 abstract production blockingLockDelete
@@ -327,13 +332,13 @@ top::Expr ::= l::Expr args::Exprs
   forwards to
     if !null(localErrors)
     then errorExpr(localErrors, location=top.location)
-    else eqExpr(lhs, ableC_Expr {
-        ({
-          struct __blocking_condvar _res
-            = { (struct __blocking_lock*) $Expr{lock}, (void*) 0, (void*) 0 };
-          _res;
-        })
-      }, location=top.location);
+    else ableC_Expr {
+      ({
+        $Expr{lhs}.lk = (struct __blocking_lock*) $Expr{lock};
+        $Expr{lhs}.waiting_head = (void*) 0;
+        $Expr{lhs}.waiting_tail = (void*) 0;
+      })
+      };
 }
 
 abstract production blockingCondvarDelete

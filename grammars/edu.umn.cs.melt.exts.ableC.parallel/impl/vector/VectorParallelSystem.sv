@@ -126,15 +126,18 @@ top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
     end;
 
   local localTypeErrors :: [Message] =
-    case headBT of
-    | just(_) -> []
-    | _ -> [err(loc, "Arrays in vector parallel for-loop must be of an integer or floating-point type")]
-    end
-    ++
-    flatMap(
-      \t::Type ->
-        checkTypesMatch(t, headBT, loc),
-      tailElemTypes);
+    if null(arrays)
+    then [err(loc, "Vectorized parallel for-loops must involve array accesses")]
+    else
+      case headBT of
+      | just(_) -> []
+      | _ -> [err(loc, "Arrays in vector parallel for-loop must be of an integer or floating-point type")]
+      end
+      ++
+      flatMap(
+        \t::Type ->
+          checkTypesMatch(t, headBT, loc),
+        tailElemTypes);
 
   local vectorType :: String =
     case headBT of

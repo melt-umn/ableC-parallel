@@ -67,7 +67,7 @@ top::Expr ::= sys::Decorated LockSystem lhs::Expr rhs::Expr
   forwards to 
     case rhs of
     | newExpr(_, args) -> sys.initializeLock(lhs, args, top.location)
-    | _ -> errorExpr([err(top.location, 
+    | _ -> errorExpr([err(top.location,
                     "Locks can only be assigned a constructed value (using new)")],
               location=top.location)
     end;
