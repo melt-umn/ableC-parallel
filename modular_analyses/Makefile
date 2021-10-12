@@ -1,4 +1,6 @@
-.NOTPARALLEL:
+# These can safely run in parallel, sicne all the recusive makes invoke silver with --dont-translate
+# TODO: There is probably a nicer way to organize this Makefile...
+
 all: base fcfs bthrdpool bworkstlr blocking cilk workstlr lvars posix synchronization thrdpool vector mapReduce
 
 base:
@@ -40,20 +42,48 @@ vector:
 mapReduce:
 	$(MAKE) -C mapReduce
 
-mda:
+base_mda:
 	$(MAKE) -C base mda
+
+fcfs_mda:
 	$(MAKE) -C fcfs mda
+
+bthrdpool_mda:
 	$(MAKE) -C bthrdpool mda
-	$(MAKE) -C bworkstlr mda
-	$(MAKE) -C blocking mda
+
+bworkstlr_mda:
 	$(MAKE) -C workstlr mda
+
+blocking_mda:
+	$(MAKE) -C blocking mda
+
+cilk_mda:
+	$(MAKE) -C cilk mda
+
+workstlr_mda:
+	$(MAKE) -C workstlr mda
+
+lvars_mda:
 	$(MAKE) -C lvars mda
+
+posix_mda:
 	$(MAKE) -C posix mda
+
+synchronization_mda:
 	$(MAKE) -C synchronization mda
+
+thrdpool_mda:
 	$(MAKE) -C thrdpool mda
+
+vector_mda:
 	$(MAKE) -C vector mda
+
+mapReduce_mda:
 	$(MAKE) -C mapReduce mda
 
+mda: base_mda fcfs_mda bthrdpool_mda bworkstlr_mda blocking_mda cilk_mda workstlr_mda lvars_mda posix_mda synchronization_mda thrdpool_mda vector_mda mapReduce_mda
+
+# TODO: No reason to run MWDA seperately for every extension here...
 mwda:
 	$(MAKE) -C base mwda
 	$(MAKE) -C fcfs mwda
