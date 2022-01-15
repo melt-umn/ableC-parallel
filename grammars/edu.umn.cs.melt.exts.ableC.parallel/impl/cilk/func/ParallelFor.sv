@@ -122,7 +122,7 @@ top::Stmt ::= init::Decl cond::MaybeExpr iter::Expr body::Stmt
   cilkFunction.isTopLevel = true;
 
   local liftedName :: String =
-    s"__lifted_cilk_parFor_${cleanLocName(iter.location.unparse)}_u${toString(genInt())}";
+    s"__lifted_cilk_parFor_${cleanLocName(iter.location.unparse)}_u${toString(genIntT())}";
 
   top.globalDecls <-
     if !annts.bySystem.isJust && !form.isJust && canLift
