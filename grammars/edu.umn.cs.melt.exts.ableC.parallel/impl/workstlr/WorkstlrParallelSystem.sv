@@ -195,7 +195,7 @@ top::Stmt ::= e::Expr loc::Location annts::SpawnAnnotations
     );
 
   local liftedName :: String =
-    s"__${fName}_interface_${cleanLocName(loc.unparse)}_u${toString(genInt())}";
+    s"__${fName}_interface_${cleanLocName(loc.unparse)}_u${toString(genIntT())}";
 
   local closureDecl :: Decl =
     maybeValueDecl(liftedName ++ "_closure",
@@ -490,7 +490,7 @@ top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
     end;
 
   local liftedName :: String =
-    s"__lifted_workstlr_parallel_${cleanLocName(loc.unparse)}_u${toString(genInt())}";
+    s"__lifted_workstlr_parallel_${cleanLocName(loc.unparse)}_u${toString(genIntT())}";
   
   local freeVars :: [Name] = nub(loop.freeVariables);
 
