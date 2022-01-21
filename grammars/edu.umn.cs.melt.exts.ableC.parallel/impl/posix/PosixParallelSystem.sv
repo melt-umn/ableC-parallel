@@ -39,7 +39,7 @@ top::Stmt ::= e::Expr loc::Location annts::SpawnAnnotations
   local localErrors :: [Message] = e.errors ++ annts.errors ++ missingVars;
 
   local liftedName :: String =
-    s"__lifted_posix_parallel_${cleanLocName(loc.unparse)}_u${toString(genIntT())}";
+    s"__lifted_posix_parallel_${cleanLocName(loc.unparse)}_u${toString(genInt())}";
 
   local freeVars :: [Name] = nub(e.freeVariables);
 

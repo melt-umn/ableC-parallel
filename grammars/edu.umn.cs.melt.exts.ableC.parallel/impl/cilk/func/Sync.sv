@@ -11,5 +11,5 @@ top::Stmt ::= tasks::Exprs
   top.cilkVersion =
     if tasks.count > 0
     then fwrd.cilkVersion
-    else cilk_syncStmt(loc("fake(ableC-parallel-cilk)", genIntT(), 0, 0, 0, 0, 0));
+    else cilk_syncStmt(loc("fake(ableC-parallel-cilk)", genInt(), 0, 0, 0, 0, 0));
 }

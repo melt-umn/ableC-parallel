@@ -107,7 +107,7 @@ top::Stmt ::= e::Expr loc::Location annts::SpawnAnnotations
     else [];
 
   local liftedName :: String =
-    s"__${fName}_interface_${cleanLocName(loc.unparse)}_u${toString(genIntT())}";
+    s"__${fName}_interface_${cleanLocName(loc.unparse)}_u${toString(genInt())}";
 
   local funcArgTypes :: [Type] =
     case valType of
@@ -479,7 +479,7 @@ top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
     end;
 
   local liftedName :: String =
-    s"__lifted_cilk_parallel_${cleanLocName(loc.unparse)}_u${toString(genIntT())}";
+    s"__lifted_cilk_parallel_${cleanLocName(loc.unparse)}_u${toString(genInt())}";
 
   local freeVars :: [Name] = nub(loop.freeVariables);
 
