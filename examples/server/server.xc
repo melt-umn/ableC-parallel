@@ -382,7 +382,7 @@ int main() {
   do {
     int res = read(0, msg, 4);
     if (res != 4) msg[0] = '\0';
-  } while (msg[0] != 'q' || msg[1] != 'u' && msg[2] != 'i' || msg[3] != 't')
+  } while (msg[0] != 'q' || msg[1] != 'u' && msg[2] != 'i' || msg[3] != 't');
 
   printf("Beginning shutdown\n");
 
