@@ -8,7 +8,7 @@ inherited attribute workstlrParInitState :: Integer occurs on AsmArgument,
   AsmOperand, AsmOperands, AsmStatement, Decl, Declarator, 
   Declarators, Decls, Expr, Exprs, Init, Initializer, InitList, MaybeExpr,
   MaybeInitializer, Stmt;
-autocopy attribute workstlrParFuncName :: String occurs on AsmArgument,
+inherited attribute workstlrParFuncName :: String occurs on AsmArgument,
   AsmOperand, AsmOperands, AsmStatement, Decl, Declarator,
   Declarators, Decls, Expr, Exprs, Init, Initializer, InitList, MaybeExpr,
   MaybeInitializer, Stmt;

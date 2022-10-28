@@ -104,7 +104,7 @@ top::Stmt ::= ex::Expr name::String negateCond::Boolean
       };
 }
 
-autocopy attribute thisName :: Pair<Name String> occurs on Expr;
+inherited attribute thisName :: Pair<Name String> occurs on Expr;
 functor attribute replaceThis occurs on Expr;
 propagate replaceThis on Expr excluding declRefExpr;
 
