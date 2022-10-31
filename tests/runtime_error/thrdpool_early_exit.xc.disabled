@@ -1,6 +1,9 @@
 #include <ableC_thrdpool.h>
 #include <stdlib.h>
 
+// TODO: This sometimes fails to terminate.
+// See https://github.com/melt-umn/ableC-parallel/issues/3
+
 #define N_CORES 3
 
 void forever() {
