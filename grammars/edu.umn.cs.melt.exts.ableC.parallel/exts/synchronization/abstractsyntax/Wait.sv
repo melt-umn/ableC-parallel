@@ -80,6 +80,9 @@ top::Stmt ::= ex::Expr name::String negateCond::Boolean
     ((struct $name{mangledName}*) $Name{heldVar})->$name{cvName}
   };
 
+  ex.env = top.env;
+  ex.controlStmtContext = top.controlStmtContext;
+
   local condExpr :: Maybe<Expr> = lookupCondition(condName, negateCond, conds);
   local conditionExpr :: Expr = 
     let cond::Expr = (decorate condExpr.fromJust with {env=top.env;
@@ -105,6 +108,7 @@ top::Stmt ::= ex::Expr name::String negateCond::Boolean
 }
 
 inherited attribute thisName :: Pair<Name String> occurs on Expr;
+propagate thisName on Expr;
 functor attribute replaceThis occurs on Expr;
 propagate replaceThis on Expr excluding declRefExpr;
 

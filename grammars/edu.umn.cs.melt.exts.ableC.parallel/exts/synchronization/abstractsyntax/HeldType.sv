@@ -496,6 +496,8 @@ top::Expr ::= lhsType::ExtType lhs::Expr deref::Boolean fieldName::Name
 {
   top.pp = parens(ppConcat([lhs.pp, text(" = "), rhs.pp]));
 
+  propagate controlStmtContext, env;
+
   local lhsRes :: Expr =
     lhsType.ovrld:memberProd.fromJust(lhs, deref, fieldName, top.location);
   lhsType.givenQualifiers = nilQualifier();
@@ -563,6 +565,8 @@ top::Expr ::= sys::LockSystem nm::Name mangledName::String sigs::[SignalAction]
 {
   top.pp = e.pp;
 
+  propagate controlStmtContext, env;
+
   forwards to
     stmtExpr(
       produceSignals(sys, top.env, nm, mangledName, sigs),
@@ -579,6 +583,8 @@ top::Expr ::= actions::Either<Actions Accesses> getObj::(Expr ::= Expr)
               lhs::Expr rhs::Expr conds::[Pair<String Pair<Boolean Expr>>]
 {
   top.pp = text("/* heldBinaryActionProd */");
+
+  propagate controlStmtContext, env;
 
   forwards to
     let desire::Maybe<ActionType> = desired(rhs)
@@ -608,6 +614,8 @@ top::Expr ::= e::Expr
 {
   top.pp = e.pp;
 
+  propagate controlStmtContext, env;
+
   forwards to
     case e.typerep of
     | extType(_, heldType(_, _, getObj, _, _, _, _, _, _)) -> getObj(e)
@@ -620,6 +628,8 @@ top::Expr ::= e::Expr sys::LockSystem nm::Name mangledName::String
               conds::[Pair<String Pair<Boolean Expr>>]
 {
   top.pp = e.pp;
+
+  propagate controlStmtContext, env;
 
   forwards to
     exprAsType(
@@ -636,6 +646,8 @@ abstract production produceTypedExpr
 top::Expr ::= e::Expr predType::(ExtType ::= Type)
 {
   top.pp = e.pp;
+
+  propagate controlStmtContext, env;
 
   forwards to
     exprAsType(

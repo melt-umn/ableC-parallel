@@ -19,6 +19,8 @@ top::Stmt ::= tasks::Exprs
   top.functionDefs := [];
   top.labelDefs := [];
 
+  propagate controlStmtContext;
+
   tasks.env = top.env;
 
   local exprs :: [Pair<Expr Type>] = 

@@ -25,6 +25,8 @@ top::ParallelAnnotations ::= hd::ParallelAnnotation tl::ParallelAnnotations
     if hd.numParallelThreads.isJust && tl.numParallelThreads.isJust
     then [err(hd.location, "Multiple annotations on parallel for-loop specify the number of threads")]
     else [];
+
+  propagate controlStmtContext, env;
 }
 
 abstract production nilParallelAnnotations
@@ -63,6 +65,8 @@ top::ParallelAnnotation ::= expr::Expr
 {
   top.pp = ppConcat([text("by"), space(), expr.pp]);
   top.bySystem = just(expr);
+
+  propagate controlStmtContext, env;
 }
 
 abstract production parallelInAnnotation
@@ -74,6 +78,8 @@ top::ParallelAnnotation ::= group::Expr
                 | extType(_, groupType(_)) -> []
                 | _ -> [err(group.location, "Annotation 'in' on parallel-for expects object of group type")]
                 end;
+
+  propagate controlStmtContext, env;
 }
 
 abstract production parallelPublicAnnotation
@@ -105,4 +111,6 @@ top::ParallelAnnotation ::= num::Expr
 {
   top.pp = ppConcat([text("num-threads"), space(), num.pp]);
   top.numParallelThreads = just(num);
+
+  propagate controlStmtContext, env;
 }

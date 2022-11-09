@@ -11,6 +11,8 @@ top::MapReduceAnnts ::= hd::MapReduceAnnt tl::MapReduceAnnts
 {
   top.pp = ppConcat([hd.pp, semi(), space(), tl.pp]);
 
+  propagate controlStmtContext, env;
+
   top.bySystem = if hd.bySystem.isJust then hd.bySystem else tl.bySystem;
   top.numParallelThreads = 
     if hd.numParallelThreads.isJust then hd.numParallelThreads
@@ -71,6 +73,8 @@ abstract production mapReduceParallelAnnt
 top::MapReduceAnnt ::= annt::ParallelAnnotation
 {
   top.pp = annt.pp;
+
+  propagate controlStmtContext, env;
 
   top.bySystem = annt.bySystem;
   top.numParallelThreads = annt.numParallelThreads;

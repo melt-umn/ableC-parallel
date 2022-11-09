@@ -22,6 +22,8 @@ abstract production vectorSpawn
 top::Stmt ::= e::Expr loc::Location annts::SpawnAnnotations
 {
   top.pp = ppConcat([text("spawn"), e.pp, semi()]);
+
+  propagate controlStmtContext, env;
   
   forwards to
     warnStmt([err(e.location,
@@ -34,6 +36,8 @@ top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
   top.pp = ppConcat([text("parallel"), top.pp]);
   top.functionDefs := loop.functionDefs;
   top.labelDefs := [];
+
+  propagate controlStmtContext, env;
 
   local localErrors :: [Message] =
     case loop of
@@ -254,7 +258,7 @@ top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
     end;
   parBody.controlStmtContext = initialControlStmtContext;
   parBody.env = loopEnv;
-                
+
   forwards to
     if !null(localErrors)
     then warnStmt(localErrors)
@@ -292,6 +296,8 @@ top::Expr ::= args::Exprs
   top.pp = ppConcat([text("new"), space(), text("vector"), space(), text("parallel"),
               parens(ppImplode(comma(), args.pps))]);
 
+  propagate controlStmtContext, env;
+
   local nmbrg::SystemNumbering = systemNumbering();
   nmbrg.lookupParName = "vectorization";
 
@@ -318,6 +324,8 @@ top::Stmt ::= e::Expr
   top.pp = ppConcat([text("delete"), e.pp]);
   top.functionDefs := [];
   top.labelDefs := [];
+
+  propagate controlStmtContext, env;
 
   forwards to
     if !null(e.errors)

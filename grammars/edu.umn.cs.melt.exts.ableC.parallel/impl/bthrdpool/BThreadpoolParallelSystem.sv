@@ -44,6 +44,8 @@ top::Expr ::= args::Exprs
                            | _ -> error("Error in arguments reported via errors attribute") end;
   local sysIndex :: Integer = nmbrg.parNameIndex;
 
+  propagate controlStmtContext, env;
+
   forwards to 
     if !null(localErrors)
     then errorExpr(localErrors, location=top.location)
@@ -83,6 +85,8 @@ top::Stmt ::= e::Expr
   top.pp = ppConcat([text("delete"), e.pp]);
   top.functionDefs := [];
   top.labelDefs := [];
+
+  propagate controlStmtContext, env;
 
   forwards to
     if !null(e.errors)

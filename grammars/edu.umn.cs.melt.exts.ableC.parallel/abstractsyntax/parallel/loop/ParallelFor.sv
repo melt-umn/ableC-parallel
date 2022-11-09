@@ -13,6 +13,8 @@ top::Stmt ::= init::Decl cond::MaybeExpr iter::Expr body::Stmt
   top.labelDefs := []; -- Prevent labels from propagating up
   init.isTopLevel = false;
 
+  propagate controlStmtContext, env;
+
   local loopS :: Stmt = ableC_Stmt {
       for($Decl{init} $Expr{cond.justTheExpr.fromJust}; $Expr{iter}) $Stmt{body}
     };

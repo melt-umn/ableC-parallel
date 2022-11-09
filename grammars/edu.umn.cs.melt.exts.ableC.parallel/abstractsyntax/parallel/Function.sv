@@ -14,6 +14,8 @@ top::ParallelFunctionDecl ::= storage::StorageClasses fnquals::SpecialSpecifiers
                     text("{"), line(), nestlines(2,body.pp), text("}")
                   ]);
 
+  propagate controlStmtContext, env, isTopLevel;
+
   bty.givenRefId = nothing();
   mty.baseType = bty.typerep;
   mty.typeModifierIn = bty.typeModifier;
@@ -29,6 +31,8 @@ top::ParallelFunctionDecl ::= storage::StorageClasses fnquals::SpecialSpecifiers
                     bty.pp, space(), mty.lpp, fname.pp, mty.rpp,
                     ppAttributesRHS(attrs), line(), semi()]);
 
+  propagate controlStmtContext, env, isTopLevel;
+
   bty.givenRefId = nothing();
   mty.baseType = bty.typerep;
   mty.typeModifierIn = bty.typeModifier;
@@ -38,6 +42,8 @@ abstract production parallelFunction
 top::Decl ::= interface::Name func::ParallelFunctionDecl
 {
   top.pp = ppConcat([text("parallel by"), space(), interface.pp, space(), func.pp]);
+
+  propagate controlStmtContext, env, isTopLevel;
 
   local localErrors :: [Message] =
     case interface.valueLookupCheck of
@@ -67,6 +73,8 @@ top::Decl ::= interface::Name func::ParallelFunctionDecl
 abstract production parallelFuncToC
 top::Decl ::= func::ParallelFunctionDecl
 {
+  propagate controlStmtContext, env, isTopLevel;
+
   forwards to
     case func of
     | parallelFunctionDecl(storage, fnquals, bty, mty, fname, attrs, dcls, body)

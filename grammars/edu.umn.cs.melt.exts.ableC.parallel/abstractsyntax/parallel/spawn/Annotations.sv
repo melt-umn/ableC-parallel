@@ -10,6 +10,8 @@ nonterminal SpawnAnnotations with errors, env, controlStmtContext,
 abstract production consSpawnAnnotations
 top::SpawnAnnotations ::= hd::SpawnAnnotation tl::SpawnAnnotations
 {
+  propagate controlStmtContext, env;
+
   top.bySystem = if hd.bySystem.isJust then hd.bySystem else tl.bySystem;
   
   top.asThreads = hd.asThreads ++ tl.asThreads;
@@ -64,6 +66,8 @@ top::SpawnAnnotation ::=
 abstract production spawnByAnnotation
 top::SpawnAnnotation ::= expr::Expr 
 {
+  propagate controlStmtContext, env;
+
   top.bySystem = just(expr);
   top.dropShareAnnotation = just(top);
 }
@@ -71,6 +75,8 @@ top::SpawnAnnotation ::= expr::Expr
 abstract production spawnAsAnnotation -- specify thread object to associate with
 top::SpawnAnnotation ::= expr::Expr
 {
+  propagate controlStmtContext, env;
+
   top.asThreads = expr :: [];
   top.errors <- case expr.typerep of
                 | extType(_, threadType(_)) -> []
@@ -82,6 +88,8 @@ top::SpawnAnnotation ::= expr::Expr
 abstract production spawnInAnnotation -- specify group object to add to
 top::SpawnAnnotation ::= expr::Expr
 {
+  propagate controlStmtContext, env;
+
   top.inGroups = expr :: [];
   top.errors <- case expr.typerep of
                 | extType(_, groupType(_)) -> []

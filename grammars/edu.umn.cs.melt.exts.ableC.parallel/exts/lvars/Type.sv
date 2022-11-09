@@ -6,6 +6,8 @@ top::BaseTypeExpr ::= q::Qualifiers inner::TypeName loc::Location
   top.pp = ppConcat([ppImplode(space(), q.pps), space(),
                     text("lvar<"), inner.pp, text(">")]);
 
+  propagate controlStmtContext, env;
+
   local partitionQualifiers :: Pair<[Qualifier] [Qualifier]> =
     partition(\q::Qualifier -> q.lockSystem.isJust, q.qualifiers);
 
@@ -41,6 +43,8 @@ abstract production lvarTypeDecl
 top::Decl ::= sys::LockSystem inner::TypeName mangledName::String loc::Location
 {
   top.pp = text("/* lvar type generated struct */");
+
+  propagate controlStmtContext, env;
 
   forwards to
     maybeTagDecl(
@@ -183,6 +187,9 @@ abstract production lvarLEq
 top::Expr ::= l::Expr r::Expr sys::LockSystem mangledName::String inner::Type
 {
   top.pp = ppConcat([l.pp, space(), text("="), space(), r.pp]);
+
+  propagate controlStmtContext, env;
+
   forwards to
     case r of
     | newExpr(_, args) -> initializeLVar(l, args, sys, mangledName, inner, location=top.location)
@@ -206,6 +213,8 @@ abstract production initializeLVar
 top::Expr ::= l::Expr args::Exprs sys::LockSystem mangledName::String inner::Type
 {
   top.pp = text("/* lVar initialization */");
+
+  propagate controlStmtContext, env;
 
   local lhs::Expr = exprAsType(l,
     extType(nilQualifier(),

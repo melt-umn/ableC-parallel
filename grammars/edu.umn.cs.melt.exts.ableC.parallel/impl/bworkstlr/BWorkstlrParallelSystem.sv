@@ -42,6 +42,8 @@ top::Expr ::= args::Exprs
   top.pp = ppConcat([text("new bworkstlr parallel"), 
     parens(ppImplode(text(", "), args.pps))]);
 
+  propagate controlStmtContext, env;
+
   local nmbrg::SystemNumbering = systemNumbering();
   nmbrg.lookupParName = "workstlr";
 
@@ -85,6 +87,8 @@ top::Stmt ::= e::Expr
   top.pp = ppConcat([text("delete"), e.pp]);
   top.functionDefs := [];
   top.labelDefs := [];
+
+  propagate controlStmtContext, env;
 
   forwards to
     if !null(e.errors)

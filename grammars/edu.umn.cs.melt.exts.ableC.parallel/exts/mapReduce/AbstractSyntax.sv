@@ -9,6 +9,10 @@ top::Expr ::= arr::MapReduceArray init::Expr arrVar::Name accumVar::Name
                     text("\\"), arrVar.pp, space(), accumVar.pp, space(),
                     text("->"), space(), body.pp]);
   
+  arr.env = top.env;
+  init.env = top.env;
+  annts.env = top.env;
+
   local cscx :: ControlStmtContext = initialControlStmtContext;
   arr.controlStmtContext = cscx;
   arrVar.controlStmtContext = cscx;
@@ -288,6 +292,8 @@ abstract production mapExprBridge
 top::Expr ::= exp::MapReduceArray
 {
   top.pp = exp.pp;
+
+  propagate controlStmtContext, env;
 
   local fused :: MapReduceArray = exp.fusionResult;
   fused.emitBound = true;

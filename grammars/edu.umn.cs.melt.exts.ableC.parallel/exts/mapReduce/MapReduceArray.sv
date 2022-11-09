@@ -18,6 +18,9 @@ abstract production arrayExpr
 top::MapReduceArray ::= arr::Name len::Expr
 {
   top.pp = ppConcat([arr.pp, brackets(len.pp)]);
+
+  propagate controlStmtContext, env;
+
   top.errors := len.errors ++
     case arr.valueLookupCheck of
     | [] ->
@@ -49,7 +52,10 @@ top::MapReduceArray ::= arr::MapReduceArray var::Name body::Expr annts::MapReduc
   top.pp = parens(ppConcat([text("map"), brackets(annts.pp), space(), arr.pp,
                           space(), text("by"), space(), text("\\"), var.pp,
                           space(), text("->"), space(), body.pp]));
-  
+
+  arr.env = top.env;
+  annts.env = top.env;
+
   local cscx :: ControlStmtContext = initialControlStmtContext;
   arr.controlStmtContext = cscx;
   var.controlStmtContext = cscx;

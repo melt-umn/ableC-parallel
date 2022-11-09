@@ -5,6 +5,8 @@ top::Decl ::= func::ParallelFunctionDecl
 {
   top.pp = func.pp;
 
+  propagate controlStmtContext, env, isTopLevel;
+
   -- TODO: Locations
   local localErrors :: [Message] =
     case func of

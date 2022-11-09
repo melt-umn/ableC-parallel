@@ -25,6 +25,8 @@ top::Stmt ::= e::Expr loc::Location annts::SpawnAnnotations
   top.functionDefs := [];
   top.labelDefs := [];
 
+  propagate controlStmtContext, env;
+
   local sys :: Expr = annts.bySystem.fromJust;
   sys.env = top.env;
   sys.controlStmtContext = top.controlStmtContext;
@@ -478,6 +480,8 @@ top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
   top.functionDefs := [];
   top.labelDefs := [];
 
+  propagate controlStmtContext, env;
+
   local privateVars :: [Name] = nub(annts.privates);
   local publicVars  :: [Name] = nub(annts.publics);
   local globalVars  :: [Name] = nub(annts.globals);
@@ -808,6 +812,8 @@ top::Expr ::= args::Exprs
     | consExpr(e, nilExpr()) when e.typerep.isIntegerType -> []
     | _ -> [err(top.location, "Workstlr Parallel system should be initialized with one integer argument")]
     end;
+
+  propagate controlStmtContext, env;
   
   top.pp = ppConcat([text("new workstlr parallel"), 
     parens(ppImplode(text(", "), args.pps))]);
@@ -852,6 +858,8 @@ top::Stmt ::= e::Expr
   top.pp = ppConcat([text("delete"), e.pp]);
   top.functionDefs := [];
   top.labelDefs := [];
+
+  propagate controlStmtContext, env;
 
   forwards to
     if !null(e.errors)

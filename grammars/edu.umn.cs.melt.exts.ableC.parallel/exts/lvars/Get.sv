@@ -5,6 +5,8 @@ top::Expr ::= lvar::Expr func::Expr
 {
   top.pp = ppConcat([text("get"), space(), lvar.pp, space(), text("at"), space(), func.pp]);
 
+  propagate controlStmtContext, env;
+
   -- TODO: typecheck func
   local localErrors :: [Message] =
     case lvar.typerep of

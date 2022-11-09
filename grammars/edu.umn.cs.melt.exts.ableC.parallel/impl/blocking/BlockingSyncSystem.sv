@@ -172,6 +172,8 @@ top::Expr ::= l::Expr args::Exprs
   top.pp = ppConcat([l.pp, text("="), text("new blocking thread"),
       parens(ppImplode(text(","), args.pps))]);
 
+  propagate controlStmtContext, env;
+
   local localErrors :: [Message] =
     args.errors
     ++
@@ -206,6 +208,8 @@ top::Stmt ::= e::Expr
   top.functionDefs := [];
   top.labelDefs := [];
 
+  propagate controlStmtContext, env;
+
   forwards to
     if !null(e.errors)
     then warnStmt(e.errors)
@@ -226,6 +230,8 @@ top::Expr ::= l::Expr args::Exprs
 {
   top.pp = ppConcat([l.pp, text("="), text("new blocking group"),
       parens(ppImplode(text(","), args.pps))]);
+
+  propagate controlStmtContext, env;
 
   local localErrors :: [Message] =
     args.errors
@@ -260,6 +266,8 @@ top::Stmt ::= e::Expr
   top.pp = ppConcat([text("delete"), e.pp]);
   top.functionDefs := [];
   top.labelDefs := [];
+
+  propagate controlStmtContext, env;
 
   forwards to
     if !null(e.errors)

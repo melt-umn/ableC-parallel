@@ -7,6 +7,8 @@ top::Stmt ::= locks::Exprs sysFunc::(Stmt ::= LockSystem Decorated Env [Expr]) n
   top.pp = ppConcat([text(nm), space(), 
     ppImplode(cat(comma(), space()), locks.pps)]);
 
+  propagate controlStmtContext;
+
   top.functionDefs := [];
   top.labelDefs := [];
 

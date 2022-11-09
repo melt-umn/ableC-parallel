@@ -98,7 +98,10 @@ top::Stmt ::= e::Expr nm::Name bd::Stmt
       )) :: [],
     openScopeEnv(top.env));
   sys.locks = [ableC_Expr{&($Name{nm}->lck)}];
-  
+
+  e.env = top.env;
+  e.controlStmtContext = top.controlStmtContext;
+
   forwards to
     if !null(localErrors)
     then warnStmt(localErrors)

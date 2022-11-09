@@ -5,6 +5,8 @@ top::Expr ::= lvar::Expr
 {
   top.pp = ppConcat([text("freeze"), space(), lvar.pp]);
 
+  propagate controlStmtContext, env;
+
   local localErrors :: [Message] =
     case lvar.typerep of
     | extType(_, lvarType(_, _, _, _)) -> []

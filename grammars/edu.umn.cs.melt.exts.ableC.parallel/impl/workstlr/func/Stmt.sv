@@ -12,6 +12,8 @@ top::Stmt ::= h::Stmt t::Stmt
   top.workstlrParNeedStates = h.workstlrParNeedStates + t.workstlrParNeedStates;
   h.workstlrParInitState = top.workstlrParInitState;
   t.workstlrParInitState = h.workstlrParInitState + h.workstlrParNeedStates;
+
+  propagate workstlrParFuncName;
 }
 
 aspect production compoundStmt
@@ -19,6 +21,8 @@ top::Stmt ::= s::Stmt
 {
   top.workstlrParNeedStates = s.workstlrParNeedStates;
   s.workstlrParInitState = top.workstlrParInitState;
+
+  propagate workstlrParFuncName;
 }
 
 aspect production declStmt
@@ -26,6 +30,8 @@ top::Stmt ::= d::Decl
 {
   top.workstlrParNeedStates = d.workstlrParNeedStates;
   d.workstlrParInitState = top.workstlrParInitState;
+
+  propagate workstlrParFuncName;
 }
 
 aspect production exprStmt
@@ -33,6 +39,8 @@ top::Stmt ::= e::Expr
 {
   top.workstlrParNeedStates = e.workstlrParNeedStates;
   e.workstlrParInitState = top.workstlrParInitState;
+
+  propagate workstlrParFuncName;
 }
 
 aspect production ifStmt
@@ -42,6 +50,8 @@ top::Stmt ::= c::Expr t::Stmt e::Stmt
   c.workstlrParInitState = top.workstlrParInitState;
   t.workstlrParInitState = c.workstlrParInitState + c.workstlrParNeedStates;
   e.workstlrParInitState = t.workstlrParInitState + t.workstlrParNeedStates;
+
+  propagate workstlrParFuncName;
 }
 
 aspect production whileStmt
@@ -50,6 +60,8 @@ top::Stmt ::= e::Expr b::Stmt
   top.workstlrParNeedStates = e.workstlrParNeedStates + b.workstlrParNeedStates;
   e.workstlrParInitState = top.workstlrParInitState;
   b.workstlrParInitState = e.workstlrParInitState + e.workstlrParNeedStates;
+
+  propagate workstlrParFuncName;
 }
 
 aspect production doStmt
@@ -58,6 +70,8 @@ top::Stmt ::= b::Stmt e::Expr
   top.workstlrParNeedStates = b.workstlrParNeedStates + e.workstlrParNeedStates;
   b.workstlrParInitState = top.workstlrParInitState;
   e.workstlrParInitState = b.workstlrParInitState + b.workstlrParNeedStates;
+
+  propagate workstlrParFuncName;
 }
 
 aspect production forStmt
@@ -69,6 +83,8 @@ top::Stmt ::= i::MaybeExpr c::MaybeExpr s::MaybeExpr b::Stmt
   c.workstlrParInitState = i.workstlrParInitState + i.workstlrParNeedStates;
   s.workstlrParInitState = c.workstlrParInitState + c.workstlrParNeedStates;
   b.workstlrParInitState = s.workstlrParInitState + s.workstlrParNeedStates;
+
+  propagate workstlrParFuncName;
 }
 
 aspect production forDeclStmt
@@ -80,6 +96,8 @@ top::Stmt ::= i::Decl c::MaybeExpr s::MaybeExpr b::Stmt
   c.workstlrParInitState = i.workstlrParInitState + i.workstlrParNeedStates;
   s.workstlrParInitState = c.workstlrParInitState + c.workstlrParNeedStates;
   b.workstlrParInitState = s.workstlrParInitState + s.workstlrParNeedStates;
+
+  propagate workstlrParFuncName;
 }
 
 aspect production returnStmt
@@ -120,6 +138,8 @@ top::Stmt ::= e::Expr b::Stmt
   top.workstlrParNeedStates = e.workstlrParNeedStates + b.workstlrParNeedStates;
   e.workstlrParInitState = top.workstlrParInitState;
   b.workstlrParInitState = e.workstlrParInitState + e.workstlrParNeedStates;
+
+  propagate workstlrParFuncName;
 }
 
 aspect production labelStmt
@@ -127,6 +147,8 @@ top::Stmt ::= l::Name s::Stmt
 {
   top.workstlrParNeedStates = s.workstlrParNeedStates;
   s.workstlrParInitState = top.workstlrParInitState;
+
+  propagate workstlrParFuncName;
 }
 
 aspect production caseLabelStmt
@@ -135,6 +157,8 @@ top::Stmt ::= v::Expr s::Stmt
   top.workstlrParNeedStates = v.workstlrParNeedStates + s.workstlrParNeedStates;
   v.workstlrParInitState = top.workstlrParInitState;
   s.workstlrParInitState = v.workstlrParInitState + v.workstlrParNeedStates;
+
+  propagate workstlrParFuncName;
 }
 
 aspect production defaultLabelStmt
@@ -142,6 +166,8 @@ top::Stmt ::= s::Stmt
 {
   top.workstlrParNeedStates = s.workstlrParNeedStates;
   s.workstlrParInitState = top.workstlrParInitState;
+
+  propagate workstlrParFuncName;
 }
 
 aspect production caseLabelRangeStmt
@@ -151,6 +177,8 @@ top::Stmt ::= l::Expr u::Expr s::Stmt
   l.workstlrParInitState = top.workstlrParInitState;
   u.workstlrParInitState = l.workstlrParInitState + l.workstlrParNeedStates;
   s.workstlrParInitState = u.workstlrParInitState + u.workstlrParNeedStates;
+
+  propagate workstlrParFuncName;
 }
 
 aspect production asmStmt
@@ -158,6 +186,8 @@ top::Stmt ::= asm::AsmStatement
 {
   top.workstlrParNeedStates = asm.workstlrParNeedStates;
   asm.workstlrParInitState = top.workstlrParInitState;
+
+  propagate workstlrParFuncName;
 }
 
 aspect production injectGlobalDeclsStmt
@@ -169,4 +199,6 @@ top::Stmt ::= decls::Decls lifted::Stmt
 
   top.workstlrParFastClone = lifted.workstlrParFastClone;
   top.workstlrParSlowClone = injectGlobalDeclsStmt(decls, lifted.workstlrParSlowClone);
+
+  propagate workstlrParFuncName;
 }

@@ -253,6 +253,8 @@ top::Expr ::= l::Expr args::Exprs
 
   top.pp = ppConcat([l.pp, text("="), text("new blocking lock()")]);
 
+  propagate controlStmtContext, env;
+
   local lhs::Expr = exprAsType(l, extType(nilQualifier(),
                       refIdExtType(structSEU(), just("__blocking_lock"),
                         "edu:umn:cs:melt:exts:ableC:parallel:blocking:lock")),
@@ -305,6 +307,8 @@ top::Expr ::= l::Expr args::Exprs
 {
   top.pp = ppConcat([l.pp, text("="), text("new blocking condvar"),
     parens(ppImplode(text(","), args.pps))]);
+
+  propagate controlStmtContext, env;
   
   local localErrors :: [Message] =
     args.errors

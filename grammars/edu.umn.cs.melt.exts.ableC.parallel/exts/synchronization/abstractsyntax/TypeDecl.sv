@@ -6,6 +6,8 @@ top::Decl ::= sys::LockSystem inner::TypeName conds::OptionalConds
 {
   top.pp = text("/* synchronized type generated struct */");
 
+  propagate controlStmtContext, env;
+
   local cvs :: [Pair<String Boolean>] = conds.condVars;
   local cvItems :: [StructItem] =
     map(\p::Pair<String Boolean> -> 

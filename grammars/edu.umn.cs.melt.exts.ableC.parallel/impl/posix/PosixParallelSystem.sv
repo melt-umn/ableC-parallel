@@ -25,6 +25,8 @@ top::Stmt ::= e::Expr loc::Location annts::SpawnAnnotations
   top.functionDefs := [];
   top.labelDefs := [];
 
+  propagate controlStmtContext, env;
+
   local sys :: Expr = annts.bySystem.fromJust;
   sys.env = top.env;
   sys.controlStmtContext = initialControlStmtContext;
@@ -391,6 +393,8 @@ top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
   top.functionDefs := loop.functionDefs;
   top.labelDefs := [];
 
+  propagate controlStmtContext, env;
+
   local loopInfo :: Pair<Pair<BaseTypeExpr Name> Pair<Expr Stmt>>=
     case loop of
     | ableC_Stmt { for($BaseTypeExpr{bt} $Name{i1} = host::(0); host::$Name{_} host::< $Expr{bound}; host::$Name{_} host::++) $Stmt{bd} }
@@ -469,6 +473,8 @@ top::Expr ::= args::Exprs
 
   top.pp = text("new posix parallel()");
 
+  propagate controlStmtContext, env;
+
   local nmbrg::SystemNumbering = systemNumbering();
   nmbrg.lookupParName = "posix";
 
@@ -495,6 +501,8 @@ top::Stmt ::= e::Expr
   top.pp = ppConcat([text("delete"), e.pp]);
   top.functionDefs := [];
   top.labelDefs := [];
+
+  propagate controlStmtContext, env;
 
   forwards to
     if !null(e.errors)

@@ -8,6 +8,10 @@ top::BaseTypeExpr ::= q::Qualifiers inner::TypeName conds::OptionalConds
                     text("synchronization<"), inner.pp, text(">"), space(), 
                     conds.pp]);
 
+  propagate controlStmtContext;
+
+  inner.env = top.env;
+
   conds.env = -- Adds `this` (as type inner) to the environment
     addEnv(
       valueDef("this", builtinValueItem(inner.typerep)) :: [],
@@ -134,6 +138,8 @@ top::Conditions ::= h::Condition tl::Conditions
   top.condVars = pair(h.condVarName, error("internal error")) :: tl.condVars;
 
   top.freeVariables := h.freeVariables ++ tl.freeVariables;
+
+  propagate env;
 }
 
 
@@ -146,6 +152,8 @@ top::Condition ::= nm::Name cond::Expr
   top.pp = ppConcat([text("condition"), space(), nm.pp, parens(cond.pp), semi()]);
 
   cond.controlStmtContext = initialControlStmtContext;
+
+  propagate env;
 
   local mangled :: Maybe<String> = mangleCondExpr(cond);
 
@@ -180,6 +188,8 @@ top::Signals ::= h::Signal tl::Signals
   top.errors := h.errors ++ tl.errors;
   top.mangledName = s"${h.mangledName}_cons_${tl.mangledName}";
   top.condVars = h.condVars ++ tl.condVars;
+
+  propagate env;
 }
 
 
@@ -192,6 +202,8 @@ top::Signal ::= ex::Expr mod::ModAction sig::SignalAction
                       text("then"), space(), sig.pp, semi()]);
  
   local mangled :: Maybe<String> = mangleAccessExpr(ex);
+
+  propagate env;
 
   ex.controlStmtContext = initialControlStmtContext;
 

@@ -64,6 +64,8 @@ top::Expr ::= sys::Decorated SyncSystem lhs::Expr rhs::Expr
 {
   top.pp = ppConcat([lhs.pp, text(" = "), rhs.pp]);
 
+  propagate controlStmtContext, env;
+
   forwards to 
     case rhs of
     | newExpr(_, args) -> sys.initializeGroup(lhs, args, top.location)

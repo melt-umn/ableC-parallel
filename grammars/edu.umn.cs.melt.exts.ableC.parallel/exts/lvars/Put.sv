@@ -5,6 +5,8 @@ top::Expr ::= lhs::Expr rhs::Expr
 {
   top.pp = ppConcat([lhs.pp, space(), text("<-"), space(), rhs.pp]);
 
+  propagate controlStmtContext, env;
+
   local localErrors :: [Message] =
     lhs.errors ++ rhs.errors ++
     case lhs.typerep of

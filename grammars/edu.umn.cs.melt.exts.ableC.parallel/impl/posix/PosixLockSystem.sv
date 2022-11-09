@@ -135,6 +135,8 @@ top::Expr ::= l::Expr args::Exprs
 
   top.pp = ppConcat([l.pp, text("="), text("new posix lock()")]);
 
+  propagate controlStmtContext, env;
+
   local lhs::Expr = exprAsType(l, extType(nilQualifier(),
         refIdExtType(structSEU(), just("__posix_mutex"),
           "edu:umn:cs:melt:exts:ableC:parallel:impl:posix:mutex")),
@@ -183,6 +185,8 @@ top::Expr ::= l::Expr args::Exprs
 {
   top.pp = ppConcat([l.pp, text("="), text("new posix condvar"),
       parens(ppImplode(text(","), args.pps))]);
+
+  propagate controlStmtContext, env;
 
   local localErrors :: [Message] =
     args.errors

@@ -5,6 +5,10 @@ top::Stmt ::= expr::Expr annts::SpawnAnnotations
 {
   expr.env = top.env;
 
+  propagate controlStmtContext;
+
+  annts.env = top.env;
+
   top.pp = ppConcat([text("spawn"), space(), expr.pp, semi()]);
   top.functionDefs := [];
   top.labelDefs := [];

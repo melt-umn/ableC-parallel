@@ -5,6 +5,8 @@ top::Stmt ::= cv::Expr sysOp::(Stmt ::= LockSystem Decorated Env Expr) nm::Strin
 {
   cv.env = top.env;
 
+  propagate controlStmtContext;
+
   top.pp = ppConcat([text(nm), space(), cv.pp]);
   top.functionDefs := [];
   top.labelDefs := [];

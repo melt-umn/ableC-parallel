@@ -129,6 +129,9 @@ top::Expr ::= l::Expr r::Expr sys::LockSystem desc::SynchronizationDesc
               mangledName::String
 {
   top.pp = ppConcat([l.pp, space(), text("="), space(), r.pp]);
+
+  propagate controlStmtContext, env;
+
   forwards to 
     case r of
     | newExpr(_, consExpr(arg, nilExpr())) ->
@@ -169,6 +172,11 @@ top::Expr ::= l::Expr ex::Expr sys::LockSystem desc::SynchronizationDesc
 
   lhs.env = top.env;
   lhs.controlStmtContext = top.controlStmtContext;
+
+  l.env = top.env;
+  l.controlStmtContext = top.controlStmtContext;
+
+  sys.env = top.env;
 
   forwards to
     ableC_Expr {
