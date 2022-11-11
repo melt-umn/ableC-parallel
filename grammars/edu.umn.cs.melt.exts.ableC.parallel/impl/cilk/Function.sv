@@ -5,6 +5,7 @@ global MODULE_NAME :: String = "ableC-parallel-cilk";
 abstract production cilkParFunctionConverter
 top::Decl ::= decl::ParallelFunctionDecl
 {
+  propagate env, controlStmtContext;
   top.pp = ppConcat([text("parallel by cilk"), space(), decl.pp]);
   
   local bty :: Decorated BaseTypeExpr =

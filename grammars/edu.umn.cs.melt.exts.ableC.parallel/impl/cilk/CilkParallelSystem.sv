@@ -22,6 +22,7 @@ top::SystemNumbering ::=
 abstract production cilkSpawn
 top::Stmt ::= e::Expr loc::Location annts::SpawnAnnotations
 {
+  propagate env, controlStmtContext;
   top.pp = ppConcat([text("spawn"), space(), e.pp, semi()]);
   top.functionDefs := [];
   top.labelDefs := [];
@@ -463,6 +464,7 @@ top::Stmt ::= e::Expr loc::Location annts::SpawnAnnotations
 abstract production cilkParFor
 top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
 {
+  propagate env, controlStmtContext;
   top.pp = ppConcat([text("parallel"), space(), loop.pp]);
   top.functionDefs := [];
   top.labelDefs := [];
@@ -811,6 +813,7 @@ top::Stmt ::= loop::Stmt loc::Location annts::ParallelAnnotations
 abstract production cilkParallelNew
 top::Expr ::= args::Exprs
 {
+  propagate env, controlStmtContext;
   local localErrors :: [Message] =
     args.errors
     ++
@@ -859,6 +862,7 @@ top::Expr ::= args::Exprs
 abstract production cilkParallelDelete
 top::Stmt ::= e::Expr
 {
+  propagate env, controlStmtContext;
   top.pp = ppConcat([text("delete"), e.pp]);
   top.functionDefs := [];
   top.labelDefs := [];
